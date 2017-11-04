@@ -11,8 +11,8 @@ gamma    = 0.99
 time	 = [ -1, -3, -5, -7, -8, -9,   -13,	  -14,   -17,   -19]
 treasure = [0.5, 2.8, 5.2, 7.3, 8.2, 9.0, 11.5, 12.1, 13.5, 14.2]
 
-dis_time = (np.power(gamma, -np.asarray(time)) * np.asarray(time) / 14.2).tolist()
-dis_treasure = (np.power(gamma, -np.asarray(time)) * np.asarray(treasure) / 14.2).tolist()
+dis_time = (np.power(gamma, -np.asarray(time)) * np.asarray(time)).tolist()
+dis_treasure = (np.power(gamma, -np.asarray(time)) * np.asarray(treasure)).tolist()
 
 # Create and style traces
 trace = dict(x=dis_time, 

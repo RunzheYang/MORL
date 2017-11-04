@@ -19,7 +19,7 @@ class DeepSeaTreasure(object):
 			)
 
 		# DON'T normalize
-		self.max_reward = 14.2
+		self.max_reward = 1.0
 
 		# state space specification: 2-dimensional discrete box
 		self.state_spec = [['discrete', 1, [0, 10]], ['discrete', 1, [0, 10]]]

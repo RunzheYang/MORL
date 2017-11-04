@@ -2,6 +2,7 @@ import argparse
 import numpy as np
 import torch
 from torch.autograd import Variable
+from utils.monitor import Monitor
 from ENV.mo_env import MultiObjectiveEnv
 
 
@@ -20,7 +21,7 @@ parser.add_argument('--mem-size', type=int, default=20000, metavar='M',
 				help='max size of the replay memory')
 parser.add_argument('--batch-size', type=int, default=256, metavar='B',
 				help='batch size')
-parser.add_argument('--lr', type=float, default=1e-5, metavar='LR',
+parser.add_argument('--lr', type=float, default=5e-4, metavar='LR',
 				help='learning rate')
 parser.add_argument('--epsilon', type=float, default=0.3, metavar='EPS',
 				help='epsilon greedy exploration')
@@ -38,12 +39,14 @@ parser.add_argument('--log', default='CRL/NAIVE/logs/', metavar='LOG',
 
 
 def train(env, agent, args, shared_mem=None):
+	monitor = Monitor()
 	env.reset()
 	for num_eps in xrange(args.episode_num):
 		terminal = False
 		env.reset()
 		loss = 0
 		cnt = 0
+		tot_reward = 0
 		while not terminal:
 			state  = env.observe()
 			action = agent.act(state)
@@ -51,17 +54,17 @@ def train(env, agent, args, shared_mem=None):
 			if cnt > 50:
 				terminal = True
 			agent.memorize(state, action, next_state, reward, terminal)
-			tmp = agent.learn()
-			if tmp is not None:
-				loss = loss + tmp
+			loss += agent.learn()
 			cnt = cnt + 1
+			tot_reward = args.gamma * tot_reward + 0.99*reward[0]+0.01*reward[1]
 		_, q = agent.model(Variable(torch.FloatTensor([0,0]).unsqueeze(0)), 
 						Variable(torch.FloatTensor([1,0]).unsqueeze(0)))
-		print "end of eps %d with final treasure %0.2f, the Q is %0.2f | %0.2f; loss: %0.4f"%(
-						num_eps, 0.9*reward[0]+0.1*reward[1], 
-						q[0, 3].data.numpy(), q[0, 1].data.numpy(), loss / cnt)
+		print "end of eps %d with total reward %0.2f, the Q is %0.2f | %0.2f; loss: %0.4f"%(
+						num_eps, tot_reward, q[0, 3].data[0], q[0, 1].data[0], loss / cnt)
+		monitor.update(num_eps, tot_reward, q[0, 3].data[0], q[0, 1].data[0], loss / cnt)
 			# print "s:", state, "\ta:", action, "\ts':", next_state, "\tr:", reward
 		# print "EPISODE %d ENDS"%(num_eps)
+	torch.save(agent.model, "{}{}.pkl".format(args.save, args.model))
 
 
 if __name__ == '__main__':	
@@ -80,8 +83,8 @@ if __name__ == '__main__':
 	if args.method == 'crl-naive':
 		from CRL.NAIVE.meta   import MetaAgent
 		from CRL.NAIVE.models import get_new_model
-		agent = get_new_model(args.model, state_size, action_size, reward_size)
-		agent = MetaAgent(agent, args, is_train=True)
+		model = get_new_model(args.model, state_size, action_size, reward_size)
+		agent = MetaAgent(model, args, is_train=True)
 
 	train(env, agent, args)
 

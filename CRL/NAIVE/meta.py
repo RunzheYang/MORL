@@ -79,15 +79,15 @@ class MetaAgent(object):
 	def learn(self):
 		if len(self.trans_mem) > self.batch_size:
 			minibatch = random.sample(self.trans_mem, self.batch_size)
-			listize = lambda x: list(x) * self.weight_num
-			state_batch      = listize(map(lambda x: x.s.unsqueeze(0), minibatch))
-			action_batch     = listize(map(lambda x: self.get_one_hot(self.model.action_size, x.a), minibatch))
-			reward_batch     = listize(map(lambda x: x.r.unsqueeze(0), minibatch))
-			next_state_batch = listize(map(lambda x: x.s_.unsqueeze(0), minibatch))
-			terminal_batch   = listize(map(lambda x: x.d, minibatch))
+			batchify = lambda x: list(x) * self.weight_num
+			state_batch      = batchify(map(lambda x: x.s.unsqueeze(0), minibatch))
+			action_batch     = batchify(map(lambda x: self.get_one_hot(self.model.action_size, x.a), minibatch))
+			reward_batch     = batchify(map(lambda x: x.r.unsqueeze(0), minibatch))
+			next_state_batch = batchify(map(lambda x: x.s_.unsqueeze(0), minibatch))
+			terminal_batch   = batchify(map(lambda x: x.d, minibatch))
 
 			# preference_batch = np.random.randn(self.weight_num, self.model.reward_size)
-			preference_batch = np.array([[0.9,0.1]]).repeat(self.weight_num, axis=0)
+			preference_batch = np.array([[0.99,0.01]]).repeat(self.weight_num, axis=0)
 			preference_batch = np.abs(preference_batch) / \
 								np.linalg.norm(preference_batch, ord=1, axis=1, keepdims=True)
 			preference_batch = torch.from_numpy(preference_batch.repeat(self.batch_size, axis=0)).float()
@@ -102,12 +102,13 @@ class MetaAgent(object):
 									   	torch.cat(reward_batch, dim=0).unsqueeze(2)
 									  ).squeeze()
 			for i in range(0, self.batch_size * self.weight_num):
+				r = Variable(torch.FloatTensor([w_reward_batch[i]]))
 				if terminal_batch[i]:
-					Target_Q.append(torch.FloatTensor([w_reward_batch[i]]))
+					Target_Q.append(r)
 				else:
-					Target_Q.append(w_reward_batch[i] + self.gamma * HQ[i].data)
+					Target_Q.append(r + self.gamma * HQ[i])
 			
-			Target_Q = Variable(torch.cat(Target_Q, dim=0))
+			Target_Q = torch.cat(Target_Q, dim=0)
 
 			self.optimizer.zero_grad()
 			action_mask = Variable(torch.cat(action_batch, dim=0))
@@ -116,6 +117,6 @@ class MetaAgent(object):
 			loss.backward()
 
 			self.optimizer.step()
-
 			return	report_loss
+		return 1.0
 
