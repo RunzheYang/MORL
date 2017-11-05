@@ -18,8 +18,8 @@ class NaiveLinearCQN(torch.nn.Module):
 		self.reward_size = reward_size
 
 		# S x A -> (W -> R)
-		self.affine1 = nn.Linear(state_size + reward_size, (state_size + reward_size) * 20)
-		self.affine2 = nn.Linear((state_size + reward_size) * 20, action_size)
+		self.affine1 = nn.Linear(state_size + reward_size, (state_size + reward_size) * 40)
+		self.affine2 = nn.Linear((state_size + reward_size) * 40, action_size)
 
 	def forward(self, state, preference):
 		x = torch.cat((state, preference), dim=1)

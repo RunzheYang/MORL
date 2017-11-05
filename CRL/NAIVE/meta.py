@@ -1,5 +1,6 @@
 import random
 import torch
+import copy
 import numpy as np
 import torch.optim as optim
 from torch.autograd import Variable
@@ -35,6 +36,9 @@ class MetaAgent(object):
 		elif args.optimizer == 'RMSprop':
 			self.optimizer = optim.RMSprop(self.model.parameters(), lr=args.lr)
 
+		self.update_count = 0
+		self.update_freq  = args.update_freq
+
 		if self.is_train: self.model.train()
 		
 		
@@ -50,7 +54,7 @@ class MetaAgent(object):
 				Variable(preference.unsqueeze(0)))
 		
 		action = Q.max(1)[1].data.numpy()
-		action = action[0, 0]
+		action = action[0]
 
 		if len(self.trans_mem) < self.batch_size or \
 				self.is_train and torch.rand(1)[0] < self.epsilon:
@@ -70,10 +74,17 @@ class MetaAgent(object):
 			self.trans_mem.popleft()
 
 
-	def get_one_hot(self, num_dim, index):
-		tensor = torch.ByteTensor(num_dim).zero_()
-		tensor[index] = 1
-		return tensor
+	def actmsk(self, num_dim, index):
+		mask = torch.ByteTensor(num_dim).zero_()
+		mask[index] = 1
+		return mask.unsqueeze(0)
+
+
+	def nontmlinds(self, terminal_batch):
+		mask = torch.ByteTensor(terminal_batch)
+		inds = torch.arange(0, len(terminal_batch)).long()
+		inds = inds[mask.eq(0)]
+		return inds
 
 
 	def learn(self):
@@ -81,7 +92,7 @@ class MetaAgent(object):
 			minibatch = random.sample(self.trans_mem, self.batch_size)
 			batchify = lambda x: list(x) * self.weight_num
 			state_batch      = batchify(map(lambda x: x.s.unsqueeze(0), minibatch))
-			action_batch     = batchify(map(lambda x: self.get_one_hot(self.model.action_size, x.a), minibatch))
+			action_batch     = batchify(map(lambda x: self.actmsk(self.model.action_size, x.a), minibatch))
 			reward_batch     = batchify(map(lambda x: x.r.unsqueeze(0), minibatch))
 			next_state_batch = batchify(map(lambda x: x.s_.unsqueeze(0), minibatch))
 			terminal_batch   = batchify(map(lambda x: x.d, minibatch))
@@ -92,31 +103,37 @@ class MetaAgent(object):
 								np.linalg.norm(preference_batch, ord=1, axis=1, keepdims=True)
 			preference_batch = torch.from_numpy(preference_batch.repeat(self.batch_size, axis=0)).float()
 
-			Target_Q = []
+			
 			__, Q    = self.model(Variable(torch.cat(state_batch, dim=0)),
 								  Variable(preference_batch))
+			# detach since we don't want gradients to propagate
+			
 			HQ, _    = self.model(Variable(torch.cat(next_state_batch, dim=0)),
 								  Variable(preference_batch))
 
 			w_reward_batch = torch.bmm(preference_batch.unsqueeze(1),
 									   	torch.cat(reward_batch, dim=0).unsqueeze(2)
 									  ).squeeze()
-			for i in range(0, self.batch_size * self.weight_num):
-				r = Variable(torch.FloatTensor([w_reward_batch[i]]))
-				if terminal_batch[i]:
-					Target_Q.append(r)
-				else:
-					Target_Q.append(r + self.gamma * HQ[i])
+
 			
-			Target_Q = torch.cat(Target_Q, dim=0)
+			nontmlmask = self.nontmlinds(terminal_batch)
+			Estimate_Q = Variable(torch.zeros(self.batch_size*self.weight_num))
+			Estimate_Q[nontmlmask] = self.gamma * HQ[nontmlmask]
+			Estimate_Q += Variable(torch.FloatTensor(w_reward_batch))
 
 			self.optimizer.zero_grad()
 			action_mask = Variable(torch.cat(action_batch, dim=0))
-			loss = torch.sum((Q.masked_select(action_mask) - Target_Q).pow(2))
-			report_loss = loss.data[0] / (self.batch_size * self.weight_num)
+			loss = torch.sum((Q.masked_select(action_mask) - Estimate_Q).pow(2))			
+			report_loss = loss.data[0]/(self.batch_size*self.weight_num)
 			loss.backward()
-
 			self.optimizer.step()
+
 			return	report_loss
+		
 		return 1.0
+
+
+	def save(self, save_path, model_name):
+		torch.save(self.model, "{}{}.pkl".format(save_path, model_name))
+
 

@@ -6,7 +6,7 @@ class MultiObjectiveEnv(object):
 	def __init__(self, env_name="deep_sea_treasure"):
 		if env_name == "dst":
 			self.env = DeepSeaTreasure()
-			self.state_spec = self.env.state_spec
+			self.state_spec  = self.env.state_spec
 			self.action_spec = self.env.action_spec
 			self.reward_spec = self.env.reward_spec
 
