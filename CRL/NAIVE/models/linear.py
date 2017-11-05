@@ -17,7 +17,7 @@ class NaiveLinearCQN(torch.nn.Module):
 		self.action_size = action_size
 		self.reward_size = reward_size
 
-		# S x A -> (W -> R)
+		# S x A -> (W -> R). =>. S x W -> (A -> R)
 		self.affine1 = nn.Linear(state_size + reward_size, (state_size + reward_size) * 40)
 		self.affine2 = nn.Linear((state_size + reward_size) * 40, action_size)
 

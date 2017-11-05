@@ -36,8 +36,8 @@ class MetaAgent(object):
 		elif args.optimizer == 'RMSprop':
 			self.optimizer = optim.RMSprop(self.model.parameters(), lr=args.lr)
 
-		self.update_count = 0
-		self.update_freq  = args.update_freq
+		# self.update_count = 0
+		# self.update_freq  = args.update_freq
 
 		if self.is_train: self.model.train()
 		
@@ -47,6 +47,8 @@ class MetaAgent(object):
 		if preference is None:
 			preference = torch.randn(self.model.reward_size)
 			preference = torch.abs(preference) / torch.norm(preference, p=1)
+			# preference = random.choice(
+			# 	[torch.FloatTensor([0.8,0.2]), torch.FloatTensor([0.2,0.8])])
 		state = torch.from_numpy(state).float()
 
 		_, Q = self.model(
@@ -56,8 +58,9 @@ class MetaAgent(object):
 		action = Q.max(1)[1].data.numpy()
 		action = action[0]
 
-		if len(self.trans_mem) < self.batch_size or \
-				self.is_train and torch.rand(1)[0] < self.epsilon:
+		if self.is_train and (
+				len(self.trans_mem) < self.batch_size or \
+				torch.rand(1)[0] < self.epsilon):
 			action = np.random.choice(self.model.action_size, 1)[0]
 			
 		return action
@@ -97,8 +100,8 @@ class MetaAgent(object):
 			next_state_batch = batchify(map(lambda x: x.s_.unsqueeze(0), minibatch))
 			terminal_batch   = batchify(map(lambda x: x.d, minibatch))
 
-			# preference_batch = np.random.randn(self.weight_num, self.model.reward_size)
-			preference_batch = np.array([[0.99,0.01]]).repeat(self.weight_num, axis=0)
+			preference_batch = np.random.randn(self.weight_num, self.model.reward_size)
+			# preference_batch = np.array([[0.8,0.2], [0.2, 0.8]])
 			preference_batch = np.abs(preference_batch) / \
 								np.linalg.norm(preference_batch, ord=1, axis=1, keepdims=True)
 			preference_batch = torch.from_numpy(preference_batch.repeat(self.batch_size, axis=0)).float()
@@ -107,7 +110,6 @@ class MetaAgent(object):
 			__, Q    = self.model(Variable(torch.cat(state_batch, dim=0)),
 								  Variable(preference_batch))
 			# detach since we don't want gradients to propagate
-			
 			HQ, _    = self.model(Variable(torch.cat(next_state_batch, dim=0)),
 								  Variable(preference_batch))
 
