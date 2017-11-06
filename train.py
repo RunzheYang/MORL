@@ -36,12 +36,14 @@ parser.add_argument('--update-freq', type=int, default=32, metavar='OPT',
 # LOG & SAVING
 parser.add_argument('--save', default='CRL/NAIVE/saved/', metavar='SAVE',
 				help='address for saving trained models')
+parser.add_argument('--name', default='', metavar='name',
+				help='specify a name for saving the model')
 parser.add_argument('--log', default='CRL/NAIVE/logs/', metavar='LOG',
 				help='address for recording training informtions')
 
 
 def train(env, agent, args, shared_mem=None):
-	monitor = Monitor(train=True, spec="--two w rand act [0.8, 0.2], [0.2, 0.8]")
+	monitor = Monitor(train=True, spec="--Naive")
 	env.reset()
 	for num_eps in xrange(args.episode_num):
 		terminal = False
@@ -75,7 +77,7 @@ def train(env, agent, args, shared_mem=None):
 					   q[0, 3].data[0], 
 					   q[0, 1].data[0], 
 					   loss / cnt)
-	agent.save(args.save, args.model)
+	agent.save(args.save, args.model+args.name)
 
 
 if __name__ == '__main__':	

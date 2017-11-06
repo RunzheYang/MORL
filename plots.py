@@ -26,6 +26,8 @@ parser.add_argument('--pltcontrol', default=False, action='store_true',
 # LOG & SAVING
 parser.add_argument('--save', default='CRL/NAIVE/saved/', metavar='SAVE',
 				help='address for saving trained models')
+parser.add_argument('--name', default='', metavar='name',
+				help='specify a name for saving the model')
 # Useless but I am too laze to delete them
 parser.add_argument('--mem-size', type=int, default=10000, metavar='M',
 				help='max size of the replay memory')
@@ -55,6 +57,8 @@ gamma    = args.gamma
 args 	 = parser.parse_args()	
 time	 = [ -1, -3, -5, -7, -8, -9,   -13,	  -14,   -17,   -19]
 treasure = [0.5, 2.8, 5.2, 7.3, 8.2, 9.0, 11.5, 12.1, 13.5, 14.2]
+# time	 = [ -1, -3, -5, -7, -8, -9]
+# treasure = [0.5, 2.8, 5.2, 7.3, 8.2, 9.0]
 
 # apply gamma
 dis_time = (-(1 - np.power(gamma, -np.asarray(time))) / (1 - gamma)).tolist()
@@ -72,7 +76,7 @@ if args.pltcontrol:
 	agent = None
 	if args.method == 'crl-naive':
 		from CRL.NAIVE.meta import MetaAgent
-		model = torch.load("{}{}.pkl".format(args.save, args.model))
+		model = torch.load("{}{}.pkl".format(args.save, args.model+args.name))
 		agent = MetaAgent(model, args, is_train=False)
 
 	# compute opt
@@ -87,10 +91,12 @@ if args.pltcontrol:
 	for i in xrange(2000):
 		w = np.random.randn(2)
 		w = np.abs(w) / np.linalg.norm(w, ord=1)
+		# w = np.random.dirichlet(np.ones(2))
+		w_e = w / np.linalg.norm(w, ord=2)
 		hq, _ = agent.model(Variable(torch.FloatTensor([0,0]).unsqueeze(0), volatile=True), 
 						Variable(torch.from_numpy(w).unsqueeze(0).float(), volatile=True))
-		realc = w.dot(real_sol).max() * w
-		qc = hq.data[0] * w
+		realc = w.dot(real_sol).max() * w_e
+		qc = hq.data[0] * w_e
 		ttrw = np.array([0, 0])
 		terminal = False
 		env.reset()
@@ -103,7 +109,7 @@ if args.pltcontrol:
 				terminal = True
 			cnt += 1
 			ttrw = args.gamma * ttrw + reward
-		ttrw_w = w.dot(ttrw) * w
+		ttrw_w = w.dot(ttrw) * w_e
 		opt_x.append(realc[0])
 		opt_y.append(realc[1])
 		q_x.append(qc[0])
@@ -158,7 +164,7 @@ if args.pltpareto:
 	agent = None
 	if args.method == 'crl-naive':
 		from CRL.NAIVE.meta import MetaAgent
-		model = torch.load("{}{}.pkl".format(args.save, args.model))
+		model = torch.load("{}{}.pkl".format(args.save, args.model+args.name))
 		agent = MetaAgent(model, args, is_train=False)
 
 	# compute recovered Pareto
@@ -167,6 +173,7 @@ if args.pltpareto:
 	for i in xrange(2000):
 		w = np.random.randn(2)
 		w = np.abs(w) / np.linalg.norm(w, ord=1)
+		# w = np.random.dirichlet(np.ones(2))
 		ttrw = np.array([0, 0])
 		terminal = False
 		env.reset()

@@ -30,6 +30,7 @@ class MetaAgent(object):
 		self.weight_num = args.weight_num
 		self.trans_mem = deque()
 		self.trans = namedtuple('trans', ['s', 'a', 's_', 'r', 'd'])
+		self.priority_mem = deque()
 
 		if args.optimizer == 'Adam':
 			self.optimizer = optim.Adam(self.model.parameters(), lr=args.lr)
@@ -45,6 +46,8 @@ class MetaAgent(object):
 	def act(self, state, preference=None):
 		# random pick a preference if it is not specified
 		if preference is None:
+			# preference = torch.from_numpy(
+			# 	np.random.dirichlet(np.ones(self.model.reward_size))).float()
 			preference = torch.randn(self.model.reward_size)
 			preference = torch.abs(preference) / torch.norm(preference, p=1)
 			# preference = random.choice(
@@ -58,10 +61,9 @@ class MetaAgent(object):
 		action = Q.max(1)[1].data.numpy()
 		action = action[0]
 
-		if self.is_train and (
-				len(self.trans_mem) < self.batch_size or \
-				torch.rand(1)[0] < self.epsilon):
-			action = np.random.choice(self.model.action_size, 1)[0]
+		if self.is_train and (len(self.trans_mem) < self.batch_size or \
+					torch.rand(1)[0] < self.epsilon):
+				action = np.random.choice(self.model.action_size, 1)[0]
 			
 		return action
 
@@ -73,9 +75,42 @@ class MetaAgent(object):
 							torch.from_numpy(next_state).float(), 	# next state
 							torch.from_numpy(reward).float(), 		# reward
 							terminal))								# terminal
+		
+		# randomly produce a preference for calculating priority
+		preference = torch.randn(self.model.reward_size)
+		preference = torch.abs(preference) / torch.norm(preference, p=1)
+		state = torch.from_numpy(state).float()
+		
+		_, q  = self.model(Variable(state.unsqueeze(0), volatile=True),
+						  Variable(preference.unsqueeze(0), volatile=True))
+		q = q[0, action].data[0]
+		wr = preference.dot(torch.from_numpy(reward).float())
+		if not terminal:
+			next_state = torch.from_numpy(next_state).float()
+			hq, _ = self.model(Variable(next_state.unsqueeze(0), volatile=True),
+						  Variable(preference.unsqueeze(0), volatile=True))
+			hq = hq.data[0]
+			p = abs(wr + self.gamma * hq - q)
+		else:
+			p = abs(wr - q)
+
+		self.priority_mem.append(
+				p
+			)
 		if len(self.trans_mem) > self.mem_size:
 			self.trans_mem.popleft()
+			self.priority_mem.popleft()
 
+
+	def sample(self, pop, pri, k):
+		pri = np.array(pri).astype(np.float)
+		inds = np.random.choice(
+				range(len(pop)), k,
+				replace=False,
+				p=pri/pri.sum()
+			)
+		return [pop[i] for i in inds]
+	
 
 	def actmsk(self, num_dim, index):
 		mask = torch.ByteTensor(num_dim).zero_()
@@ -92,7 +127,8 @@ class MetaAgent(object):
 
 	def learn(self):
 		if len(self.trans_mem) > self.batch_size:
-			minibatch = random.sample(self.trans_mem, self.batch_size)
+			minibatch = self.sample(self.trans_mem, self.priority_mem, self.batch_size)
+			# minibatch = random.sample(self.trans_mem, self.batch_size)
 			batchify = lambda x: list(x) * self.weight_num
 			state_batch      = batchify(map(lambda x: x.s.unsqueeze(0), minibatch))
 			action_batch     = batchify(map(lambda x: self.actmsk(self.model.action_size, x.a), minibatch))
@@ -101,9 +137,10 @@ class MetaAgent(object):
 			terminal_batch   = batchify(map(lambda x: x.d, minibatch))
 
 			preference_batch = np.random.randn(self.weight_num, self.model.reward_size)
-			# preference_batch = np.array([[0.8,0.2], [0.2, 0.8]])
+			# # preference_batch = np.array([[0.8,0.2], [0.2, 0.8]])
 			preference_batch = np.abs(preference_batch) / \
 								np.linalg.norm(preference_batch, ord=1, axis=1, keepdims=True)
+			# preference_batch = np.random.dirichlet(np.ones(self.model.reward_size), size=self.weight_num)								
 			preference_batch = torch.from_numpy(preference_batch.repeat(self.batch_size, axis=0)).float()
 
 			

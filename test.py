@@ -36,12 +36,14 @@ parser.add_argument('--update-freq', type=int, default=32, metavar='OPT',
 # LOG & SAVING
 parser.add_argument('--save', default='CRL/NAIVE/saved/', metavar='SAVE',
 				help='address for saving trained models')
+parser.add_argument('--name', default='', metavar='name',
+				help='specify a name for saving the model')
 parser.add_argument('--log', default='CRL/NAIVE/logs/', metavar='LOG',
 				help='address for recording training informtions')
 
 
 def test(env, agent, args, shared_mem=None):
-	monitor = Monitor(spec="-rand rand [0.01, 0.99]")
+	monitor = Monitor(spec="-rand rand [0.99, 0.01]")
 	env.reset()
 	for num_eps in xrange(args.episode_num):
 		terminal = False
@@ -50,7 +52,7 @@ def test(env, agent, args, shared_mem=None):
 		cnt  = 0
 		tot_reward = 0
 		reward = [0, 0]
-		pref = [0.01, 0.99]
+		pref = [0.99, 0.01]
 		while not terminal:
 			state  = env.observe()
 			action = agent.act(state, preference=torch.FloatTensor(pref))
@@ -99,7 +101,7 @@ if __name__ == '__main__':
 	agent = None
 	if args.method == 'crl-naive':
 		from CRL.NAIVE.meta   import MetaAgent
-		model = torch.load("{}{}.pkl".format(args.save, args.model))
+		model = torch.load("{}{}.pkl".format(args.save, args.model+args.name))
 		agent = MetaAgent(model, args, is_train=False)
 
 	test(env, agent, args)
