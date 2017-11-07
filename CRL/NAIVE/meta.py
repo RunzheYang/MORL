@@ -20,16 +20,18 @@ class MetaAgent(object):
 		model.
 	'''
 	def __init__(self, model, args, is_train=False):
-		self.model = model
-		self.is_train = is_train
-		self.gamma =   args.gamma
-		self.epsilon = args.epsilon
+		self.model         = model
+		self.is_train      = is_train
+		self.gamma         =   args.gamma
+		self.epsilon       = args.epsilon
+		self.epsilon_decay = args.epsilon_decay
+		self.epsilon_delta = args.epsilon / args.episode_num
 
-		self.mem_size = args.mem_size
-		self.batch_size = args.batch_size
-		self.weight_num = args.weight_num
-		self.trans_mem = deque()
-		self.trans = namedtuple('trans', ['s', 'a', 's_', 'r', 'd'])
+		self.mem_size     = args.mem_size
+		self.batch_size   = args.batch_size
+		self.weight_num   = args.weight_num
+		self.trans_mem    = deque()
+		self.trans        = namedtuple('trans', ['s', 'a', 's_', 'r', 'd'])
 		self.priority_mem = deque()
 
 		if args.optimizer == 'Adam':
@@ -95,6 +97,8 @@ class MetaAgent(object):
 			p = abs(wr + self.gamma * hq - q)
 		else:
 			self.keep_preference = None
+			if self.epsilon_decay:
+				self.epsilon -= self.epsilon_delta
 			p = abs(wr - q)
 		p += 1e-5
 
@@ -177,6 +181,8 @@ class MetaAgent(object):
 
 	def reset(self):
 		self.keep_preference = None
+		if self.epsilon_decay:
+				self.epsilon -= self.epsilon_delta
 
 
 	def save(self, save_path, model_name):

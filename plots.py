@@ -37,6 +37,8 @@ parser.add_argument('--lr', type=float, default=1e-3, metavar='LR',
 				help='learning rate')
 parser.add_argument('--epsilon', type=float, default=0.3, metavar='EPS',
 				help='epsilon greedy exploration')
+parser.add_argument('--epsilon-decay', default=False, action='store_true',
+				help='linear epsilon decay to zero')
 parser.add_argument('--weight-num', type=int, default=32, metavar='WN',
 				help='number of sampled weights per iteration')
 parser.add_argument('--episode-num', type=int, default=100, metavar='EN',
