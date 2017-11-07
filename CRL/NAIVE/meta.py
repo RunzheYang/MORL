@@ -82,7 +82,9 @@ class MetaAgent(object):
 							terminal))								# terminal
 		
 		# randomly produce a preference for calculating priority
-		preference = self.keep_preference
+		# preference = self.keep_preference
+		preference = torch.randn(self.model.reward_size)
+		preference = torch.abs(preference) / torch.norm(preference, p=1)
 		state = torch.from_numpy(state).float()
 		
 		_, q  = self.model(Variable(state.unsqueeze(0), volatile=True),
