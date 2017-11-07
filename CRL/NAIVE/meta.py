@@ -37,6 +37,7 @@ class MetaAgent(object):
 		elif args.optimizer == 'RMSprop':
 			self.optimizer = optim.RMSprop(self.model.parameters(), lr=args.lr)
 
+		self.keep_preference = None
 		# self.update_count = 0
 		# self.update_freq  = args.update_freq
 
@@ -45,11 +46,13 @@ class MetaAgent(object):
 		
 	def act(self, state, preference=None):
 		# random pick a preference if it is not specified
-		if preference is None:
+		if preference is None or self.keep_preference is None:
 			# preference = torch.from_numpy(
 			# 	np.random.dirichlet(np.ones(self.model.reward_size))).float()
-			preference = torch.randn(self.model.reward_size)
-			preference = torch.abs(preference) / torch.norm(preference, p=1)
+			self.keep_preference = torch.randn(self.model.reward_size)
+			self.keep_preference = torch.abs(self.keep_preference) / \
+								   torch.norm(self.keep_preference, p=1)
+			preference = self.keep_preference
 			# preference = random.choice(
 			# 	[torch.FloatTensor([0.8,0.2]), torch.FloatTensor([0.2,0.8])])
 		state = torch.from_numpy(state).float()
@@ -77,8 +80,7 @@ class MetaAgent(object):
 							terminal))								# terminal
 		
 		# randomly produce a preference for calculating priority
-		preference = torch.randn(self.model.reward_size)
-		preference = torch.abs(preference) / torch.norm(preference, p=1)
+		preference = self.keep_preference
 		state = torch.from_numpy(state).float()
 		
 		_, q  = self.model(Variable(state.unsqueeze(0), volatile=True),
@@ -92,7 +94,9 @@ class MetaAgent(object):
 			hq = hq.data[0]
 			p = abs(wr + self.gamma * hq - q)
 		else:
+			self.keep_preference = None
 			p = abs(wr - q)
+		p += 1e-5
 
 		self.priority_mem.append(
 				p
@@ -170,6 +174,9 @@ class MetaAgent(object):
 			return	report_loss
 		
 		return 1.0
+
+	def reset(self):
+		self.keep_preference = None
 
 
 	def save(self, save_path, model_name):

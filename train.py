@@ -17,7 +17,7 @@ parser.add_argument('--model', default='linear', metavar='MODELS',
 parser.add_argument('--gamma', type=float, default=0.99, metavar='GAMMA',
 				help='gamma for infinite horizonal MDPs')
 # TRAINING
-parser.add_argument('--mem-size', type=int, default=10000, metavar='M',
+parser.add_argument('--mem-size', type=int, default=4000, metavar='M',
 				help='max size of the replay memory')
 parser.add_argument('--batch-size', type=int, default=256, metavar='B',
 				help='batch size')
@@ -55,13 +55,13 @@ def train(env, agent, args, shared_mem=None):
 			state  = env.observe()
 			action = agent.act(state)
 			next_state, reward, terminal = env.step(action)
-			if cnt > 50:
-				terminal = True
 			agent.memorize(state, action, next_state, reward, terminal)
 			loss += agent.learn()
-
+			if cnt > 30:
+				terminal = True
+				agent.reset()
+			tot_reward = tot_reward + (0.8*reward[0]+0.2*reward[1]) * np.power(args.gamma, cnt)
 			cnt = cnt + 1
-			tot_reward = args.gamma * tot_reward + 0.8*reward[0]+0.2*reward[1]
 		
 
 		_, q = agent.model(Variable(torch.FloatTensor([0,0]).unsqueeze(0), volatile=True), 

@@ -35,7 +35,7 @@ parser.add_argument('--batch-size', type=int, default=256, metavar='B',
 				help='batch size')
 parser.add_argument('--lr', type=float, default=1e-3, metavar='LR',
 				help='learning rate')
-parser.add_argument('--epsilon', type=float, default=0.5, metavar='EPS',
+parser.add_argument('--epsilon', type=float, default=0.3, metavar='EPS',
 				help='epsilon greedy exploration')
 parser.add_argument('--weight-num', type=int, default=32, metavar='WN',
 				help='number of sampled weights per iteration')
@@ -62,7 +62,7 @@ treasure = [0.5, 2.8, 5.2, 7.3, 8.2, 9.0, 11.5, 12.1, 13.5, 14.2]
 
 # apply gamma
 dis_time = (-(1 - np.power(gamma, -np.asarray(time))) / (1 - gamma)).tolist()
-dis_treasure = (np.asarray(treasure)).tolist()
+dis_treasure = (np.power(gamma, -np.asarray(time)-1) * np.asarray(treasure)).tolist()
 
 
 ################# Control Frontier #################
@@ -105,10 +105,10 @@ if args.pltcontrol:
 			state  = env.observe()
 			action = agent.act(state, preference=torch.from_numpy(w).float())
 			next_state, reward, terminal = env.step(action)
-			if cnt > 50:
+			if cnt > 30:
 				terminal = True
-			cnt += 1
-			ttrw = args.gamma * ttrw + reward
+			ttrw = ttrw + reward * np.power(args.gamma, cnt)
+			cnt += 1	
 		ttrw_w = w.dot(ttrw) * w_e
 		opt_x.append(realc[0])
 		opt_y.append(realc[1])
@@ -184,8 +184,8 @@ if args.pltpareto:
 			next_state, reward, terminal = env.step(action)
 			if cnt > 50:
 				terminal = True
+			ttrw = ttrw + reward * np.power(args.gamma, cnt)
 			cnt += 1
-			ttrw = args.gamma * ttrw + reward
 
 		act_x.append(ttrw[0])
 		act_y.append(ttrw[1])	
