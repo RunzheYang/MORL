@@ -6,7 +6,7 @@ class DeepSeaTreasure(object):
 		# the map of the deep sea treasure (convex version)
 		self.sea_map = np.array(
 				[[  0,  0,  0,  0,  0,  0,    0,     0,     0,     0, 0],
-				 [0.5,  0,  0,  0,  0,  0,    0,     0,     0,     0, 0],
+				 [0.1,  0,  0,  0,  0,  0,    0,     0,     0,     0, 0],
 				 [ -1,2.8,  0,  0,  0,  0,    0,     0,     0,     0, 0],
 				 [ -1, -1,5.2,  0,  0,  0,    0,     0,     0,     0, 0],
 				 [ -1, -1, -1,7.3,8.2,  9,    0,     0,     0,     0, 0],

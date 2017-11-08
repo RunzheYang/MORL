@@ -29,13 +29,15 @@ parser.add_argument('--epsilon-decay', default=False, action='store_true',
 				help='linear epsilon decay to zero')
 parser.add_argument('--weight-num', type=int, default=32, metavar='WN',
 				help='number of sampled weights per iteration')
-parser.add_argument('--episode-num', type=int, default=3000, metavar='EN',
+parser.add_argument('--episode-num', type=int, default=2000, metavar='EN',
 				help='number of episodes for training')
 parser.add_argument('--optimizer', default='Adam', metavar='OPT',
 				help='optimizer: Adam | RMSprop')
 parser.add_argument('--update-freq', type=int, default=32, metavar='OPT',
 				help='optimizer: Adam | RMSprop')
 # LOG & SAVING
+parser.add_argument('--serialize', default=False, action='store_true',
+				help='serialize a model')
 parser.add_argument('--save', default='CRL/NAIVE/saved/', metavar='SAVE',
 				help='address for saving trained models')
 parser.add_argument('--name', default='', metavar='name',
@@ -59,9 +61,9 @@ def train(env, agent, args, shared_mem=None):
 			next_state, reward, terminal = env.step(action)
 			agent.memorize(state, action, next_state, reward, terminal)
 			loss += agent.learn()
-			if cnt > 30:
-				terminal = True
-				agent.reset()
+			# if cnt > 30:
+			# 	terminal = True
+			# 	agent.reset()
 			tot_reward = tot_reward + (0.8*reward[0]+0.2*reward[1]) * np.power(args.gamma, cnt)
 			cnt = cnt + 1
 		
@@ -98,7 +100,10 @@ if __name__ == '__main__':
 	if args.method == 'crl-naive':
 		from CRL.NAIVE.meta   import MetaAgent
 		from CRL.NAIVE.models import get_new_model
-		model = get_new_model(args.model, state_size, action_size, reward_size)
+		if args.serialize:
+			model = torch.load("{}{}.pkl".format(args.save, args.model+args.name))
+		else:
+			model = get_new_model(args.model, state_size, action_size, reward_size)
 		agent = MetaAgent(model, args, is_train=True)
 
 	train(env, agent, args)

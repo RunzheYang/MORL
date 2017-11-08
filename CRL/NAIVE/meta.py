@@ -25,7 +25,7 @@ class MetaAgent(object):
 		self.gamma         =   args.gamma
 		self.epsilon       = args.epsilon
 		self.epsilon_decay = args.epsilon_decay
-		self.epsilon_delta = args.epsilon / args.episode_num
+		self.epsilon_delta = (args.epsilon - 0.05) / args.episode_num
 
 		self.mem_size     = args.mem_size
 		self.batch_size   = args.batch_size
@@ -48,12 +48,13 @@ class MetaAgent(object):
 		
 	def act(self, state, preference=None):
 		# random pick a preference if it is not specified
-		if preference is None or self.keep_preference is None:
-			# preference = torch.from_numpy(
-			# 	np.random.dirichlet(np.ones(self.model.reward_size))).float()
-			self.keep_preference = torch.randn(self.model.reward_size)
-			self.keep_preference = torch.abs(self.keep_preference) / \
-								   torch.norm(self.keep_preference, p=1)
+		if preference is None:
+			if self.keep_preference is None:
+				# preference = torch.from_numpy(
+				# 	np.random.dirichlet(np.ones(self.model.reward_size))).float()
+				self.keep_preference = torch.randn(self.model.reward_size)
+				self.keep_preference = torch.abs(self.keep_preference) / \
+									   torch.norm(self.keep_preference, p=1)
 			preference = self.keep_preference
 			# preference = random.choice(
 			# 	[torch.FloatTensor([0.8,0.2]), torch.FloatTensor([0.2,0.8])])
