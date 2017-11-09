@@ -47,7 +47,7 @@ parser.add_argument('--log', default='CRL/NAIVE/logs/', metavar='LOG',
 
 
 def train(env, agent, args, shared_mem=None):
-	monitor = Monitor(train=True, spec="--Naive")
+	# monitor = Monitor(train=True, spec="--Naive")
 	env.reset()
 	for num_eps in xrange(args.episode_num):
 		terminal = False
@@ -59,8 +59,8 @@ def train(env, agent, args, shared_mem=None):
 			state  = env.observe()
 			action = agent.act(state)
 			next_state, reward, terminal = env.step(action)
-			agent.memorize(state, action, next_state, reward, terminal)
-			loss += agent.learn()
+			# agent.memorize(state, action, next_state, reward, terminal)
+			# loss += agent.learn()
 			# if cnt > 30:
 			# 	terminal = True
 			# 	agent.reset()
@@ -76,11 +76,11 @@ def train(env, agent, args, shared_mem=None):
 						q[0, 3].data[0], 
 						q[0, 1].data[0], 
 						loss / cnt)
-		monitor.update(num_eps, 
-					   tot_reward, 
-					   q[0, 3].data[0], 
-					   q[0, 1].data[0], 
-					   loss / cnt)
+		# monitor.update(num_eps, 
+		# 			   tot_reward, 
+		# 			   q[0, 3].data[0], 
+		# 			   q[0, 1].data[0], 
+		# 			   loss / cnt)
 	agent.save(args.save, args.model+args.name)
 
 
@@ -100,11 +100,15 @@ if __name__ == '__main__':
 	if args.method == 'crl-naive':
 		from CRL.NAIVE.meta   import MetaAgent
 		from CRL.NAIVE.models import get_new_model
-		if args.serialize:
-			model = torch.load("{}{}.pkl".format(args.save, args.model+args.name))
-		else:
-			model = get_new_model(args.model, state_size, action_size, reward_size)
-		agent = MetaAgent(model, args, is_train=True)
+	elif args.method == 'crl-envelope':
+		from CRL.ENVELOPE.meta   import MetaAgent
+		from CRL.ENVELOPE.models import get_new_model
+
+	if args.serialize:
+		model = torch.load("{}{}.pkl".format(args.save, args.model+args.name))
+	else:
+		model = get_new_model(args.model, state_size, action_size, reward_size)
+	agent = MetaAgent(model, args, is_train=True)
 
 	train(env, agent, args)
 
