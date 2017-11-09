@@ -59,22 +59,22 @@ def train(env, agent, args, shared_mem=None):
 			state  = env.observe()
 			action = agent.act(state)
 			next_state, reward, terminal = env.step(action)
-			# agent.memorize(state, action, next_state, reward, terminal)
-			# loss += agent.learn()
+			agent.memorize(state, action, next_state, reward, terminal)
+			loss += agent.learn()
 			# if cnt > 30:
 			# 	terminal = True
 			# 	agent.reset()
 			tot_reward = tot_reward + (0.8*reward[0]+0.2*reward[1]) * np.power(args.gamma, cnt)
 			cnt = cnt + 1
 		
-
+		probe = torch.FloatTensor([0.8,0.2])
 		_, q = agent.model(Variable(torch.FloatTensor([0,0]).unsqueeze(0), volatile=True), 
-						Variable(torch.FloatTensor([0.8,0.2]).unsqueeze(0), volatile=True))
+						Variable(probe.unsqueeze(0), volatile=True))
 		print "end of eps %d with total reward (1) %0.2f, the Q is %0.2f | %0.2f; loss: %0.4f"%(
 						num_eps, 
 						tot_reward, 
-						q[0, 3].data[0], 
-						q[0, 1].data[0], 
+						probe.dot(q[0, 3].data), 
+						probe.dot(q[0, 1].data), 
 						loss / cnt)
 		# monitor.update(num_eps, 
 		# 			   tot_reward, 

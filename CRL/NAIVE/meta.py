@@ -153,7 +153,6 @@ class MetaAgent(object):
 								np.linalg.norm(preference_batch, ord=1, axis=1, keepdims=True)
 			# preference_batch = np.random.dirichlet(np.ones(self.model.reward_size), size=self.weight_num)								
 			preference_batch = torch.from_numpy(preference_batch.repeat(self.batch_size, axis=0)).float()
-
 			
 			__, Q    = self.model(Variable(torch.cat(state_batch, dim=0)),
 								  Variable(preference_batch))
@@ -169,7 +168,7 @@ class MetaAgent(object):
 			nontmlmask = self.nontmlinds(terminal_batch)
 			Estimate_Q = Variable(torch.zeros(self.batch_size*self.weight_num))
 			Estimate_Q[nontmlmask] = self.gamma * HQ[nontmlmask]
-			Estimate_Q += Variable(torch.FloatTensor(w_reward_batch))
+			Estimate_Q += Variable(w_reward_batch)
 
 			self.optimizer.zero_grad()
 			action_mask = Variable(torch.cat(action_batch, dim=0))

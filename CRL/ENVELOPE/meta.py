@@ -104,12 +104,13 @@ class MetaAgent(object):
 			hq, _ = self.model(Variable(next_state.unsqueeze(0), volatile=True),
 						  Variable(preference.unsqueeze(0), volatile=True))
 			hq = hq.data[0]
-			p = abs(wr + self.gamma * hq - q)
+			whq = preference.dot(hq)
+			p = abs(wr + self.gamma * whq - wq)
 		else:
 			self.keep_preference = None
 			if self.epsilon_decay:
 				self.epsilon -= self.epsilon_delta
-			p = abs(wr - q)
+			p = abs(wr - wq)
 		p += 1e-5
 
 		self.priority_mem.append(
@@ -161,26 +162,23 @@ class MetaAgent(object):
 			# preference_batch = np.random.dirichlet(np.ones(self.model.reward_size), size=self.weight_num)								
 			preference_batch = torch.from_numpy(preference_batch.repeat(self.batch_size, axis=0)).float()
 
-			
 			__, Q    = self.model(Variable(torch.cat(state_batch, dim=0)),
-								  Variable(preference_batch))
+								  Variable(preference_batch), w_num=self.weight_num)
 			# detach since we don't want gradients to propagate
 			HQ, _    = self.model(Variable(torch.cat(next_state_batch, dim=0)),
-								  Variable(preference_batch))
-
-			w_reward_batch = torch.bmm(preference_batch.unsqueeze(1),
-									   	torch.cat(reward_batch, dim=0).unsqueeze(2)
-									  ).squeeze()
+								  Variable(preference_batch), w_num=self.weight_num)
 
 			
 			nontmlmask = self.nontmlinds(terminal_batch)
-			Estimate_Q = Variable(torch.zeros(self.batch_size*self.weight_num))
+			Estimate_Q = Variable(torch.zeros(self.batch_size*self.weight_num, 
+											  self.model.reward_size))
 			Estimate_Q[nontmlmask] = self.gamma * HQ[nontmlmask]
-			Estimate_Q += Variable(torch.FloatTensor(w_reward_batch))
+			Estimate_Q += Variable(torch.cat(reward_batch, dim=0))
 
 			self.optimizer.zero_grad()
 			action_mask = Variable(torch.cat(action_batch, dim=0))
-			loss = torch.sum((Q.masked_select(action_mask) - Estimate_Q).pow(2))			
+			action_mask = action_mask.unsqueeze(2).repeat(1,1,self.model.reward_size)
+			loss = torch.sum((Q.masked_select(action_mask) - Estimate_Q.view(-1)).pow(2))			
 			report_loss = loss.data[0]/(self.batch_size*self.weight_num)
 			loss.backward()
 			self.optimizer.step()
