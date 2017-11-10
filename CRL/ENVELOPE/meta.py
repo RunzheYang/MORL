@@ -97,7 +97,7 @@ class MetaAgent(object):
 		# randomly produce a preference for calculating priority
 		# preference = self.keep_preference
 		preference = torch.randn(self.model.reward_size)
-		preference = torch.abs(preference) / torch.norm(preference, p=1)
+		preference = (torch.abs(preference) / torch.norm(preference, p=1)).type(FloatTensor)
 		state = torch.from_numpy(state).type(FloatTensor)
 		
 		_, q  = self.model(Variable(state.unsqueeze(0), volatile=True),
