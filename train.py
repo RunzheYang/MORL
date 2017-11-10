@@ -45,9 +45,14 @@ parser.add_argument('--name', default='', metavar='name',
 parser.add_argument('--log', default='CRL/NAIVE/logs/', metavar='LOG',
 				help='address for recording training informtions')
 
+use_cuda = torch.cuda.is_available()
+FloatTensor = torch.cuda.FloatTensor if use_cuda else torch.FloatTensor
+LongTensor = torch.cuda.LongTensor if use_cuda else torch.LongTensor
+ByteTensor = torch.cuda.ByteTensor if use_cuda else torch.ByteTensor
+Tensor = FloatTensor
 
 def train(env, agent, args, shared_mem=None):
-	# monitor = Monitor(train=True, spec="--Naive")
+	monitor = Monitor(train=True, spec="-{}".format(args.method))
 	env.reset()
 	for num_eps in xrange(args.episode_num):
 		terminal = False
@@ -67,20 +72,26 @@ def train(env, agent, args, shared_mem=None):
 			tot_reward = tot_reward + (0.8*reward[0]+0.2*reward[1]) * np.power(args.gamma, cnt)
 			cnt = cnt + 1
 		
-		probe = torch.FloatTensor([0.8,0.2])
-		_, q = agent.model(Variable(torch.FloatTensor([0,0]).unsqueeze(0), volatile=True), 
+		probe = FloatTensor([0.8,0.2])
+		_, q = agent.model(Variable(FloatTensor([0,0]).unsqueeze(0), volatile=True), 
 						Variable(probe.unsqueeze(0), volatile=True))
+		if args.method == "crl-naive":
+			q_max = q[0, 3].data.cpu()[0]
+			q_min = q[0, 1].data.cpu()[0]
+		elif args.method == "crl-envelope":
+			q_max = probe.dot(q[0, 3].data.cpu())
+			q_min = probe.dot(q[0, 1].data.cpu())
 		print "end of eps %d with total reward (1) %0.2f, the Q is %0.2f | %0.2f; loss: %0.4f"%(
 						num_eps, 
 						tot_reward, 
-						probe.dot(q[0, 3].data), 
-						probe.dot(q[0, 1].data), 
+						q_max, 
+						q_min, 
 						loss / cnt)
-		# monitor.update(num_eps, 
-		# 			   tot_reward, 
-		# 			   q[0, 3].data[0], 
-		# 			   q[0, 1].data[0], 
-		# 			   loss / cnt)
+		monitor.update(num_eps, 
+					   tot_reward, 
+					   q_max, 
+					   q_min, 
+					   loss / cnt)
 	agent.save(args.save, args.model+args.name)
 
 

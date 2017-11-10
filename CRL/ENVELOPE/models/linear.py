@@ -4,6 +4,12 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.autograd import Variable
 
+use_cuda = torch.cuda.is_available()
+FloatTensor = torch.cuda.FloatTensor if use_cuda else torch.FloatTensor
+LongTensor = torch.cuda.LongTensor if use_cuda else torch.LongTensor
+ByteTensor = torch.cuda.ByteTensor if use_cuda else torch.ByteTensor
+Tensor = FloatTensor
+
 class EnvelopeLinearCQN(torch.nn.Module):
 
 	'''
@@ -27,7 +33,7 @@ class EnvelopeLinearCQN(torch.nn.Module):
 		# mask for reordering the batch
 		mask = torch.cat(
 				[torch.arange(i, s_num * w_num + i, s_num) 
-					for i in xrange(s_num)]).long()
+					for i in xrange(s_num)]).type(LongTensor)
 		reQ = Q.view(-1, self.action_size * self.reward_size
 							)[mask].view(-1, self.reward_size)
 		
@@ -41,7 +47,7 @@ class EnvelopeLinearCQN(torch.nn.Module):
 		# mask for take max over actions and weights
 		prod = prod.view(-1, self.action_size * w_num)
 		inds = prod.max(1)[1]
-		mask = torch.ByteTensor(prod.size()).zero_()
+		mask = ByteTensor(prod.size()).zero_()
 		mask.scatter_(1, inds.data.unsqueeze(1), 1)
 		mask = mask.view(-1, 1).repeat(1, self.reward_size)
 

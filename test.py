@@ -10,7 +10,7 @@ parser = argparse.ArgumentParser(description='MORL-TEST')
 # CONFIG
 parser.add_argument('--env-name', default='dst', metavar='ENVNAME',
 				help='environment to train on (default: dst)')
-parser.add_argument('--method', default='crl-naive', metavar='METHODS',
+parser.add_argument('--method', default='crl-naive', metavar='METHOD',
 				help='methods: crl-naive | crl-envelope | ols')
 parser.add_argument('--model', default='linear', metavar='MODELS',
 				help='linear | cnn | cnn + lstm')
@@ -45,7 +45,7 @@ parser.add_argument('--log', default='CRL/NAIVE/logs/', metavar='LOG',
 
 
 def test(env, agent, args, shared_mem=None):
-	monitor = Monitor(spec="-rand rand [0.99, 0.01]")
+	monitor = Monitor(spec="-{}".format(args.method))
 	env.reset()
 	for num_eps in xrange(args.episode_num):
 		terminal = False
@@ -67,16 +67,24 @@ def test(env, agent, args, shared_mem=None):
 		
 			_, q = agent.model(Variable(torch.FloatTensor(state).unsqueeze(0), volatile=True), 
 							Variable(torch.FloatTensor(pref).unsqueeze(0), volatile=True))
+			
+			if args.method == "crl-naive":
+				q_max = q[0, 3].data[0]
+				q_min = q[0, 1].data[0]
+			elif args.method == "crl-envelope":
+				q_max = probe.dot(q[0, 3].data)
+				q_min = probe.dot(q[0, 1].data)
+			
 			print "end of eps %d with total reward (1) %0.2f, the Q is %0.2f | %0.2f; loss: %0.4f"%(
 							num_eps, 
 							tot_reward, 
-							q[0, 3].data[0], 
-							q[0, 1].data[0], 
+							q_max, 
+							q_min, 
 							loss / cnt)
 			monitor.update(num_eps, 
 						   tot_reward, 
-						   q[0, 3].data[0], 
-						   q[0, 1].data[0], 
+						   q_max, 
+						   q_min, 
 						   loss / cnt)
 
 
@@ -94,9 +102,11 @@ if __name__ == '__main__':
 	# generate an agent for testing
 	agent = None
 	if args.method == 'crl-naive':
-		from CRL.NAIVE.meta   import MetaAgent
-		model = torch.load("{}{}.pkl".format(args.save, args.model+args.name))
-		agent = MetaAgent(model, args, is_train=False)
+		from CRL.NAIVE.meta import MetaAgent
+	elif args.method == 'crl-envelope':
+		from CRL.ENVELOPE.meta import MetaAgent
+	model = torch.load("{}{}.pkl".format(args.save, args.model+args.name))
+	agent = MetaAgent(model, args, is_train=False)
 
 	test(env, agent, args)
 

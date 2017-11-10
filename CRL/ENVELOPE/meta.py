@@ -8,6 +8,13 @@ import torch.nn.functional as F
 from collections import namedtuple
 from collections import deque
 
+use_cuda = torch.cuda.is_available()
+FloatTensor = torch.cuda.FloatTensor if use_cuda else torch.FloatTensor
+LongTensor = torch.cuda.LongTensor if use_cuda else torch.LongTensor
+ByteTensor = torch.cuda.ByteTensor if use_cuda else torch.ByteTensor
+Tensor = FloatTensor
+
+
 class MetaAgent(object):
 	'''
 	(1) act: how to sample an action to examine the learning 
@@ -44,6 +51,7 @@ class MetaAgent(object):
 		# self.update_freq  = args.update_freq
 
 		if self.is_train: self.model.train()
+		if use_cuda: self.model.cuda()
 		
 		
 	def act(self, state, preference=None):
@@ -51,14 +59,14 @@ class MetaAgent(object):
 		if preference is None:
 			if self.keep_preference is None:
 				# preference = torch.from_numpy(
-				# 	np.random.dirichlet(np.ones(self.model.reward_size))).float()
+				# 	np.random.dirichlet(np.ones(self.model.reward_size))).type(FloatTensor)
 				self.keep_preference = torch.randn(self.model.reward_size)
 				self.keep_preference = torch.abs(self.keep_preference) / \
 									   torch.norm(self.keep_preference, p=1)
 			preference = self.keep_preference
 			# preference = random.choice(
-			# 	[torch.FloatTensor([0.8,0.2]), torch.FloatTensor([0.2,0.8])])
-		state = torch.from_numpy(state).float()
+			# 	[FloatTensor([0.8,0.2]), FloatTensor([0.2,0.8])])
+		state = torch.from_numpy(state).type(FloatTensor)
 
 		_, Q = self.model(
 				Variable(state.unsqueeze(0)), 
@@ -80,17 +88,17 @@ class MetaAgent(object):
 
 	def memorize(self, state, action, next_state, reward, terminal):
 		self.trans_mem.append(self.trans(
-							torch.from_numpy(state).float(),		# state
+							torch.from_numpy(state).type(FloatTensor),		# state
 							action, 								# action
-							torch.from_numpy(next_state).float(), 	# next state
-							torch.from_numpy(reward).float(), 		# reward
+							torch.from_numpy(next_state).type(FloatTensor), 	# next state
+							torch.from_numpy(reward).type(FloatTensor), 		# reward
 							terminal))								# terminal
 		
 		# randomly produce a preference for calculating priority
 		# preference = self.keep_preference
 		preference = torch.randn(self.model.reward_size)
 		preference = torch.abs(preference) / torch.norm(preference, p=1)
-		state = torch.from_numpy(state).float()
+		state = torch.from_numpy(state).type(FloatTensor)
 		
 		_, q  = self.model(Variable(state.unsqueeze(0), volatile=True),
 						  Variable(preference.unsqueeze(0), volatile=True))
@@ -98,9 +106,9 @@ class MetaAgent(object):
 		q = q[0, action].data
 		wq = preference.dot(q)
 		
-		wr = preference.dot(torch.from_numpy(reward).float())
+		wr = preference.dot(torch.from_numpy(reward).type(FloatTensor))
 		if not terminal:
-			next_state = torch.from_numpy(next_state).float()
+			next_state = torch.from_numpy(next_state).type(FloatTensor)
 			hq, _ = self.model(Variable(next_state.unsqueeze(0), volatile=True),
 						  Variable(preference.unsqueeze(0), volatile=True))
 			hq = hq.data[0]
@@ -132,14 +140,14 @@ class MetaAgent(object):
 	
 
 	def actmsk(self, num_dim, index):
-		mask = torch.ByteTensor(num_dim).zero_()
+		mask = ByteTensor(num_dim).zero_()
 		mask[index] = 1
 		return mask.unsqueeze(0)
 
 
 	def nontmlinds(self, terminal_batch):
-		mask = torch.ByteTensor(terminal_batch)
-		inds = torch.arange(0, len(terminal_batch)).long()
+		mask = ByteTensor(terminal_batch)
+		inds = torch.arange(0, len(terminal_batch)).type(LongTensor)
 		inds = inds[mask.eq(0)]
 		return inds
 
@@ -160,7 +168,7 @@ class MetaAgent(object):
 			preference_batch = np.abs(preference_batch) / \
 								np.linalg.norm(preference_batch, ord=1, axis=1, keepdims=True)
 			# preference_batch = np.random.dirichlet(np.ones(self.model.reward_size), size=self.weight_num)								
-			preference_batch = torch.from_numpy(preference_batch.repeat(self.batch_size, axis=0)).float()
+			preference_batch = torch.from_numpy(preference_batch.repeat(self.batch_size, axis=0)).type(FloatTensor)
 
 			__, Q    = self.model(Variable(torch.cat(state_batch, dim=0)),
 								  Variable(preference_batch), w_num=self.weight_num)

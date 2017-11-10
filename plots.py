@@ -77,9 +77,11 @@ if args.pltcontrol:
 	# generate an agent for plotting
 	agent = None
 	if args.method == 'crl-naive':
-		from CRL.NAIVE.meta import MetaAgent
-		model = torch.load("{}{}.pkl".format(args.save, args.model+args.name))
-		agent = MetaAgent(model, args, is_train=False)
+		from CRL.NAIVE.meta   import MetaAgent
+	elif args.method == 'crl-envelope':
+		from CRL.ENVELOPE.meta   import MetaAgent
+	model = torch.load("{}{}.pkl".format(args.save, args.model+args.name))
+	agent = MetaAgent(model, args, is_train=False)
 
 	# compute opt
 	opt_x = []
@@ -98,7 +100,11 @@ if args.pltcontrol:
 		hq, _ = agent.model(Variable(torch.FloatTensor([0,0]).unsqueeze(0), volatile=True), 
 						Variable(torch.from_numpy(w).unsqueeze(0).float(), volatile=True))
 		realc = w.dot(real_sol).max() * w_e
-		qc = hq.data[0] * w_e
+		qc = w_e
+		if args.method == 'crl-naive':
+			qc = hq.data[0] * w_e
+		elif args.method == 'crl-envelope':
+			qc = w.dot(hq.data.numpy().squeeze()) * w_e
 		ttrw = np.array([0, 0])
 		terminal = False
 		env.reset()
@@ -147,7 +153,7 @@ if args.pltcontrol:
 						size  = 1),
 				 name='policy')
 
-	layout_opt=dict(title="DST Control Frontier (gamma=%0.2f)"%gamma,
+	layout_opt=dict(title="DST Control Frontier - {}".format(args.method),
 				xaxis=dict(title = 'teasure value'), 
 				yaxis=dict(title = 'time penalty'))
 
@@ -165,13 +171,20 @@ if args.pltpareto:
 	# generate an agent for plotting
 	agent = None
 	if args.method == 'crl-naive':
-		from CRL.NAIVE.meta import MetaAgent
-		model = torch.load("{}{}.pkl".format(args.save, args.model+args.name))
-		agent = MetaAgent(model, args, is_train=False)
+		from CRL.NAIVE.meta   import MetaAgent
+	elif args.method == 'crl-envelope':
+		from CRL.ENVELOPE.meta   import MetaAgent
+	model = torch.load("{}{}.pkl".format(args.save, args.model+args.name))
+	agent = MetaAgent(model, args, is_train=False)
 
 	# compute recovered Pareto
 	act_x = []
 	act_y = []
+
+	# predicted solution
+	pred_x = []
+	pred_y = []
+
 	for i in xrange(2000):
 		w = np.random.randn(2)
 		w = np.abs(w) / np.linalg.norm(w, ord=1)
@@ -180,6 +193,11 @@ if args.pltpareto:
 		terminal = False
 		env.reset()
 		cnt = 0
+		if args.method == "crl-envelope":
+			hq, _ = agent.model(Variable(torch.FloatTensor([0,0]).unsqueeze(0), volatile=True), 
+							Variable(torch.from_numpy(w).unsqueeze(0).float(), volatile=True))
+			pred_x.append(hq.data.numpy().squeeze()[0] * 1.0)
+			pred_y.append(hq.data.numpy().squeeze()[1] * 1.0)
 		while not terminal:
 			state  = env.observe()
 			action = agent.act(state, preference=torch.from_numpy(w).float())
@@ -198,11 +216,9 @@ if args.pltpareto:
 				 mode="markers+lines",
 				 type='custom',
 				 marker=dict(
-				 		# color =('rgb(205, 12, 24)'), 
 				 		symbol="circle", 
 				 		size  = 10),
 				 line = dict(
-						# color = ('rgb(205, 12, 24)'),
 						width = 1,
 						dash  = 'dash'),
 				 name='Pareto')
@@ -212,23 +228,37 @@ if args.pltpareto:
 				 mode="markers",
 				 type='custom',
 				 marker=dict(
-				 		# color =('rgb(205, 12, 24)'), 
 				 		symbol="circle", 
 				 		size  = 10),
 				 line = dict(
-						# color = ('rgb(205, 12, 24)'),
 						width = 1,
 						dash  = 'dash'),
 				 name='Recovered')
 
-	layout=dict(title="DST Pareto Frontier (gamma=%0.2f)"%gamma,
+	pred_pareto = dict(x=pred_x, 
+				 y=pred_y,
+				 mode="markers",
+				 type='custom',
+				 marker=dict(
+				 		symbol="circle", 
+				 		size  = 10),
+				 line = dict(
+						width = 1,
+						dash  = 'dash'),
+				 name='Predicted')
+
+
+	layout=dict(title="DST Pareto Frontier - {}".format(args.method),
 				xaxis=dict(   title = 'teasure value',
 						   zeroline = False), 
 				yaxis=dict(   title = 'time penalty',
 						   zeroline = False))
 
 	# send to visdom
-	vis._send({'data': [trace_pareto, act_pareto], 'layout': layout})
+	if args.method == "crl-naive":
+		vis._send({'data': [trace_pareto, act_pareto], 'layout': layout})
+	elif args.method == "crl-envelope":
+		vis._send({'data': [trace_pareto, act_pareto, pred_pareto], 'layout': layout})
 
 
 
