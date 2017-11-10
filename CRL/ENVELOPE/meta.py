@@ -76,7 +76,7 @@ class MetaAgent(object):
 
 		Q = torch.mv(Q.data, preference)
 
-		action = Q.max(0)[1].numpy()
+		action = Q.max(0)[1].cpu().numpy()
 		action = action[0]
 
 		if self.is_train and (len(self.trans_mem) < self.batch_size or \
