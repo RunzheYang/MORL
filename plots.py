@@ -54,6 +54,12 @@ vis = visdom.Visdom()
 
 assert vis.check_connection()
 
+use_cuda = torch.cuda.is_available()
+FloatTensor = torch.cuda.FloatTensor if use_cuda else torch.FloatTensor
+LongTensor = torch.cuda.LongTensor if use_cuda else torch.LongTensor
+ByteTensor = torch.cuda.ByteTensor if use_cuda else torch.ByteTensor
+Tensor = FloatTensor
+
 # Add data
 gamma    = args.gamma
 args 	 = parser.parse_args()	
@@ -97,21 +103,21 @@ if args.pltcontrol:
 		w = np.abs(w) / np.linalg.norm(w, ord=1)
 		# w = np.random.dirichlet(np.ones(2))
 		w_e = w / np.linalg.norm(w, ord=2)
-		hq, _ = agent.model(Variable(torch.FloatTensor([0,0]).unsqueeze(0), volatile=True), 
-						Variable(torch.from_numpy(w).unsqueeze(0).float(), volatile=True))
+		hq, _ = agent.model(Variable(FloatTensor([0,0]).unsqueeze(0), volatile=True), 
+						Variable(torch.from_numpy(w).unsqueeze(0).type(FloatTensor), volatile=True))
 		realc = w.dot(real_sol).max() * w_e
 		qc = w_e
 		if args.method == 'crl-naive':
 			qc = hq.data[0] * w_e
 		elif args.method == 'crl-envelope':
-			qc = w.dot(hq.data.numpy().squeeze()) * w_e
+			qc = w.dot(hq.data.cpu().numpy().squeeze()) * w_e
 		ttrw = np.array([0, 0])
 		terminal = False
 		env.reset()
 		cnt = 0
 		while not terminal:
 			state  = env.observe()
-			action = agent.act(state, preference=torch.from_numpy(w).float())
+			action = agent.act(state, preference=torch.from_numpy(w).type(FloatTensor))
 			next_state, reward, terminal = env.step(action)
 			if cnt > 30:
 				terminal = True
@@ -194,13 +200,13 @@ if args.pltpareto:
 		env.reset()
 		cnt = 0
 		if args.method == "crl-envelope":
-			hq, _ = agent.model(Variable(torch.FloatTensor([0,0]).unsqueeze(0), volatile=True), 
-							Variable(torch.from_numpy(w).unsqueeze(0).float(), volatile=True))
-			pred_x.append(hq.data.numpy().squeeze()[0] * 1.0)
-			pred_y.append(hq.data.numpy().squeeze()[1] * 1.0)
+			hq, _ = agent.model(Variable(FloatTensor([0,0]).unsqueeze(0), volatile=True), 
+							Variable(torch.from_numpy(w).unsqueeze(0).type(FloatTensor), volatile=True))
+			pred_x.append(hq.data.cpu().numpy().squeeze()[0] * 1.0)
+			pred_y.append(hq.data.cpu().numpy().squeeze()[1] * 1.0)
 		while not terminal:
 			state  = env.observe()
-			action = agent.act(state, preference=torch.from_numpy(w).float())
+			action = agent.act(state, preference=torch.from_numpy(w).type(FloatTensor))
 			next_state, reward, terminal = env.step(action)
 			if cnt > 50:
 				terminal = True
