@@ -16,13 +16,13 @@ Tensor = FloatTensor
 
 class MetaAgent(object):
 	'''
-	(1) act: how to sample an action to examine the learning 
+	(1) act: how to sample an action to examine the learning
 		outcomes or explore the environment;
 	(2) memorize: how to store observed observations in order to
-		help learing or establishing the empirical model of the 
+		help learing or establishing the empirical model of the
 		enviroment;
-	(3) learn: how the agent learns from the observations via 
-		explicitor implicit inference, how to optimize the policy 
+	(3) learn: how the agent learns from the observations via
+		explicitor implicit inference, how to optimize the policy
 		model.
 	'''
 	def __init__(self, model, args, is_train=False):
@@ -51,8 +51,8 @@ class MetaAgent(object):
 
 		if self.is_train: self.model.train()
 		if use_cuda: self.model.cuda()
-		
-		
+
+
 	def act(self, state, preference=None):
 		# random pick a preference if it is not specified
 		if preference is None:
@@ -68,16 +68,16 @@ class MetaAgent(object):
 		state = torch.from_numpy(state).type(FloatTensor)
 
 		_, Q = self.model(
-				Variable(state.unsqueeze(0)), 
+				Variable(state.unsqueeze(0)),
 				Variable(preference.unsqueeze(0)))
-		
+
 		action = Q.max(1)[1].data.cpu().numpy()
 		action = action[0]
 
 		if self.is_train and (len(self.trans_mem) < self.batch_size or \
 					torch.rand(1)[0] < self.epsilon):
 				action = np.random.choice(self.model.action_size, 1)[0]
-			
+
 		return action
 
 
@@ -88,13 +88,13 @@ class MetaAgent(object):
 							torch.from_numpy(next_state).type(FloatTensor), 	# next state
 							torch.from_numpy(reward).type(FloatTensor), 		# reward
 							terminal))								# terminal
-		
+
 		# randomly produce a preference for calculating priority
 		# preference = self.keep_preference
 		preference = torch.randn(self.model.reward_size)
 		preference = (torch.abs(preference) / torch.norm(preference, p=1)).type(FloatTensor)
 		state = torch.from_numpy(state).type(FloatTensor)
-		
+
 		_, q  = self.model(Variable(state.unsqueeze(0), volatile=True),
 						  Variable(preference.unsqueeze(0), volatile=True))
 		q = q[0, action].data[0]
@@ -128,16 +128,16 @@ class MetaAgent(object):
 				p=pri/pri.sum()
 			)
 		return [pop[i] for i in inds]
-	
+
 
 	def actmsk(self, num_dim, index):
-		mask = torch.ByteTensor(num_dim).zero_()
+		mask = ByteTensor(num_dim).zero_()
 		mask[index] = 1
 		return mask.unsqueeze(0)
 
 
 	def nontmlinds(self, terminal_batch):
-		mask = torch.ByteTensor(terminal_batch)
+		mask = ByteTensor(terminal_batch)
 		inds = torch.arange(0, len(terminal_batch)).type(LongTensor)
 		inds = inds[mask.eq(0)]
 		return inds
@@ -158,9 +158,9 @@ class MetaAgent(object):
 			# # preference_batch = np.array([[0.8,0.2], [0.2, 0.8]])
 			preference_batch = np.abs(preference_batch) / \
 								np.linalg.norm(preference_batch, ord=1, axis=1, keepdims=True)
-			# preference_batch = np.random.dirichlet(np.ones(self.model.reward_size), size=self.weight_num)								
+			# preference_batch = np.random.dirichlet(np.ones(self.model.reward_size), size=self.weight_num)
 			preference_batch = torch.from_numpy(preference_batch.repeat(self.batch_size, axis=0)).type(FloatTensor)
-			
+
 			__, Q    = self.model(Variable(torch.cat(state_batch, dim=0)),
 								  Variable(preference_batch))
 			# detach since we don't want gradients to propagate
@@ -171,7 +171,7 @@ class MetaAgent(object):
 									   	torch.cat(reward_batch, dim=0).unsqueeze(2)
 									  ).squeeze()
 
-			
+
 			nontmlmask = self.nontmlinds(terminal_batch)
 			Estimate_Q = Variable(torch.zeros(self.batch_size*self.weight_num).type(FloatTensor))
 			Estimate_Q[nontmlmask] = self.gamma * HQ[nontmlmask]
@@ -179,13 +179,13 @@ class MetaAgent(object):
 
 			self.optimizer.zero_grad()
 			action_mask = Variable(torch.cat(action_batch, dim=0))
-			loss = torch.sum((Q.masked_select(action_mask) - Estimate_Q).pow(2))			
+			loss = torch.sum((Q.masked_select(action_mask) - Estimate_Q).pow(2))
 			report_loss = loss.data[0]/(self.batch_size*self.weight_num)
 			loss.backward()
 			self.optimizer.step()
 
 			return	report_loss
-		
+
 		return 1.0
 
 	def reset(self):
@@ -196,5 +196,3 @@ class MetaAgent(object):
 
 	def save(self, save_path, model_name):
 		torch.save(self.model, "{}{}.pkl".format(save_path, model_name))
-
-
