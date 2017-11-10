@@ -71,36 +71,36 @@ def train(env, agent, args, shared_mem=None):
 			# 	agent.reset()
 			tot_reward = tot_reward + (0.8*reward[0]+0.2*reward[1]) * np.power(args.gamma, cnt)
 			cnt = cnt + 1
-		
+
 		probe = FloatTensor([0.8,0.2])
-		_, q = agent.model(Variable(FloatTensor([0,0]).unsqueeze(0), volatile=True), 
+		_, q = agent.model(Variable(FloatTensor([0,0]).unsqueeze(0), volatile=True),
 						Variable(probe.unsqueeze(0), volatile=True))
 		if args.method == "crl-naive":
 			q_max = q[0, 3].data.cpu()[0]
 			q_min = q[0, 1].data.cpu()[0]
 		elif args.method == "crl-envelope":
-			q_max = probe.dot(q[0, 3].data.cpu())
-			q_min = probe.dot(q[0, 1].data.cpu())
+			q_max = probe.dot(q[0, 3].data)
+			q_min = probe.dot(q[0, 1].data)
 		print "end of eps %d with total reward (1) %0.2f, the Q is %0.2f | %0.2f; loss: %0.4f"%(
-						num_eps, 
-						tot_reward, 
-						q_max, 
-						q_min, 
+						num_eps,
+						tot_reward,
+						q_max,
+						q_min,
 						loss / cnt)
-		monitor.update(num_eps, 
-					   tot_reward, 
-					   q_max, 
-					   q_min, 
+		monitor.update(num_eps,
+					   tot_reward,
+					   q_max,
+					   q_min,
 					   loss / cnt)
 	agent.save(args.save, args.model+args.name)
 
 
-if __name__ == '__main__':	
-	args = parser.parse_args()	
+if __name__ == '__main__':
+	args = parser.parse_args()
 
 	# setup the environment
 	env = MultiObjectiveEnv(args.env_name)
-	
+
 	# get state / action / reward sizes
 	state_size  = len(env.state_spec)
 	action_size = env.action_spec[2][1] - env.action_spec[2][0]
@@ -122,5 +122,3 @@ if __name__ == '__main__':
 	agent = MetaAgent(model, args, is_train=True)
 
 	train(env, agent, args)
-
-
