@@ -62,7 +62,7 @@ class MetaAgent(object):
 				# 	np.random.dirichlet(np.ones(self.model.reward_size))).type(FloatTensor)
 				self.keep_preference = torch.randn(self.model.reward_size)
 				self.keep_preference = torch.abs(self.keep_preference) / \
-									   torch.norm(self.keep_preference, p=1)
+									   torch.norm(self.keep_preference, p=1).type(FloatTensor)
 			preference = self.keep_preference
 			# preference = random.choice(
 			# 	[FloatTensor([0.8,0.2]), FloatTensor([0.2,0.8])])
