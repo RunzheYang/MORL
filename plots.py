@@ -247,7 +247,7 @@ if args.pltpareto:
 				 type='custom',
 				 marker=dict(
 				 		symbol="circle", 
-				 		size  = 10),
+				 		size  = 3),
 				 line = dict(
 						width = 1,
 						dash  = 'dash'),
