@@ -83,9 +83,9 @@ if args.pltcontrol:
 	# generate an agent for plotting
 	agent = None
 	if args.method == 'crl-naive':
-		from CRL.NAIVE.meta   import MetaAgent
+		from CRL.NAIVE.meta import MetaAgent
 	elif args.method == 'crl-envelope':
-		from CRL.ENVELOPE.meta   import MetaAgent
+		from CRL.ENVELOPE.meta import MetaAgent
 	model = torch.load("{}{}.pkl".format(args.save, args.model+args.name))
 	agent = MetaAgent(model, args, is_train=False)
 

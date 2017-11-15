@@ -191,7 +191,8 @@ class MetaAgent(object):
 			wQ_TQ = torch.bmm(Variable(preference_batch.unsqueeze(1)),
 									   	(Q-Tau_Q).unsqueeze(2)
 									  ).squeeze()
-			loss = torch.sum(wQ_TQ.pow(2))
+			loss = torch.sum(wQ_TQ.pow(2)) + \
+				   torch.sum((Q.view(-1) - Tau_Q.view(-1)).pow(2))
 			report_loss = loss.data[0]/(self.batch_size*self.weight_num)
 			loss.backward()
 			self.optimizer.step()
