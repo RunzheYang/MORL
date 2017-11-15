@@ -1,5 +1,5 @@
 from linear import NaiveLinearCQN
-from large import NaiveLinearLargeCQN
+from large import NaiveLargeCQN
 
 def get_new_model(name, state_size, action_size, reward_size):
 	if name == 'linear':
