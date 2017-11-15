@@ -10,14 +10,14 @@ LongTensor = torch.cuda.LongTensor if use_cuda else torch.LongTensor
 ByteTensor = torch.cuda.ByteTensor if use_cuda else torch.ByteTensor
 Tensor = FloatTensor
 
-class EnvelopeCnnCQN(torch.nn.Module):
+class EnvelopeLargeCQN(torch.nn.Module):
 
 	'''
 		Convolutional Controllable Q-Network, Envelope Version
 	'''
 	
 	def __init__(self, state_size, action_size, reward_size):
-		super(EnvelopeCnnCQN, self).__init__()
+		super(EnvelopeLargeCQN, self).__init__()
 		
 		self.state_size  = state_size
 		self.action_size = action_size
@@ -27,8 +27,8 @@ class EnvelopeCnnCQN(torch.nn.Module):
 		self.affine1 = nn.Linear(state_size + reward_size, 
 								 (state_size + reward_size) * 40)
 		self.affine2 = nn.Linear((state_size + reward_size) * 40, 
-								 (state_size + reward_size) * 40)
-		self.affine3 = nn.Linear((state_size + reward_size) * 40, 
+								 (state_size + reward_size) * 60)
+		self.affine3 = nn.Linear((state_size + reward_size) * 60, 
 								 action_size * reward_size)
 
 	def H(self, Q, w, s_num, w_num):

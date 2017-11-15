@@ -4,23 +4,23 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.autograd import Variable
 
-class NaiveLinearLargeCQN(torch.nn.Module):
+class NaiveLargeCQN(torch.nn.Module):
 
 	'''
 		Linear Controllable Q-Network, Naive Version
 	'''
 	
 	def __init__(self, state_size, action_size, reward_size):
-		super(NaiveLinearLargeCQN, self).__init__()
+		super(NaiveLargeCQN, self).__init__()
 		
 		self.state_size  = state_size
 		self.action_size = action_size
 		self.reward_size = reward_size
 
 		# S x A -> (W -> R). =>. S x W -> (A -> R)
-		self.affine1 = nn.Linear(state_size + reward_size, (state_size + reward_size) * 64)
-		self.affine2 = nn.Linear((state_size + reward_size) * 64, (state_size + reward_size) * 32)
-		self.affine3 = nn.Linear((state_size + reward_size) * 32, action_size)
+		self.affine1 = nn.Linear(state_size + reward_size, (state_size + reward_size) * 40)
+		self.affine2 = nn.Linear((state_size + reward_size) * 40, (state_size + reward_size) * 60)
+		self.affine3 = nn.Linear((state_size + reward_size) * 60, action_size)
 
 	def forward(self, state, preference):
 		x = torch.cat((state, preference), dim=1)
