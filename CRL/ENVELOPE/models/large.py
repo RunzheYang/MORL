@@ -13,7 +13,7 @@ Tensor = FloatTensor
 class EnvelopeLargeCQN(torch.nn.Module):
 
 	'''
-		Convolutional Controllable Q-Network, Envelope Version
+		Linear Controllable Q-Network, Envelope Version
 	'''
 	
 	def __init__(self, state_size, action_size, reward_size):
