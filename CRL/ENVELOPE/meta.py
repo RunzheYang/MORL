@@ -178,15 +178,20 @@ class MetaAgent(object):
 
 
 			nontmlmask = self.nontmlinds(terminal_batch)
-			Estimate_Q = Variable(torch.zeros(self.batch_size*self.weight_num,
+			Tau_Q = Variable(torch.zeros(self.batch_size*self.weight_num,
 											  self.model.reward_size).type(FloatTensor))
-			Estimate_Q[nontmlmask] = self.gamma * HQ[nontmlmask]
-			Estimate_Q += Variable(torch.cat(reward_batch, dim=0))
+			Tau_Q[nontmlmask] = self.gamma * HQ[nontmlmask]
+			Tau_Q += Variable(torch.cat(reward_batch, dim=0))
 
 			self.optimizer.zero_grad()
 			action_mask = Variable(torch.cat(action_batch, dim=0))
 			action_mask = action_mask.unsqueeze(2).repeat(1,1,self.model.reward_size)
-			loss = torch.sum((Q.masked_select(action_mask) - Estimate_Q.view(-1)).pow(2))
+			Q = Q.masked_select(action_mask).view(-1, self.model.reward_size)
+			Tau_Q = Tau_Q.view(-1, self.model.reward_size)
+			wQ_TQ = torch.bmm(Variable(preference_batch.unsqueeze(1)),
+									   	(Q-Tau_Q).unsqueeze(2)
+									  ).squeeze()
+			loss = torch.sum(wQ_TQ.pow(2))
 			report_loss = loss.data[0]/(self.batch_size*self.weight_num)
 			loss.backward()
 			self.optimizer.step()
