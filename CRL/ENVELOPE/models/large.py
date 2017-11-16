@@ -28,6 +28,8 @@ class EnvelopeLargeCQN(torch.nn.Module):
 								 (state_size + reward_size) * 40)
 		self.affine2 = nn.Linear((state_size + reward_size) * 40, 
 								 (state_size + reward_size) * 60)
+		self.gates   = nn.Linear((state_size + reward_size) * 40, 
+								 (state_size + reward_size) * 60)
 		self.affine3 = nn.Linear((state_size + reward_size) * 60, 
 								 action_size * reward_size)
 
@@ -65,7 +67,8 @@ class EnvelopeLargeCQN(torch.nn.Module):
 		x = x.view(x.size(0), -1)
 		x = F.relu(self.affine1(x))
 		x = F.relu(self.affine2(x))
-		q = self.affine3(x)
+		g = F.sigmoid(self.gates(x)*1e2)
+		q = self.affine3(x*g)
 		q = q.view(q.size(0), self.action_size, self.reward_size)
 		
 		hq = self.H(q.view(-1, self.reward_size), preference, s_num, w_num)
