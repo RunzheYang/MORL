@@ -66,8 +66,8 @@ class EnvelopeLargeCQN(torch.nn.Module):
 		x = torch.cat((state, preference), dim=1)
 		x = x.view(x.size(0), -1)
 		x = F.relu(self.affine1(x))
-		x = F.relu(self.affine2(x))
 		g = F.sigmoid(self.gates(x)*1e2)
+		x = F.relu(self.affine2(x))
 		q = self.affine3(x*g)
 		q = q.view(q.size(0), self.action_size, self.reward_size)
 		
