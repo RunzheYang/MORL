@@ -11,7 +11,7 @@ class NaiveLinearCQN(torch.nn.Module):
 	'''
 	
 	def __init__(self, state_size, action_size, reward_size):
-		super(NaiveLargeCQN, self).__init__()
+		super(NaiveLinearCQN, self).__init__()
 		
 		self.state_size  = state_size
 		self.action_size = action_size
