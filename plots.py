@@ -3,6 +3,7 @@ import visdom
 import torch
 from torch.autograd import Variable
 from ENV.mo_env import MultiObjectiveEnv
+import time as Timer
 import math
 import numpy as np
 
@@ -23,6 +24,8 @@ parser.add_argument('--pltpareto', default=False, action='store_true',
 				help='plot pareto frontier')
 parser.add_argument('--pltcontrol', default=False, action='store_true',
 				help='plot control curve')
+parser.add_argument('--pltdemo', default=False, action='store_true',
+				help='plot demo')
 # LOG & SAVING
 parser.add_argument('--save', default='CRL/NAIVE/saved/', metavar='SAVE',
 				help='address for saving trained models')
@@ -290,3 +293,73 @@ if args.pltmap:
 					title="DST Map",
 					xmin = -10,
 					xmax = 14.5))
+
+
+################# HEATMAP #################
+
+if args.pltdemo:
+	see_map = np.array(
+					[[  -3,   0,   0,   0,   0,   0,    0,    0,    0,    0, 0],
+					 [ 0.1,   0,   0,   0,   0,   0,    0,    0,    0,    0, 0],
+					 [ -10, 2.8,   0,   0,   0,   0,    0,    0,    0,    0, 0],
+					 [ -10, -10, 5.2,   0,   0,   0,    0,    0,    0,    0, 0],
+					 [ -10, -10, -10, 7.3, 8.2, 9.0,    0,    0,    0,    0, 0],
+					 [ -10, -10, -10, -10, -10, -10,    0,    0,    0,    0, 0],
+					 [ -10, -10, -10, -10, -10, -10,    0,    0,    0,    0, 0],
+					 [ -10, -10, -10, -10, -10, -10, 11.5, 12.1,    0,    0, 0],
+					 [ -10, -10, -10, -10, -10, -10,  -10,  -10,    0,    0, 0],
+					 [ -10, -10, -10, -10, -10, -10,  -10,  -10, 13.5,    0, 0],
+					 [ -10, -10, -10, -10, -10, -10,  -10,  -10,  -10, 14.2, 0]]
+				)[::-1]
+
+	# setup the environment
+	env = MultiObjectiveEnv(args.env_name)
+
+	# generate an agent for plotting
+	agent = None
+	if args.method == 'crl-naive':
+		from CRL.NAIVE.meta import MetaAgent
+	elif args.method == 'crl-envelope':
+		from CRL.ENVELOPE.meta import MetaAgent
+	model = torch.load("{}{}.pkl".format(args.save, args.model+args.name))
+	agent = MetaAgent(model, args, is_train=False)
+	new_episode = True
+
+	while new_episode:
+
+		dy_map = np.copy(see_map)
+		dy_map[10 - 0, 0] = -3
+
+		win = vis.heatmap(X=dy_map,
+						opts=dict(
+							title="DST Map",
+							xmin = -10,
+							xmax = 14.5))
+
+		w1 = float(raw_input("treasure weight: "))
+		w2 = float(raw_input("time weight: "))
+		w = np.array([w1, w2])
+		w = np.abs(w) / np.linalg.norm(w, ord=1)
+		# w = np.random.dirichlet(np.ones(2))
+		ttrw = np.array([0, 0])
+		terminal = False
+		env.reset()
+		cnt = 0
+		while not terminal:
+			state  = env.observe()
+			action = agent.act(state, preference=torch.from_numpy(w).type(FloatTensor))
+			next_state, reward, terminal = env.step(action)
+			dy_map[10 - next_state[0], next_state[1]] = -3
+			vis.heatmap(X=dy_map,
+						win = win,
+						opts=dict(
+							title="DST Map",
+							xmin = -10,
+							xmax = 14.5))
+			Timer.sleep(.5)
+			if cnt > 50:
+				terminal = True
+			ttrw = ttrw + reward * np.power(args.gamma, cnt)
+			cnt += 1
+		print "final reward: treasure %0.2f, time %0.2f, tot %0.2f"%(ttrw[0], ttrw[1], w.dot(ttrw))
+		new_episode = int(raw_input("try again? 1: Yes | 0: No "))
