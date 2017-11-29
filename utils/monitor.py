@@ -24,7 +24,7 @@ class Monitor(object):
 		if self.train:
 			self.vis.line(
 				X=torch.Tensor([eps]).cpu(),
-				Y=torch.Tensor([loss]).unsqueeze(0).cpu(),
+				Y=torch.Tensor([loss]).cpu(),
 				win=self.loss_window,
 				update='append')
 
