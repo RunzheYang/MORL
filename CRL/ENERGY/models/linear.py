@@ -25,10 +25,10 @@ class EnergyLinearCQN(torch.nn.Module):
 
 		# S x A -> (W -> R^n). =>. S x W -> (A -> R^n)
 		self.affine1 = nn.Linear(state_size + reward_size, 
-								 (state_size + reward_size))
-		self.affine2 = nn.Linear((state_size + reward_size), 
-								 (state_size + reward_size))
-		self.affine3 = nn.Linear((state_size + reward_size), 
+								 (state_size + reward_size) * 80)
+		self.affine2 = nn.Linear((state_size + reward_size) * 80, 
+								 (state_size + reward_size) * 80)
+		self.affine3 = nn.Linear((state_size + reward_size) * 80, 
 								 action_size * reward_size)
 
 	def H(self, Q, w, s_num, w_num, alpha):

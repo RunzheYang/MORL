@@ -90,7 +90,7 @@ if args.pltcontrol:
 		from CRL.NAIVE.meta import MetaAgent
 	elif args.method == 'crl-envelope':
 		from CRL.ENVELOPE.meta import MetaAgent
-	elif args.method == 'crl-energy'
+	elif args.method == 'crl-energy':
 		from CRL.ENERGY.meta import MetaAgent
 	model = torch.load("{}{}.pkl".format(args.save, args.model+args.name))
 	agent = MetaAgent(model, args, is_train=False)
@@ -109,8 +109,13 @@ if args.pltcontrol:
 		w = np.abs(w) / np.linalg.norm(w, ord=1)
 		# w = np.random.dirichlet(np.ones(2))
 		w_e = w / np.linalg.norm(w, ord=2)
-		hq, _ = agent.model(Variable(FloatTensor([0,0]).unsqueeze(0), volatile=True), 
+		if args.method == 'crl-naive' or args.method == 'crl-energy':
+			hq, _ = agent.model(Variable(FloatTensor([0,0]).unsqueeze(0), volatile=True), 
 						Variable(torch.from_numpy(w).unsqueeze(0).type(FloatTensor), volatile=True))
+		elif args.method == 'crl-energy':
+			hq, _ = agent.model(Variable(FloatTensor([0,0]).unsqueeze(0), volatile=True), 
+						Variable(torch.from_numpy(w).unsqueeze(0).type(FloatTensor), volatile=True),
+						alpha=1e-5)
 		realc = w.dot(real_sol).max() * w_e
 		qc = w_e
 		if args.method == 'crl-naive':
@@ -185,11 +190,11 @@ if args.pltpareto:
 	# generate an agent for plotting
 	agent = None
 	if args.method == 'crl-naive':
-		from CRL.NAIVE.meta   import MetaAgent
+		from CRL.NAIVE.meta import MetaAgent
 	elif args.method == 'crl-envelope':
-		from CRL.ENVELOPE.meta   import MetaAgen
-	elif args.method == 'crl-energy' | :
-		from CRL.ENERGY.meta   import MetaAgen
+		from CRL.ENVELOPE.meta import MetaAgent
+	elif args.method == 'crl-energy':
+		from CRL.ENERGY.meta import MetaAgent
 	model = torch.load("{}{}.pkl".format(args.save, args.model+args.name))
 	agent = MetaAgent(model, args, is_train=False)
 
@@ -209,9 +214,15 @@ if args.pltpareto:
 		terminal = False
 		env.reset()
 		cnt = 0
-		if args.method == "crl-envelope" or args.method == "crl-energy":
+		if args.method == "crl-envelope":
 			hq, _ = agent.model(Variable(FloatTensor([0,0]).unsqueeze(0), volatile=True), 
 							Variable(torch.from_numpy(w).unsqueeze(0).type(FloatTensor), volatile=True))
+			pred_x.append(hq.data.cpu().numpy().squeeze()[0] * 1.0)
+			pred_y.append(hq.data.cpu().numpy().squeeze()[1] * 1.0)
+		elif args.method == "crl-energy":
+			hq, _ = agent.model(Variable(FloatTensor([0,0]).unsqueeze(0), volatile=True), 
+							Variable(torch.from_numpy(w).unsqueeze(0).type(FloatTensor), volatile=True),
+							alpha=1e-5)
 			pred_x.append(hq.data.cpu().numpy().squeeze()[0] * 1.0)
 			pred_y.append(hq.data.cpu().numpy().squeeze()[1] * 1.0)
 		while not terminal:
@@ -330,7 +341,7 @@ if args.pltdemo:
 		from CRL.NAIVE.meta import MetaAgent
 	elif args.method == 'crl-envelope':
 		from CRL.ENVELOPE.meta import MetaAgent
-	elif args.method == 'crl-energy'
+	elif args.method == 'crl-energy':
 		from CRL.ENERGY.meta import MetaAgent
 	model = torch.load("{}{}.pkl".format(args.save, args.model+args.name))
 	agent = MetaAgent(model, args, is_train=False)
