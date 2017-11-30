@@ -12,7 +12,7 @@ parser = argparse.ArgumentParser(description='MORL-PLOT')
 parser.add_argument('--env-name', default='dst', metavar='ENVNAME',
 				help='environment to train on (default: dst)')
 parser.add_argument('--method', default='crl-naive', metavar='METHODS',
-				help='methods: crl-naive | crl-envelope | ols')
+				help='methods: crl-naive | crl-envelope | crl-energy')
 parser.add_argument('--model', default='linear', metavar='MODELS',
 				help='linear | cnn | cnn + lstm')
 parser.add_argument('--gamma', type=float, default=0.99, metavar='GAMMA',
@@ -90,6 +90,8 @@ if args.pltcontrol:
 		from CRL.NAIVE.meta import MetaAgent
 	elif args.method == 'crl-envelope':
 		from CRL.ENVELOPE.meta import MetaAgent
+	elif args.method == 'crl-energy'
+		from CRL.ENERGY.meta import MetaAgent
 	model = torch.load("{}{}.pkl".format(args.save, args.model+args.name))
 	agent = MetaAgent(model, args, is_train=False)
 
@@ -114,6 +116,8 @@ if args.pltcontrol:
 		if args.method == 'crl-naive':
 			qc = hq.data[0] * w_e
 		elif args.method == 'crl-envelope':
+			qc = w.dot(hq.data.cpu().numpy().squeeze()) * w_e
+		elif args.method == 'crl-energy':
 			qc = w.dot(hq.data.cpu().numpy().squeeze()) * w_e
 		ttrw = np.array([0, 0])
 		terminal = False
@@ -183,7 +187,9 @@ if args.pltpareto:
 	if args.method == 'crl-naive':
 		from CRL.NAIVE.meta   import MetaAgent
 	elif args.method == 'crl-envelope':
-		from CRL.ENVELOPE.meta   import MetaAgent
+		from CRL.ENVELOPE.meta   import MetaAgen
+	elif args.method == 'crl-energy' | :
+		from CRL.ENERGY.meta   import MetaAgen
 	model = torch.load("{}{}.pkl".format(args.save, args.model+args.name))
 	agent = MetaAgent(model, args, is_train=False)
 
@@ -203,7 +209,7 @@ if args.pltpareto:
 		terminal = False
 		env.reset()
 		cnt = 0
-		if args.method == "crl-envelope":
+		if args.method == "crl-envelope" or args.method == "crl-energy":
 			hq, _ = agent.model(Variable(FloatTensor([0,0]).unsqueeze(0), volatile=True), 
 							Variable(torch.from_numpy(w).unsqueeze(0).type(FloatTensor), volatile=True))
 			pred_x.append(hq.data.cpu().numpy().squeeze()[0] * 1.0)
@@ -269,6 +275,8 @@ if args.pltpareto:
 		vis._send({'data': [trace_pareto, act_pareto], 'layout': layout})
 	elif args.method == "crl-envelope":
 		vis._send({'data': [trace_pareto, act_pareto, pred_pareto], 'layout': layout})
+	elif args.method == "crl-energy":
+		vis._send({'data': [trace_pareto, act_pareto, pred_pareto], 'layout': layout})
 
 
 
@@ -322,6 +330,8 @@ if args.pltdemo:
 		from CRL.NAIVE.meta import MetaAgent
 	elif args.method == 'crl-envelope':
 		from CRL.ENVELOPE.meta import MetaAgent
+	elif args.method == 'crl-energy'
+		from CRL.ENERGY.meta import MetaAgent
 	model = torch.load("{}{}.pkl".format(args.save, args.model+args.name))
 	agent = MetaAgent(model, args, is_train=False)
 	new_episode = True

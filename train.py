@@ -11,7 +11,7 @@ parser = argparse.ArgumentParser(description='MORL')
 parser.add_argument('--env-name', default='dst', metavar='ENVNAME',
 				help='environment to train on (default: dst)')
 parser.add_argument('--method', default='crl-naive', metavar='METHODS',
-				help='methods: crl-naive | crl-envelope | ols')
+				help='methods: crl-naive | crl-envelope | crl-energy')
 parser.add_argument('--model', default='linear', metavar='MODELS',
 				help='linear | cnn | cnn + lstm')
 parser.add_argument('--gamma', type=float, default=0.99, metavar='GAMMA',
@@ -81,6 +81,9 @@ def train(env, agent, args, shared_mem=None):
 		elif args.method == "crl-envelope":
 			q_max = probe.dot(q[0, 3].data)
 			q_min = probe.dot(q[0, 1].data)
+		elif args.method == "crl-energy":
+			q_max = probe.dot(q[0, 3].data)
+			q_min = probe.dot(q[0, 1].data)
 		print "end of eps %d with total reward (1) %0.2f, the Q is %0.2f | %0.2f; loss: %0.4f"%(
 						num_eps,
 						tot_reward,
@@ -114,6 +117,9 @@ if __name__ == '__main__':
 	elif args.method == 'crl-envelope':
 		from CRL.ENVELOPE.meta   import MetaAgent
 		from CRL.ENVELOPE.models import get_new_model
+	elif args.method == 'crl-energy':
+		from CRL.ENERGY.meta   import MetaAgent
+		from CRL.ENERGY.models import get_new_model
 
 	if args.serialize:
 		model = torch.load("{}{}.pkl".format(args.save, args.model+args.name))
