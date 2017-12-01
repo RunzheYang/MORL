@@ -104,7 +104,7 @@ if args.pltcontrol:
 	act_y = []
 	real_sol = np.stack((dis_treasure, dis_time))
 
-	for i in xrange(2000):
+	for i in range(2000):
 		w = np.random.randn(2)
 		w = np.abs(w) / np.linalg.norm(w, ord=1)
 		# w = np.random.dirichlet(np.ones(2))
@@ -206,7 +206,7 @@ if args.pltpareto:
 	pred_x = []
 	pred_y = []
 
-	for i in xrange(2000):
+	for i in range(2000):
 		w = np.random.randn(2)
 		w = np.abs(w) / np.linalg.norm(w, ord=1)
 		# w = np.random.dirichlet(np.ones(2))

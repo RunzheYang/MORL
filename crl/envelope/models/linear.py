@@ -37,7 +37,7 @@ class EnvelopeLinearCQN(torch.nn.Module):
 		# mask for reordering the batch
 		mask = torch.cat(
 				[torch.arange(i, s_num * w_num + i, s_num) 
-					for i in xrange(s_num)]).type(LongTensor)
+					for i in range(s_num)]).type(LongTensor)
 		reQ = Q.view(-1, self.action_size * self.reward_size
 							)[mask].view(-1, self.reward_size)
 		
