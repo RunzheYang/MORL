@@ -1,5 +1,5 @@
 import numpy as np
-from deep_sea_treasure import DeepSeaTreasure
+from .deep_sea_treasure import DeepSeaTreasure
 
 class MultiObjectiveEnv(object):
 
@@ -35,13 +35,13 @@ if __name__ == "__main__":
 	dst_env = MultiObjectiveEnv("dst")
 	dst_env.reset()
 	terminal = False
-	print "DST STATE SPEC:", dst_env.state_spec
-	print "DST ACTION SPEC:", dst_env.action_spec
-	print "DST REWARD SPEC:", dst_env.reward_spec
+	print("DST STATE SPEC:", dst_env.state_spec)
+	print("DST ACTION SPEC:", dst_env.action_spec)
+	print("DST REWARD SPEC:", dst_env.reward_spec)
 	while not terminal:
 		state = dst_env.observe()
 		action = np.random.choice(4,1)[0]
 		next_state, reward, terminal = dst_env.step(action)
-		print "s:", state, "\ta:", action, "\ts':", next_state, "\tr:", reward
-	print "AN EPISODE ENDS"
+		print("s:", state, "\ta:", action, "\ts':", next_state, "\tr:", reward)
+	print("AN EPISODE ENDS")
 		

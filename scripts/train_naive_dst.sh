@@ -1,0 +1,1 @@
+python train.py --env-name dst --method crl-naive --model  linear --gamma  0.99 --mem-size 4000 --batch-size 256 --lr  1e-3 --epsilon 0.5 --epsilon-decay --weight-num 32 --episode-num 2000 --optimizer Adam --save  crl/naive/saved/ --name _dst

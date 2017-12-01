@@ -2,7 +2,7 @@ import argparse
 import visdom
 import torch
 from torch.autograd import Variable
-from ENV.mo_env import MultiObjectiveEnv
+from envs.mo_env import MultiObjectiveEnv
 import time as Timer
 import math
 import numpy as np
@@ -27,7 +27,7 @@ parser.add_argument('--pltcontrol', default=False, action='store_true',
 parser.add_argument('--pltdemo', default=False, action='store_true',
 				help='plot demo')
 # LOG & SAVING
-parser.add_argument('--save', default='CRL/NAIVE/saved/', metavar='SAVE',
+parser.add_argument('--save', default='crl/naive/saved/', metavar='SAVE',
 				help='address for saving trained models')
 parser.add_argument('--name', default='', metavar='name',
 				help='specify a name for saving the model')
@@ -87,11 +87,11 @@ if args.pltcontrol:
 	# generate an agent for plotting
 	agent = None
 	if args.method == 'crl-naive':
-		from CRL.NAIVE.meta import MetaAgent
+		from crl.naive.meta import MetaAgent
 	elif args.method == 'crl-envelope':
-		from CRL.ENVELOPE.meta import MetaAgent
+		from crl.envelope.meta import MetaAgent
 	elif args.method == 'crl-energy':
-		from CRL.ENERGY.meta import MetaAgent
+		from crl.energy.meta import MetaAgent
 	model = torch.load("{}{}.pkl".format(args.save, args.model+args.name))
 	agent = MetaAgent(model, args, is_train=False)
 
@@ -190,11 +190,11 @@ if args.pltpareto:
 	# generate an agent for plotting
 	agent = None
 	if args.method == 'crl-naive':
-		from CRL.NAIVE.meta import MetaAgent
+		from crl.naive.meta import MetaAgent
 	elif args.method == 'crl-envelope':
-		from CRL.ENVELOPE.meta import MetaAgent
+		from crl.envelope.meta import MetaAgent
 	elif args.method == 'crl-energy':
-		from CRL.ENERGY.meta import MetaAgent
+		from crl.energy.meta import MetaAgent
 	model = torch.load("{}{}.pkl".format(args.save, args.model+args.name))
 	agent = MetaAgent(model, args, is_train=False)
 
@@ -338,11 +338,11 @@ if args.pltdemo:
 	# generate an agent for plotting
 	agent = None
 	if args.method == 'crl-naive':
-		from CRL.NAIVE.meta import MetaAgent
+		from crl.naive.meta import MetaAgent
 	elif args.method == 'crl-envelope':
-		from CRL.ENVELOPE.meta import MetaAgent
+		from crl.envelope.meta import MetaAgent
 	elif args.method == 'crl-energy':
-		from CRL.ENERGY.meta import MetaAgent
+		from crl.energy.meta import MetaAgent
 	model = torch.load("{}{}.pkl".format(args.save, args.model+args.name))
 	agent = MetaAgent(model, args, is_train=False)
 	new_episode = True
@@ -383,5 +383,5 @@ if args.pltdemo:
 				terminal = True
 			ttrw = ttrw + reward * np.power(args.gamma, cnt)
 			cnt += 1
-		print "final reward: treasure %0.2f, time %0.2f, tot %0.2f"%(ttrw[0], ttrw[1], w.dot(ttrw))
+		print("final reward: treasure %0.2f, time %0.2f, tot %0.2f"%(ttrw[0], ttrw[1], w.dot(ttrw)))
 		new_episode = int(raw_input("try again? 1: Yes | 0: No "))

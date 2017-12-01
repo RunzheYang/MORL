@@ -3,7 +3,7 @@ import numpy as np
 import torch
 from torch.autograd import Variable
 from utils.monitor import Monitor
-from ENV.mo_env import MultiObjectiveEnv
+from envs.mo_env import MultiObjectiveEnv
 
 
 parser = argparse.ArgumentParser(description='MORL')
@@ -38,11 +38,11 @@ parser.add_argument('--update-freq', type=int, default=32, metavar='OPT',
 # LOG & SAVING
 parser.add_argument('--serialize', default=False, action='store_true',
 				help='serialize a model')
-parser.add_argument('--save', default='CRL/NAIVE/saved/', metavar='SAVE',
+parser.add_argument('--save', default='crl/naive/saved/', metavar='SAVE',
 				help='address for saving trained models')
 parser.add_argument('--name', default='', metavar='name',
 				help='specify a name for saving the model')
-parser.add_argument('--log', default='CRL/NAIVE/logs/', metavar='LOG',
+parser.add_argument('--log', default='crl/naive/logs/', metavar='LOG',
 				help='address for recording training informtions')
 
 use_cuda = torch.cuda.is_available()
@@ -54,7 +54,7 @@ Tensor = FloatTensor
 def train(env, agent, args, shared_mem=None):
 	monitor = Monitor(train=True, spec="-{}".format(args.method))
 	env.reset()
-	for num_eps in xrange(args.episode_num):
+	for num_eps in range(args.episode_num):
 		terminal = False
 		env.reset()
 		loss = 0
@@ -84,12 +84,12 @@ def train(env, agent, args, shared_mem=None):
 		elif args.method == "crl-energy":
 			q_max = probe.dot(q[0, 3].data)
 			q_min = probe.dot(q[0, 1].data)
-		print "end of eps %d with total reward (1) %0.2f, the Q is %0.2f | %0.2f; loss: %0.4f"%(
+		print("end of eps %d with total reward (1) %0.2f, the Q is %0.2f | %0.2f; loss: %0.4f"%(
 						num_eps,
 						tot_reward,
 						q_max,
 						q_min,
-						loss / cnt)
+						loss / cnt))
 		monitor.update(num_eps,
 					   tot_reward,
 					   q_max,
@@ -112,14 +112,14 @@ if __name__ == '__main__':
 	# generate an agent for initial training
 	agent = None
 	if args.method == 'crl-naive':
-		from CRL.NAIVE.meta   import MetaAgent
-		from CRL.NAIVE.models import get_new_model
+		from crl.naive.meta   import MetaAgent
+		from crl.naive.models import get_new_model
 	elif args.method == 'crl-envelope':
-		from CRL.ENVELOPE.meta   import MetaAgent
-		from CRL.ENVELOPE.models import get_new_model
+		from crl.envelope.meta   import MetaAgent
+		from crl.envelope.models import get_new_model
 	elif args.method == 'crl-energy':
-		from CRL.ENERGY.meta   import MetaAgent
-		from CRL.ENERGY.models import get_new_model
+		from crl.energy.meta   import MetaAgent
+		from crl.energy.models import get_new_model
 
 	if args.serialize:
 		model = torch.load("{}{}.pkl".format(args.save, args.model+args.name))
