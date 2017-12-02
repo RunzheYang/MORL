@@ -9,20 +9,20 @@ class NaiveLinearCQN(torch.nn.Module):
 	'''
 		Linear Controllable Q-Network, Naive Version
 	'''
-	
+
 	def __init__(self, state_size, action_size, reward_size):
 		super(NaiveLinearCQN, self).__init__()
-		
+
 		self.state_size  = state_size
 		self.action_size = action_size
 		self.reward_size = reward_size
 
 		# S x A -> (W -> R). =>. S x W -> (A -> R)
-		self.affine1 = nn.Linear(state_size+reward_size, 
-								(state_size+reward_size)*40)
-		self.affine2 = nn.Linear((state_size+reward_size)*40, 
+		self.affine1 = nn.Linear(state_size+reward_size,
+								(state_size+reward_size)*60)
+		self.affine2 = nn.Linear((state_size+reward_size)*60,
 								 (state_size+reward_size)*60)
-		self.affine3 = nn.Linear((state_size+reward_size)*60, 
+		self.affine3 = nn.Linear((state_size+reward_size)*60,
 								  action_size)
 
 	def forward(self, state, preference):

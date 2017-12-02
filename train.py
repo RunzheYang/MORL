@@ -75,11 +75,11 @@ def train(env, agent, args, shared_mem=None):
 		probe = FloatTensor([0.8,0.2])
 		_, q = agent.model(Variable(FloatTensor([0,0]).unsqueeze(0), volatile=True),
 						Variable(probe.unsqueeze(0), volatile=True))
-		_, q_ = agent.model_(Variable(FloatTensor([0,0]).unsqueeze(0), volatile=True),
-						Variable(probe.unsqueeze(0), volatile=True))
+		# _, q_ = agent.model_(Variable(FloatTensor([0,0]).unsqueeze(0), volatile=True),
+						# Variable(probe.unsqueeze(0), volatile=True))
 		if args.method == "crl-naive":
 			q_max = q[0, 3].data.cpu()[0]
-			q__max = q_[0, 3].data.cpu()[0]
+			# q__max = q_[0, 3].data.cpu()[0]
 			q_min = q[0, 1].data.cpu()[0]
 		elif args.method == "crl-envelope":
 			q_max = probe.dot(q[0, 3].data)
@@ -91,12 +91,14 @@ def train(env, agent, args, shared_mem=None):
 						num_eps,
 						tot_reward,
 						q_max,
-						q__max,
+						q_min,
+						# q__max,
 						loss / cnt))
 		monitor.update(num_eps,
 					   tot_reward,
 					   q_max,
-					   q__max,
+					   q_min,
+					#    q__max,
 					   loss / cnt)
 	agent.save(args.save, args.model+args.name)
 
