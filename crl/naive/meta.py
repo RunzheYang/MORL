@@ -155,7 +155,7 @@ class MetaAgent(object):
 			minibatch = self.sample(self.trans_mem, self.priority_mem, self.batch_size)
 			batchify = lambda x: list(x) * self.weight_num
 			state_batch      = batchify(map(lambda x: x.s.unsqueeze(0), minibatch))
-			action_batch     = batchify(map(lambda x: torch.LongTensor([x.a]), minibatch))
+			action_batch     = batchify(map(lambda x: LongTensor([x.a]), minibatch))
 			reward_batch     = batchify(map(lambda x: x.r.unsqueeze(0), minibatch))
 			next_state_batch = batchify(map(lambda x: x.s_.unsqueeze(0), minibatch))
 			terminal_batch   = batchify(map(lambda x: x.d, minibatch))
