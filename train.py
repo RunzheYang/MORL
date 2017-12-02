@@ -33,7 +33,7 @@ parser.add_argument('--episode-num', type=int, default=2000, metavar='EN',
 				help='number of episodes for training')
 parser.add_argument('--optimizer', default='Adam', metavar='OPT',
 				help='optimizer: Adam | RMSprop')
-parser.add_argument('--update-freq', type=int, default=32, metavar='OPT',
+parser.add_argument('--update-freq', type=int, default=100, metavar='OPT',
 				help='optimizer: Adam | RMSprop')
 # LOG & SAVING
 parser.add_argument('--serialize', default=False, action='store_true',
@@ -66,17 +66,20 @@ def train(env, agent, args, shared_mem=None):
 			next_state, reward, terminal = env.step(action)
 			agent.memorize(state, action, next_state, reward, terminal)
 			loss += agent.learn()
-			# if cnt > 30:
-			# 	terminal = True
-			# 	agent.reset()
+			if cnt > 100:
+				terminal = True
+				agent.reset()
 			tot_reward = tot_reward + (0.8*reward[0]+0.2*reward[1]) * np.power(args.gamma, cnt)
 			cnt = cnt + 1
 
 		probe = FloatTensor([0.8,0.2])
 		_, q = agent.model(Variable(FloatTensor([0,0]).unsqueeze(0), volatile=True),
 						Variable(probe.unsqueeze(0), volatile=True))
+		_, q_ = agent.model_(Variable(FloatTensor([0,0]).unsqueeze(0), volatile=True),
+						Variable(probe.unsqueeze(0), volatile=True))
 		if args.method == "crl-naive":
 			q_max = q[0, 3].data.cpu()[0]
+			q__max = q_[0, 3].data.cpu()[0]
 			q_min = q[0, 1].data.cpu()[0]
 		elif args.method == "crl-envelope":
 			q_max = probe.dot(q[0, 3].data)
@@ -88,12 +91,12 @@ def train(env, agent, args, shared_mem=None):
 						num_eps,
 						tot_reward,
 						q_max,
-						q_min,
+						q__max,
 						loss / cnt))
 		monitor.update(num_eps,
 					   tot_reward,
 					   q_max,
-					   q_min,
+					   q__max,
 					   loss / cnt)
 	agent.save(args.save, args.model+args.name)
 

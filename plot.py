@@ -109,7 +109,7 @@ if args.pltcontrol:
 		w = np.abs(w) / np.linalg.norm(w, ord=1)
 		# w = np.random.dirichlet(np.ones(2))
 		w_e = w / np.linalg.norm(w, ord=2)
-		if args.method == 'crl-naive' or args.method == 'crl-energy':
+		if args.method == 'crl-naive' or args.method == 'crl-envelope':
 			hq, _ = agent.model(Variable(FloatTensor([0,0]).unsqueeze(0), volatile=True), 
 						Variable(torch.from_numpy(w).unsqueeze(0).type(FloatTensor), volatile=True))
 		elif args.method == 'crl-energy':
