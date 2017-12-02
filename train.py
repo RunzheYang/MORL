@@ -100,6 +100,8 @@ def train(env, agent, args, shared_mem=None):
 					   q_min,
 					#    q__max,
 					   loss / cnt)
+		# if num_eps+1 % 100 == 0:
+		# 	agent.save(args.save, args.model+args.name+"_tmp_{}".format(number))
 	agent.save(args.save, args.model+args.name)
 
 
