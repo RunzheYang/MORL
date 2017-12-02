@@ -31,5 +31,5 @@ class NaiveLinearCQN(torch.nn.Module):
 		x = F.relu(self.affine1(x))
 		x = F.relu(self.affine2(x))
 		q = self.affine3(x)
-		hq = q.detach().max(dim=1)[0]
+		hq = q.max(dim=1)[0]
 		return hq, q
