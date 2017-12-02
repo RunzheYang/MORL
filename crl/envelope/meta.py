@@ -197,13 +197,14 @@ class MetaAgent(object):
 				).view(-1, self.model_.reward_size)
 			Tau_Q = Tau_Q.view(-1, self.model.reward_size)
 			
-			# wQ_TQ = torch.bmm(Variable(w_batch.unsqueeze(1)),
-			# 						   	(Q-Tau_Q).unsqueeze(2)
-			# 						  ).squeeze()
-			# loss = torch.sum(wQ_TQ.pow(2)) + \
-			# 	   torch.sum((Q.view(-1) - Tau_Q.view(-1)).pow(2))
+			wQ  = torch.bmm(Variable(w_batch.unsqueeze(1)), 
+							Q.unsqueeze(2)).squeeze()
+
+			wTQ = torch.bmm(Variable(Tau_Q.unsqueeze(1)), 
+							Q.unsqueeze(2)).squeeze()
 			
-			loss = F.mse_loss(Q.view(-1), Tau_Q.view(-1))
+			loss = F.mse_loss(Q.view(-1), Tau_Q.view(-1)) + 
+				   F.mse_loss(wQ.view(-1),  wTQ.view(-1))
 
 			self.optimizer.zero_grad()
 			loss.backward()
