@@ -62,7 +62,7 @@ class EnvelopeLinearCQN(torch.nn.Module):
 
 
 	def forward(self, state, preference, w_num=1):
-		s_num = preference.size(0) / w_num
+		s_num = int(preference.size(0) / w_num)
 		x = torch.cat((state, preference), dim=1)
 		x = x.view(x.size(0), -1)
 		x = F.relu(self.affine1(x))
@@ -71,6 +71,6 @@ class EnvelopeLinearCQN(torch.nn.Module):
 		q = self.affine3(x*g)
 		q = q.view(q.size(0), self.action_size, self.reward_size)
 		
-		hq = self.H(q.view(-1, self.reward_size), preference, s_num, w_num)
+		hq = self.H(q.detach().view(-1, self.reward_size), preference, s_num, w_num)
 
 		return hq, q
