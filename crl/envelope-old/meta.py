@@ -207,5 +207,10 @@ class MetaAgent(object):
 				self.epsilon -= self.epsilon_delta
 
 
+	def predict(self, probe):
+		return self.model(Variable(FloatTensor([0,0]).unsqueeze(0), volatile=True),
+						Variable(probe.unsqueeze(0), volatile=True))
+
+
 	def save(self, save_path, model_name):
 		torch.save(self.model, "{}{}.pkl".format(save_path, model_name))

@@ -196,7 +196,7 @@ class MetaAgent(object):
 
 
 	def predict(self, probe):
-		return agent.model(Variable(FloatTensor([0,0]).unsqueeze(0), volatile=True),
+		return self.model(Variable(FloatTensor([0,0]).unsqueeze(0), volatile=True),
 						Variable(probe.unsqueeze(0), volatile=True))
 
 
