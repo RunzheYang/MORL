@@ -65,7 +65,7 @@ Tensor = FloatTensor
 
 # Add data
 gamma    = args.gamma
-args 	 = parser.parse_args()	
+args 	 = parser.parse_args()
 time	 = [ -1, -3, -5, -7, -8, -9,   -13,	  -14,   -17,   -19]
 # treasure = [0.1, 2.8, 5.2, 7.3, 8.2, 9.0, 11.5, 12.1, 13.5, 14.2]
 treasure = [0.7, 8.2, 11.5, 14., 15.1, 16.1, 19.6, 20.3, 22.4, 23.7]
@@ -110,9 +110,9 @@ if args.pltcontrol:
 		# w = np.random.dirichlet(np.ones(2))
 		w_e = w / np.linalg.norm(w, ord=2)
 		if args.method == 'crl-naive' or args.method == 'crl-envelope':
-			hq, _ = agent.predicte(torch.from_numpy(w).type(FloatTensor))
+			hq, _ = agent.predict(torch.from_numpy(w).type(FloatTensor))
 		elif args.method == 'crl-energy':
-			hq, _ = agent.predicte(torch.from_numpy(w).type(FloatTensor), alpha=1e-5)
+			hq, _ = agent.predict(torch.from_numpy(w).type(FloatTensor), alpha=1e-5)
 		realc = w.dot(real_sol).max() * w_e
 		qc = w_e
 		if args.method == 'crl-naive':
@@ -132,7 +132,7 @@ if args.pltcontrol:
 			if cnt > 30:
 				terminal = True
 			ttrw = ttrw + reward * np.power(args.gamma, cnt)
-			cnt += 1	
+			cnt += 1
 		ttrw_w = w.dot(ttrw) * w_e
 		opt_x.append(realc[0])
 		opt_y.append(realc[1])
@@ -142,7 +142,7 @@ if args.pltcontrol:
 		act_y.append(ttrw_w[1])
 
 
-	trace_opt = dict(x=opt_x, 
+	trace_opt = dict(x=opt_x,
 				 y=opt_y,
 				 mode="markers",
 				 type='custom',
@@ -151,7 +151,7 @@ if args.pltcontrol:
 						size  = 1),
 				 name='real')
 
-	q_opt = dict(x=q_x, 
+	q_opt = dict(x=q_x,
 				 y=q_y,
 				 mode="markers",
 				 type='custom',
@@ -160,7 +160,7 @@ if args.pltcontrol:
 						size  = 1),
 				 name='predited')
 
-	act_opt = dict(x=act_x, 
+	act_opt = dict(x=act_x,
 				 y=act_y,
 				 mode="markers",
 				 type='custom',
@@ -170,7 +170,7 @@ if args.pltcontrol:
 				 name='policy')
 
 	layout_opt=dict(title="DST Control Frontier - {}".format(args.method),
-				xaxis=dict(title = 'teasure value'), 
+				xaxis=dict(title = 'teasure value'),
 				yaxis=dict(title = 'time penalty'))
 
 	vis._send({'data': [trace_opt, q_opt, act_opt], 'layout': layout_opt})
@@ -212,11 +212,11 @@ if args.pltpareto:
 		env.reset()
 		cnt = 0
 		if args.method == "crl-envelope":
-			hq, _ = agent.predicte(torch.from_numpy(w).type(FloatTensor))
+			hq, _ = agent.predict(torch.from_numpy(w).type(FloatTensor))
 			pred_x.append(hq.data.cpu().numpy().squeeze()[0] * 1.0)
 			pred_y.append(hq.data.cpu().numpy().squeeze()[1] * 1.0)
 		elif args.method == "crl-energy":
-			hq, _ = agent.predicte(torch.from_numpy(w).type(FloatTensor), alpha=1e-5)
+			hq, _ = agent.predict(torch.from_numpy(w).type(FloatTensor), alpha=1e-5)
 			pred_x.append(hq.data.cpu().numpy().squeeze()[0] * 1.0)
 			pred_y.append(hq.data.cpu().numpy().squeeze()[1] * 1.0)
 		while not terminal:
@@ -229,39 +229,39 @@ if args.pltpareto:
 			cnt += 1
 
 		act_x.append(ttrw[0])
-		act_y.append(ttrw[1])	
+		act_y.append(ttrw[1])
 
 	# Create and style traces
-	trace_pareto = dict(x=dis_treasure, 
+	trace_pareto = dict(x=dis_treasure,
 				 y=dis_time,
 				 mode="markers+lines",
 				 type='custom',
 				 marker=dict(
-				 		symbol="circle", 
+				 		symbol="circle",
 				 		size  = 10),
 				 line = dict(
 						width = 1,
 						dash  = 'dash'),
 				 name='Pareto')
 
-	act_pareto = dict(x=act_x, 
+	act_pareto = dict(x=act_x,
 				 y=act_y,
 				 mode="markers",
 				 type='custom',
 				 marker=dict(
-				 		symbol="circle", 
+				 		symbol="circle",
 				 		size  = 10),
 				 line = dict(
 						width = 1,
 						dash  = 'dash'),
 				 name='Recovered')
 
-	pred_pareto = dict(x=pred_x, 
+	pred_pareto = dict(x=pred_x,
 				 y=pred_y,
 				 mode="markers",
 				 type='custom',
 				 marker=dict(
-				 		symbol="circle", 
+				 		symbol="circle",
 				 		size  = 3),
 				 line = dict(
 						width = 1,
@@ -271,7 +271,7 @@ if args.pltpareto:
 
 	layout=dict(title="DST Pareto Frontier - {}".format(args.method),
 				xaxis=dict(   title = 'teasure value',
-						   zeroline = False), 
+						   zeroline = False),
 				yaxis=dict(   title = 'time penalty',
 						   zeroline = False))
 
