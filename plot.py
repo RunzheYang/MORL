@@ -110,12 +110,9 @@ if args.pltcontrol:
 		# w = np.random.dirichlet(np.ones(2))
 		w_e = w / np.linalg.norm(w, ord=2)
 		if args.method == 'crl-naive' or args.method == 'crl-envelope':
-			hq, _ = agent.model(Variable(FloatTensor([0,0]).unsqueeze(0), volatile=True), 
-						Variable(torch.from_numpy(w).unsqueeze(0).type(FloatTensor), volatile=True))
+			hq, _ = agent.predicte(torch.from_numpy(w).type(FloatTensor))
 		elif args.method == 'crl-energy':
-			hq, _ = agent.model(Variable(FloatTensor([0,0]).unsqueeze(0), volatile=True), 
-						Variable(torch.from_numpy(w).unsqueeze(0).type(FloatTensor), volatile=True),
-						alpha=1e-5)
+			hq, _ = agent.predicte(torch.from_numpy(w).type(FloatTensor), alpha=1e-5)
 		realc = w.dot(real_sol).max() * w_e
 		qc = w_e
 		if args.method == 'crl-naive':
@@ -215,14 +212,11 @@ if args.pltpareto:
 		env.reset()
 		cnt = 0
 		if args.method == "crl-envelope":
-			hq, _ = agent.model(Variable(FloatTensor([0,0]).unsqueeze(0), volatile=True), 
-							Variable(torch.from_numpy(w).unsqueeze(0).type(FloatTensor), volatile=True))
+			hq, _ = agent.predicte(torch.from_numpy(w).type(FloatTensor))
 			pred_x.append(hq.data.cpu().numpy().squeeze()[0] * 1.0)
 			pred_y.append(hq.data.cpu().numpy().squeeze()[1] * 1.0)
 		elif args.method == "crl-energy":
-			hq, _ = agent.model(Variable(FloatTensor([0,0]).unsqueeze(0), volatile=True), 
-							Variable(torch.from_numpy(w).unsqueeze(0).type(FloatTensor), volatile=True),
-							alpha=1e-5)
+			hq, _ = agent.predicte(torch.from_numpy(w).type(FloatTensor), alpha=1e-5)
 			pred_x.append(hq.data.cpu().numpy().squeeze()[0] * 1.0)
 			pred_y.append(hq.data.cpu().numpy().squeeze()[1] * 1.0)
 		while not terminal:

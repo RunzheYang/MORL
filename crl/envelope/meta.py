@@ -158,6 +158,9 @@ class MetaAgent(object):
 
 			self.update_count += 1
 
+			action_size = self.model_.action_size
+			reward_size = self.model_.reward_size
+
 			minibatch = self.sample(self.trans_mem, self.priority_mem, self.batch_size)
 			# minibatch = random.sample(self.trans_mem, self.batch_size)
 			batchify = lambda x: list(x) * self.weight_num
@@ -167,7 +170,7 @@ class MetaAgent(object):
 			next_state_batch = batchify(map(lambda x: x.s_.unsqueeze(0), minibatch))
 			terminal_batch   = batchify(map(lambda x: x.d, minibatch))
 
-			w_batch = np.random.randn(self.weight_num, self.model_.reward_size)
+			w_batch = np.random.randn(self.weight_num, reward_size)
 			w_batch = np.abs(w_batch) / \
 								np.linalg.norm(w_batch, ord=1, axis=1, keepdims=True)
 			w_batch = torch.from_numpy(w_batch.repeat(self.batch_size, axis=0)).type(FloatTensor)
@@ -180,13 +183,18 @@ class MetaAgent(object):
 			# 					  Variable(w_batch, volatile=True), w_num=self.weight_num)
 			_, DQ    = self.model(Variable(torch.cat(next_state_batch, dim=0), volatile=True),
 								  Variable(w_batch, volatile=True))
-			_, act   = self.model_(Variable(torch.cat(next_state_batch, dim=0), volatile=True),
-								  Variable(w_batch, volatile=True))[1].max(1)
-			HQ = DQ.gather(1, act.unsqueeze(dim=1)).squeeze()
+			w_ext = w_batch.unsqueeze(2).repeat(1, action_size, 1).view(-1, 2)
+			_, tmpQ  = self.model_(Variable(torch.cat(next_state_batch, dim=0), volatile=True),
+								  Variable(w_batch, volatile=True))
+
+			tmpQ = tmpQ.view(-1, reward_size)
+			act = torch.bmm(w_ext.unsqueeze(1), 
+						    tmpQ.unsqueeze(2)).view(-1, action_size).max(1)[1]
+			HQ = DQ.gather(1, act.view(-1,1,1).expand(Q.size(0), 1, Q.size(2))).squeeze()
 
 			nontmlmask = self.nontmlinds(terminal_batch)
 			Tau_Q = Variable(torch.zeros(self.batch_size*self.weight_num,
-											  self.model_.reward_size).type(FloatTensor))
+											  reward_size).type(FloatTensor))
 			Tau_Q[nontmlmask] = self.gamma * HQ[nontmlmask]
 			Tau_Q.volatile = False
 			Tau_Q += Variable(torch.cat(reward_batch, dim=0))
@@ -194,8 +202,8 @@ class MetaAgent(object):
 			actions = Variable(torch.cat(action_batch, dim=0))
 
 			Q = Q.gather(1, actions.view(-1,1,1).expand(Q.size(0), 1, Q.size(2))
-				).view(-1, self.model_.reward_size)
-			Tau_Q = Tau_Q.view(-1, self.model.reward_size)
+				).view(-1, reward_size)
+			Tau_Q = Tau_Q.view(-1, reward_size)
 			
 			wQ  = torch.bmm(Variable(w_batch.unsqueeze(1)), 
 							Q.unsqueeze(2)).squeeze()
@@ -203,8 +211,8 @@ class MetaAgent(object):
 			wTQ = torch.bmm(Variable(Tau_Q.unsqueeze(1)), 
 							Q.unsqueeze(2)).squeeze()
 			
-			loss = F.mse_loss(Q.view(-1), Tau_Q.view(-1)) + 
-				   F.mse_loss(wQ.view(-1),  wTQ.view(-1))
+			loss = F.mse_loss(Q.view(-1), Tau_Q.view(-1)) + \
+					F.mse_loss(wQ.view(-1),  wTQ.view(-1))
 
 			self.optimizer.zero_grad()
 			loss.backward()
@@ -219,11 +227,18 @@ class MetaAgent(object):
 
 		return 0.0
 
+
 	def reset(self):
 		self.w_kept = None
 		if self.epsilon_decay:
 				self.epsilon -= self.epsilon_delta
 
 
+	def predict(self, probe):
+		return agent.model(Variable(FloatTensor([0,0]).unsqueeze(0), volatile=True),
+						Variable(probe.unsqueeze(0), volatile=True))
+
+
 	def save(self, save_path, model_name):
 		torch.save(self.model, "{}{}.pkl".format(save_path, model_name))
+

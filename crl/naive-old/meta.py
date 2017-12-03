@@ -188,10 +188,16 @@ class MetaAgent(object):
 
 		return 0.0
 
+
 	def reset(self):
 		self.keep_preference = None
 		if self.epsilon_decay:
 				self.epsilon -= self.epsilon_delta
+
+
+	def predict(self, probe):
+		return agent.model(Variable(FloatTensor([0,0]).unsqueeze(0), volatile=True),
+						Variable(probe.unsqueeze(0), volatile=True))
 
 
 	def save(self, save_path, model_name):

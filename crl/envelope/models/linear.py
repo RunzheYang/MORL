@@ -60,6 +60,27 @@ class EnvelopeLinearCQN(torch.nn.Module):
 		
 		return HQ
 
+	def H_(self, Q, w, s_num, w_num):
+		reQ = Q.view(-1, self.reward_size)
+
+		# extend preference batch
+		w_ext = w.unsqueeze(2).repeat(1, self.action_size, 1).view(-1, 2)
+
+		# produce hte inner products
+		prod = torch.bmm(reQ.unsqueeze(1), w_ext.unsqueeze(2)).squeeze()
+
+		# mask for take max over actions
+		prod = prod.view(-1, self.action_size)
+		inds = prod.max(1)[1]
+		mask = ByteTensor(prod.size()).zero_()
+		mask.scatter_(1, inds.data.unsqueeze(1), 1)
+		mask = mask.view(-1, 1).repeat(1, self.reward_size)
+
+		# get the HQ
+		HQ = reQ.masked_select(Variable(mask)).view(-1, self.reward_size)
+
+		return HQ
+
 
 	def forward(self, state, preference, w_num=1):
 		s_num = int(preference.size(0) / w_num)

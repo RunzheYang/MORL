@@ -73,10 +73,8 @@ def train(env, agent, args, shared_mem=None):
 			cnt = cnt + 1
 
 		probe = FloatTensor([0.8,0.2])
-		_, q = agent.model(Variable(FloatTensor([0,0]).unsqueeze(0), volatile=True),
-						Variable(probe.unsqueeze(0), volatile=True))
-		# _, q_ = agent.model_(Variable(FloatTensor([0,0]).unsqueeze(0), volatile=True),
-						# Variable(probe.unsqueeze(0), volatile=True))
+		_, q = agent.predict(probe)
+
 		if args.method == "crl-naive":
 			q_max = q[0, 3].data.cpu()[0]
 			# q__max = q_[0, 3].data.cpu()[0]
