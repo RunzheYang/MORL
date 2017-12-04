@@ -352,8 +352,8 @@ if args.pltdemo:
 							xmin = -10,
 							xmax = 16.6))
 
-		w1 = float(raw_input("treasure weight: "))
-		w2 = float(raw_input("time weight: "))
+		w1 = float(input("treasure weight: "))
+		w2 = float(input("time weight: "))
 		w = np.array([w1, w2])
 		w = np.abs(w) / np.linalg.norm(w, ord=1)
 		# w = np.random.dirichlet(np.ones(2))
@@ -378,4 +378,4 @@ if args.pltdemo:
 			ttrw = ttrw + reward * np.power(args.gamma, cnt)
 			cnt += 1
 		print("final reward: treasure %0.2f, time %0.2f, tot %0.2f"%(ttrw[0], ttrw[1], w.dot(ttrw)))
-		new_episode = int(raw_input("try again? 1: Yes | 0: No "))
+		new_episode = int(input("try again? 1: Yes | 0: No "))
