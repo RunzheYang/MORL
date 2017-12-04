@@ -51,9 +51,9 @@ class MetaAgent(object):
 		self.update_count = 0
 		self.update_freq  = args.update_freq
 
-		if self.is_train: 
+		if self.is_train:
 			self.model.train()
-		if use_cuda: 
+		if use_cuda:
 			self.model.cuda()
 			self.model_.cuda()
 
@@ -177,7 +177,7 @@ class MetaAgent(object):
 
 			__, Q   = self.model_(Variable(torch.cat(state_batch, dim=0)),
 								  Variable(w_batch), w_num=self.weight_num)
-			
+
 			# detach since we don't want gradients to propagate
 			# HQ, _    = self.model_(Variable(torch.cat(next_state_batch, dim=0), volatile=True),
 			# 					  Variable(w_batch, volatile=True), w_num=self.weight_num)
@@ -188,9 +188,12 @@ class MetaAgent(object):
 								  Variable(w_batch, volatile=True))
 
 			tmpQ = tmpQ.view(-1, reward_size)
-			act = torch.bmm(w_ext.unsqueeze(1), 
-						    tmpQ.unsqueeze(2)).view(-1, action_size).max(1)[1]
-			HQ = DQ.gather(1, act.view(-1,1,1).expand(Q.size(0), 1, Q.size(2))).squeeze()
+			# print(torch.bmm(w_ext.unsqueeze(1),
+			# 			    tmpQ.data.unsqueeze(2)).view(-1, action_size))
+			act = torch.bmm(w_ext.unsqueeze(1),
+						    tmpQ.data.unsqueeze(2)).view(-1, action_size).max(1)[1]
+
+			HQ = DQ.gather(1, act.view(-1,1,1).expand(DQ.size(0), 1, DQ.size(2))).squeeze()
 
 			nontmlmask = self.nontmlinds(terminal_batch)
 			Tau_Q = Variable(torch.zeros(self.batch_size*self.weight_num,
@@ -204,15 +207,16 @@ class MetaAgent(object):
 			Q = Q.gather(1, actions.view(-1,1,1).expand(Q.size(0), 1, Q.size(2))
 				).view(-1, reward_size)
 			Tau_Q = Tau_Q.view(-1, reward_size)
-			
-			wQ  = torch.bmm(Variable(w_batch.unsqueeze(1)), 
+
+			wQ  = torch.bmm(Variable(w_batch.unsqueeze(1)),
 							Q.unsqueeze(2)).squeeze()
 
-			wTQ = torch.bmm(Variable(Tau_Q.unsqueeze(1)), 
-							Q.unsqueeze(2)).squeeze()
-			
+			wTQ = torch.bmm(Variable(w_batch.unsqueeze(1)),
+							Tau_Q.unsqueeze(2)).squeeze()
+
 			# loss = F.mse_loss(Q.view(-1), Tau_Q.view(-1))
-			loss = F.mse_loss(wQ.view(-1), wTQ.view(-1))
+			loss =  F.mse_loss(wQ.view(-1), wTQ.view(-1))
+			loss += 0.02 * F.mse_loss(Q.view(-1), Tau_Q.view(-1))
 
 			self.optimizer.zero_grad()
 			loss.backward()
@@ -241,4 +245,3 @@ class MetaAgent(object):
 
 	def save(self, save_path, model_name):
 		torch.save(self.model, "{}{}.pkl".format(save_path, model_name))
-

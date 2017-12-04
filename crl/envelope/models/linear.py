@@ -15,32 +15,34 @@ class EnvelopeLinearCQN(torch.nn.Module):
 	'''
 		Linear Controllable Q-Network, Envelope Version
 	'''
-	
+
 	def __init__(self, state_size, action_size, reward_size):
 		super(EnvelopeLinearCQN, self).__init__()
-		
+
 		self.state_size  = state_size
 		self.action_size = action_size
 		self.reward_size = reward_size
 
 		# S x A -> (W -> R^n). =>. S x W -> (A -> R^n)
-		self.affine1 = nn.Linear(state_size + reward_size, 
+		self.affine1 = nn.Linear(state_size + reward_size,
 								 (state_size + reward_size) * 40)
-		self.affine2 = nn.Linear((state_size + reward_size) * 40, 
+		self.affine2 = nn.Linear((state_size + reward_size) * 40,
 								 (state_size + reward_size) * 60)
-		self.affine3 = nn.Linear((state_size + reward_size) * 60, 
+		self.affine3 = nn.Linear((state_size + reward_size) * 60,
 								 (state_size + reward_size) * 60)
-		self.affine4 = nn.Linear((state_size + reward_size) * 60, 
+		self.affine4 = nn.Linear((state_size + reward_size) * 60,
+								 (state_size + reward_size) * 60)
+		self.affine5 = nn.Linear((state_size + reward_size) * 60,
 								 action_size * reward_size)
 
 	def H(self, Q, w, s_num, w_num):
 		# mask for reordering the batch
 		mask = torch.cat(
-				[torch.arange(i, s_num * w_num + i, s_num) 
+				[torch.arange(i, s_num * w_num + i, s_num)
 					for i in range(s_num)]).type(LongTensor)
 		reQ = Q.view(-1, self.action_size * self.reward_size
 							)[mask].view(-1, self.reward_size)
-		
+
 		# extend Q batch and preference batch
 		reQ_ext = reQ.repeat(w_num, 1)
 		w_ext = w.unsqueeze(2).repeat(1, self.action_size * w_num, 1).view(-1,2)
@@ -57,7 +59,7 @@ class EnvelopeLinearCQN(torch.nn.Module):
 
 		# get the HQ
 		HQ = reQ_ext.masked_select(Variable(mask)).view(-1, self.reward_size)
-		
+
 		return HQ
 
 	def H_(self, Q, w, s_num, w_num):
@@ -89,10 +91,11 @@ class EnvelopeLinearCQN(torch.nn.Module):
 		x = F.relu(self.affine1(x))
 		x = F.relu(self.affine2(x))
 		x = F.relu(self.affine3(x))
-		q = self.affine4(x)
-		
+		x = F.relu(self.affine4(x))
+		q = self.affine5(x)
+
 		q = q.view(q.size(0), self.action_size, self.reward_size)
-		
+
 		hq  = self.H(q.detach().view(-1, self.reward_size), preference, s_num, w_num)
 
 		return hq, q
