@@ -25,19 +25,19 @@ class EnergyLinearCQN(torch.nn.Module):
 
 		# S x A -> (W -> R^n). =>. S x W -> (A -> R^n)
 		self.affine1 = nn.Linear(state_size + reward_size, 
-								 (state_size + reward_size) * 80)
+					 (state_size + reward_size) * 80)
 		self.affine2 = nn.Linear((state_size + reward_size) * 80, 
-								 (state_size + reward_size) * 80)
+					 (state_size + reward_size) * 80)
 		self.affine3 = nn.Linear((state_size + reward_size) * 80, 
-								 action_size * reward_size)
+					 action_size * reward_size)
 
 	def H(self, Q, w, s_num, w_num, alpha):
 		# mask for reordering the batch
 		mask = torch.cat(
-				[torch.arange(i, s_num * w_num + i, s_num) 
-					for i in xrange(s_num)]).type(LongTensor)
+		  [torch.arange(i, s_num * w_num + i, s_num) 
+			  for i in xrange(s_num)]).type(LongTensor)
 		reQ = Q.view(-1, self.action_size * self.reward_size
-							)[mask].view(-1, self.reward_size)
+					)[mask].view(-1, self.reward_size)
 		
 		# extend Q batch and preference batch
 		reQ_ext = reQ.repeat(w_num, 1)
@@ -74,6 +74,6 @@ class EnergyLinearCQN(torch.nn.Module):
 		q = q.view(q.size(0), self.action_size, self.reward_size)
 		
 		hq = self.H(q.view(-1, self.reward_size), 
-					preference, s_num, w_num, alpha)
+			  preference, s_num, w_num, alpha)
 
 		return hq, q

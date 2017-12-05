@@ -227,7 +227,7 @@ class MetaAgent(object):
 			if self.update_count % self.update_freq == 0:
 				self.model.load_state_dict(self.model_.state_dict())
 
-			return	loss.data[0]
+			return loss.data[0]
 
 		return 0.0
 
