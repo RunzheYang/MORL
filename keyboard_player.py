@@ -52,12 +52,7 @@ def rollout(env):
 
 		obser, r, done, info = env.step(a)
 		env.render()
-		# if done: break
-		if done: 
-			for _ in range(20): 
-				env.step(0)
-				env.render()
-			break
+		if done: break
 		if human_wants_restart: break
 		while human_sets_pause:
 			env.render()

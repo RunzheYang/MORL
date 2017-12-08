@@ -36,7 +36,7 @@ def heuristic(env, s, target=0):
 	
 	return a
 
-if __name__=="__main__":
+if __name__ == "__main__":
 	env = gym.make('MultiObj-LunarLander-v0' if len(sys.argv)<2 else sys.argv[1])
 	# env = LunarLanderContinuous()
 	s = env.reset()
@@ -52,4 +52,7 @@ if __name__=="__main__":
 			print(["{:+0.2f}".format(x) for x in s])
 			print("step {} total_reward {:+0.2f}".format(steps, total_reward))
 		steps += 1
-		if done: break
+		# if done: break
+		if done: 
+			for _ in range(20): env.render()
+			break

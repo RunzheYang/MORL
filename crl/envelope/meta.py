@@ -190,8 +190,8 @@ class MetaAgent(object):
 			tmpQ = tmpQ.view(-1, reward_size)
 			# print(torch.bmm(w_ext.unsqueeze(1),
 			# 			    tmpQ.data.unsqueeze(2)).view(-1, action_size))
-			act = torch.bmm(w_ext.unsqueeze(1),
-						    tmpQ.data.unsqueeze(2)).view(-1, action_size).max(1)[1]
+			act = torch.bmm(Variable(w_ext.unsqueeze(1), volatile=True),
+						    tmpQ.unsqueeze(2)).view(-1, action_size).max(1)[1]
 
 			HQ = DQ.gather(1, act.view(-1,1,1).expand(DQ.size(0), 1, DQ.size(2))).squeeze()
 
