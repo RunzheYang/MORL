@@ -9,7 +9,7 @@ from envs.mo_env import MultiObjectiveEnv
 parser = argparse.ArgumentParser(description='MORL')
 # CONFIG
 parser.add_argument('--env-name', default='dst', metavar='ENVNAME',
-				help='environment to train on (default: dst)')
+				help='environment to train on: dst | ft ')
 parser.add_argument('--method', default='crl-naive', metavar='METHODS',
 				help='methods: crl-naive | crl-envelope | crl-energy')
 parser.add_argument('--model', default='linear', metavar='MODELS',
@@ -60,6 +60,9 @@ def train(env, agent, args, shared_mem=None):
 		loss = 0
 		cnt = 0
 		tot_reward = 0
+
+		probe = FloatTensor([0.8,0.2,0.0,0.0,0.0,0.0])
+
 		while not terminal:
 			state  = env.observe()
 			action = agent.act(state)
@@ -69,16 +72,15 @@ def train(env, agent, args, shared_mem=None):
 			if cnt > 100:
 				terminal = True
 				agent.reset()
-			tot_reward = tot_reward + (0.8*reward[0]+0.2*reward[1]) * np.power(args.gamma, cnt)
+			tot_reward = tot_reward + (probe.numpy().dot(reward)) * np.power(args.gamma, cnt)
 			cnt = cnt + 1
 
-		probe = FloatTensor([0.8,0.2])
 		_, q = agent.predict(probe)
 
 		if args.method == "crl-naive":
-			q_max = q[0, 3].data.cpu()[0]
+			q_max = q[0, 1].data.cpu()[0]
 			# q__max = q_[0, 3].data.cpu()[0]
-			q_min = q[0, 1].data.cpu()[0]
+			q_min = q[0, 0].data.cpu()[0]
 		elif args.method == "crl-envelope":
 			q_max = probe.dot(q[0, 3].data)
 			q_min = probe.dot(q[0, 1].data)
