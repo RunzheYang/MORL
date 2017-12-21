@@ -301,6 +301,7 @@ if args.pltpareto:
 		pred = act
 	else:
 		pred = np.array(pred)
+	FRUITS = np.tile(FRUITS, (30,1))
 	ALL  = np.concatenate([FRUITS, act, pred])
 	ALL  = TSNE(n_components=2).fit_transform(ALL)
 	p1   = FRUITS.shape[0]
