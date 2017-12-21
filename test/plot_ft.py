@@ -175,7 +175,7 @@ if args.pltcontrol:
 	real_sol = np.stack((dis_treasure, dis_time))
 
 	for i in range(2000):
-		w = np.random.randn(2)
+		w = np.random.randn(6)
 		w = np.abs(w) / np.linalg.norm(w, ord=1)
 		# w = np.random.dirichlet(np.ones(2))
 		w_e = w / np.linalg.norm(w, ord=2)
@@ -272,7 +272,7 @@ if args.pltpareto:
 	pred = []
 
 	for i in range(2000):
-		w = np.random.randn(2)
+		w = np.random.randn(6)
 		w = np.abs(w) / np.linalg.norm(w, ord=1)
 		# w = np.random.dirichlet(np.ones(2))
 		ttrw = np.array([0, 0])
