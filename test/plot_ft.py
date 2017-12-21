@@ -191,7 +191,7 @@ if args.pltcontrol:
 			qc = w.dot(hq.data.cpu().numpy().squeeze()) * w_e
 		elif args.method == 'crl-energy':
 			qc = w.dot(hq.data.cpu().numpy().squeeze()) * w_e
-		ttrw = np.array([0, 0])
+		ttrw = np.array([0, 0, 0, 0, 0, 0])
 		terminal = False
 		env.reset()
 		cnt = 0
@@ -274,8 +274,8 @@ if args.pltpareto:
 	for i in range(2000):
 		w = np.random.randn(6)
 		w = np.abs(w) / np.linalg.norm(w, ord=1)
-		# w = np.random.dirichlet(np.ones(2))
-		ttrw = np.array([0, 0])
+		# w = np.random.dirichlet(np.ones(6))
+		ttrw = np.array([0, 0, 0, 0, 0, 0])
 		terminal = False
 		env.reset()
 		cnt = 0
