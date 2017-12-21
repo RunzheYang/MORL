@@ -309,22 +309,9 @@ if args.pltmap:
 					xmax = 16.6))
 
 
-################# DYNAMICS #################
+################# Fruit Tree Just Sample #################
 
-if args.pltdemo:
-	see_map = np.array(
-					[[ 0,   0,   0,   0,   0,   0,    0,    0,    0,    0, 0],
-					 [ 0.7,   0,   0,   0,   0,   0,    0,    0,    0,    0, 0],
-					 [ -10, 8.2,   0,   0,   0,   0,    0,    0,    0,    0, 0],
-					 [ -10, -10,11.5,   0,   0,   0,    0,    0,    0,    0, 0],
-					 [ -10, -10, -10,14.0,15.1,16.1,    0,    0,    0,    0, 0],
-					 [ -10, -10, -10, -10, -10, -10,    0,    0,    0,    0, 0],
-					 [ -10, -10, -10, -10, -10, -10,    0,    0,    0,    0, 0],
-					 [ -10, -10, -10, -10, -10, -10, 19.6, 20.3,    0,    0, 0],
-					 [ -10, -10, -10, -10, -10, -10,  -10,  -10,    0,    0, 0],
-					 [ -10, -10, -10, -10, -10, -10,  -10,  -10, 22.4,    0, 0],
-					 [ -10, -10, -10, -10, -10, -10,  -10,  -10,  -10, 23.7, 0]]
-				)[::-1]
+if args.pltpareto:
 
 	# setup the environment
 	env = MultiObjectiveEnv(args.env_name)
@@ -339,43 +326,36 @@ if args.pltdemo:
 		from crl.energy.meta import MetaAgent
 	model = torch.load("{}{}.pkl".format(args.save, args.model+args.name))
 	agent = MetaAgent(model, args, is_train=False)
-	new_episode = True
 
-	while new_episode:
+	# compute recovered Pareto
+	act = []
 
-		dy_map = np.copy(see_map)
-		dy_map[10 - 0, 0] = -3
+	# predicted solution
+	pred = []
 
-		win = vis.heatmap(X=dy_map,
-						opts=dict(
-							title="DST Map",
-							xmin = -10,
-							xmax = 16.6))
-
-		w1 = float(input("treasure weight: "))
-		w2 = float(input("time weight: "))
-		w = np.array([w1, w2])
+	for i in range(2000):
+		w = np.random.randn(2)
 		w = np.abs(w) / np.linalg.norm(w, ord=1)
 		# w = np.random.dirichlet(np.ones(2))
 		ttrw = np.array([0, 0])
 		terminal = False
 		env.reset()
 		cnt = 0
+		if args.method == "crl-envelope":
+			hq, _ = agent.predict(torch.from_numpy(w).type(FloatTensor))
+			pred.append(hq.data.cpu().numpy().squeeze() * 1.0)
+		elif args.method == "crl-energy":
+			hq, _ = agent.predict(torch.from_numpy(w).type(FloatTensor), alpha=1e-5)
+			pred.append(hq.data.cpu().numpy().squeeze() * 1.0)
 		while not terminal:
 			state  = env.observe()
 			action = agent.act(state, preference=torch.from_numpy(w).type(FloatTensor))
 			next_state, reward, terminal = env.step(action)
-			dy_map[10 - next_state[0], next_state[1]] = -3
-			vis.heatmap(X=dy_map,
-						win = win,
-						opts=dict(
-							title="DST Map",
-							xmin = -10,
-							xmax = 14.5))
-			Timer.sleep(.5)
 			if cnt > 50:
 				terminal = True
 			ttrw = ttrw + reward * np.power(args.gamma, cnt)
 			cnt += 1
-		print("final reward: treasure %0.2f, time %0.2f, tot %0.2f"%(ttrw[0], ttrw[1], w.dot(ttrw)))
-		new_episode = int(input("try again? 1: Yes | 0: No "))
+
+		act.append(ttrw)
+
+	print list(set(action)) 
