@@ -137,7 +137,7 @@ FRUITS =[[ 0.26745039,  3.54435815,  4.39088762,  0.5898826 ,  7.7984232 ,  2.63
 		 [ 4.72502594,  5.38532887,  5.40386645,  1.57883722,  0.24912224,  4.11288237]]
 
 # apply gamma
-FRUITS = np.array(FRUITS) * np.power(args.gamma, 6)
+FRUITS = np.array(FRUITS) * np.power(args.gamma, 5)
 
 def matrix2lists(MATRIX):
 	X, Y = [], []
@@ -191,7 +191,7 @@ if args.pltcontrol:
 			qc = w.dot(hq.data.cpu().numpy().squeeze()) * w_e
 		elif args.method == 'crl-energy':
 			qc = w.dot(hq.data.cpu().numpy().squeeze()) * w_e
-		ttrw = np.array([0, 0, 0, 0, 0, 0])
+		ttrw = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
 		terminal = False
 		env.reset()
 		cnt = 0
@@ -275,7 +275,7 @@ if args.pltpareto:
 		w = np.random.randn(6)
 		w = np.abs(w) / np.linalg.norm(w, ord=1)
 		# w = np.random.dirichlet(np.ones(6))
-		ttrw = np.array([0, 0, 0, 0, 0, 0])
+		ttrw = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
 		terminal = False
 		env.reset()
 		cnt = 0
@@ -297,14 +297,17 @@ if args.pltpareto:
 		act.append(ttrw)
 
 	act  = np.array(act)
-	pred = np.array(pred)
+	if not pred:
+		pred = act
+	else:
+		pred = np.array(pred)
 	ALL  = np.concatenate([FRUITS, act, pred])
 	ALL  = TSNE(n_components=2).fit_transform(ALL)
-	p1   = FRUITS.size(0)
-	p2   = FRUITS.size(0) + act.size(0)
-	
+	p1   = FRUITS.shape[0]
+	p2   = FRUITS.shape[0] + act.shape[0]
+
 	fruit = ALL[:p1,:]
-	act   = ALL[:p2,:]
+	act   = ALL[p1:p2,:]
 	pred  = ALL[p2:,:]
 
 	fruit_x, fruit_y = matrix2lists(fruit)
@@ -357,7 +360,6 @@ if args.pltpareto:
 if args.pltmap:
 	FRUITS_EMB = TSNE(n_components=2).fit_transform(FRUITS)
 	X, Y = matrix2lists(FRUITS_EMB)
-	print(X, Y)
 	trace_fruit_emb = dict(x=X, y=Y,
 						 mode="markers",
 						 type='custom',
