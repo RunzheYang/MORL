@@ -2,10 +2,16 @@ import argparse
 import visdom
 import torch
 from torch.autograd import Variable
-from envs.mo_env import MultiObjectiveEnv
 import time as Timer
 import math
 import numpy as np
+
+import sys
+import os
+PACKAGE_PARENT = '..'
+SCRIPT_DIR = os.path.dirname(os.path.realpath(os.path.join(os.getcwd(), os.path.expanduser(__file__))))
+sys.path.append(os.path.normpath(os.path.join(SCRIPT_DIR, PACKAGE_PARENT)))
+from envs.mo_env import MultiObjectiveEnv
 
 parser = argparse.ArgumentParser(description='MORL-PLOT')
 # CONFIG
@@ -307,55 +313,3 @@ if args.pltmap:
 					title="DST Map",
 					xmin = -10,
 					xmax = 16.6))
-
-
-################# Fruit Tree Just Sample #################
-
-if args.pltpareto:
-
-	# setup the environment
-	env = MultiObjectiveEnv(args.env_name)
-
-	# generate an agent for plotting
-	agent = None
-	if args.method == 'crl-naive':
-		from crl.naive.meta import MetaAgent
-	elif args.method == 'crl-envelope':
-		from crl.envelope.meta import MetaAgent
-	elif args.method == 'crl-energy':
-		from crl.energy.meta import MetaAgent
-	model = torch.load("{}{}.pkl".format(args.save, args.model+args.name))
-	agent = MetaAgent(model, args, is_train=False)
-
-	# compute recovered Pareto
-	act = []
-
-	# predicted solution
-	pred = []
-
-	for i in range(2000):
-		w = np.random.randn(2)
-		w = np.abs(w) / np.linalg.norm(w, ord=1)
-		# w = np.random.dirichlet(np.ones(2))
-		ttrw = np.array([0, 0])
-		terminal = False
-		env.reset()
-		cnt = 0
-		if args.method == "crl-envelope":
-			hq, _ = agent.predict(torch.from_numpy(w).type(FloatTensor))
-			pred.append(hq.data.cpu().numpy().squeeze() * 1.0)
-		elif args.method == "crl-energy":
-			hq, _ = agent.predict(torch.from_numpy(w).type(FloatTensor), alpha=1e-5)
-			pred.append(hq.data.cpu().numpy().squeeze() * 1.0)
-		while not terminal:
-			state  = env.observe()
-			action = agent.act(state, preference=torch.from_numpy(w).type(FloatTensor))
-			next_state, reward, terminal = env.step(action)
-			if cnt > 50:
-				terminal = True
-			ttrw = ttrw + reward * np.power(args.gamma, cnt)
-			cnt += 1
-
-		act.append(ttrw)
-
-	print list(set(action)) 
