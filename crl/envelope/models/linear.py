@@ -45,7 +45,8 @@ class EnvelopeLinearCQN(torch.nn.Module):
 
 		# extend Q batch and preference batch
 		reQ_ext = reQ.repeat(w_num, 1)
-		w_ext = w.unsqueeze(2).repeat(1, self.action_size * w_num, 1).view(-1,2)
+		w_ext = w.unsqueeze(2).repeat(1, self.action_size * w_num, 1)
+		w_ext = w_ext.view(-1, self.reward_size)
 
 		# produce the inner products
 		prod = torch.bmm(reQ_ext.unsqueeze(1), w_ext.unsqueeze(2)).squeeze()

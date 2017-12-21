@@ -61,7 +61,11 @@ def train(env, agent, args, shared_mem=None):
 		cnt = 0
 		tot_reward = 0
 
-		probe = FloatTensor([0.8,0.2,0.0,0.0,0.0,0.0])
+		probe = None
+		if args.env_name == "dst":
+			probe = FloatTensor([0.8,0.2])
+		elif args.env_name == "ft":
+			probe = FloatTensor([0.8,0.2,0.0,0.0,0.0,0.0])
 
 		while not terminal:
 			state  = env.observe()
@@ -72,7 +76,7 @@ def train(env, agent, args, shared_mem=None):
 			if cnt > 100:
 				terminal = True
 				agent.reset()
-			tot_reward = tot_reward + (probe.numpy().dot(reward)) * np.power(args.gamma, cnt)
+			tot_reward = tot_reward + (probe.cpu().numpy().dot(reward)) * np.power(args.gamma, cnt)
 			cnt = cnt + 1
 
 		_, q = agent.predict(probe)
