@@ -184,7 +184,7 @@ class MetaAgent(object):
 			_, DQ    = self.model(Variable(torch.cat(next_state_batch, dim=0), volatile=True),
 								  Variable(w_batch, volatile=True))
 			w_ext = w_batch.unsqueeze(2).repeat(1, action_size, 1)
-			w_ext = w_ext =.view(-1, self.model.reward_size)
+			w_ext = w_ext.view(-1, self.model.reward_size)
 			_, tmpQ  = self.model_(Variable(torch.cat(next_state_batch, dim=0), volatile=True),
 								  Variable(w_batch, volatile=True))
 

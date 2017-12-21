@@ -81,16 +81,22 @@ def train(env, agent, args, shared_mem=None):
 
 		_, q = agent.predict(probe)
 
+		if args.env_name == "dst":
+			q_max = q[0, 3]
+			q_min = q[0, 1]
+		elif args.env_name == "ft":
+			q_max = q[0, 1]
+			q_min = q[0, 0]
+		
 		if args.method == "crl-naive":
-			q_max = q[0, 1].data.cpu()[0]
-			# q__max = q_[0, 3].data.cpu()[0]
-			q_min = q[0, 0].data.cpu()[0]
+			q_max = q_max.data.cpu()[0]
+			q_min = q_min.data.cpu()[0]
 		elif args.method == "crl-envelope":
-			q_max = probe.dot(q[0, 3].data)
-			q_min = probe.dot(q[0, 1].data)
+			q_max = probe.dot(q_max.data)
+			q_min = probe.dot(q_min.data)
 		elif args.method == "crl-energy":
-			q_max = probe.dot(q[0, 3].data)
-			q_min = probe.dot(q[0, 1].data)
+			q_max = probe.dot(q_max.data)
+			q_min = probe.dot(q_min.data)
 		print("end of eps %d with total reward (1) %0.2f, the Q is %0.2f | %0.2f; loss: %0.4f"%(
 						num_eps,
 						tot_reward,
