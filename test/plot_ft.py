@@ -172,10 +172,11 @@ if args.pltcontrol:
 	q_y = []
 	act_x = []
 	act_y = []
-	real_sol = np.stack((dis_treasure, dis_time))
+	real_sol = FRUITS
 
 	for i in range(2000):
 		w = np.random.randn(6)
+		w[2], w[3], w[4], w[5] = 0, 0, 0, 0
 		w = np.abs(w) / np.linalg.norm(w, ord=1)
 		# w = np.random.dirichlet(np.ones(2))
 		w_e = w / np.linalg.norm(w, ord=2)
@@ -183,7 +184,7 @@ if args.pltcontrol:
 			hq, _ = agent.predict(torch.from_numpy(w).type(FloatTensor))
 		elif args.method == 'crl-energy':
 			hq, _ = agent.predict(torch.from_numpy(w).type(FloatTensor), alpha=1e-5)
-		realc = w.dot(real_sol).max() * w_e
+		realc = real_sol.dot(w).max() * w_e
 		qc = w_e
 		if args.method == 'crl-naive':
 			qc = hq.data[0] * w_e
@@ -221,15 +222,6 @@ if args.pltcontrol:
 						size  = 1),
 				 name='real')
 
-	q_opt = dict(x=q_x,
-				 y=q_y,
-				 mode="markers",
-				 type='custom',
-				 marker = dict(
-						symbol="circle",
-						size  = 1),
-				 name='predited')
-
 	act_opt = dict(x=act_x,
 				 y=act_y,
 				 mode="markers",
@@ -239,11 +231,20 @@ if args.pltcontrol:
 						size  = 1),
 				 name='policy')
 
-	layout_opt=dict(title="DST Control Frontier - {}".format(args.method),
-				xaxis=dict(title = 'teasure value'),
-				yaxis=dict(title = 'time penalty'))
+	q_opt = dict(x=q_x,
+				 y=q_y,
+				 mode="markers",
+				 type='custom',
+				 marker = dict(
+						symbol="circle",
+						size  = 1),
+				 name='predited')
 
-	vis._send({'data': [trace_opt, q_opt, act_opt], 'layout': layout_opt})
+	layout_opt=dict(title="FT Control Frontier - {}".format(args.method),
+				xaxis=dict(title = '1st objective'),
+				yaxis=dict(title = '2nd objective'))
+
+	vis._send({'data': [trace_opt, act_opt, q_opt], 'layout': layout_opt})
 
 
 ################# Pareto Frontier #################
@@ -344,7 +345,7 @@ if args.pltpareto:
 				 name='Predicted')
 
 
-	layout=dict(title="DST Pareto Frontier - {}".format(args.method))
+	layout=dict(title="FT Pareto Frontier - {}".format(args.method))
 
 	# send to visdom
 	if args.method == "crl-naive":
