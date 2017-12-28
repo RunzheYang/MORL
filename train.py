@@ -72,6 +72,8 @@ def train(env, agent, args):
             state = env.observe()
             action = agent.act(state)
             next_state, reward, terminal = env.step(action)
+            if args.log:
+                monitor.log(state, action, reward, terminal, agent.w_kept)
             agent.memorize(state, action, next_state, reward, terminal)
             loss += agent.learn()
             if cnt > 100:
