@@ -290,7 +290,7 @@ if args.pltcontrol:
 
     print("discrepancies: policy-{}|predict-{}".format(policy_loss, predict_loss))
 
-    layout_opt = dict(title="FT Control Frontier - {}_n:{}::{}|{}".format(
+    layout_opt = dict(title="FT Control Frontier - {}_n:{}({0:.3f}|{0:.3f})".format(
         args.method, args.name, policy_loss, predict_loss),
         xaxis=dict(title='1st objective'),
         yaxis=dict(title='2nd objective'))
@@ -404,7 +404,7 @@ if args.pltpareto:
                            size=3),
                        name='Predicted')
 
-    layout = dict(title="FT Pareto Frontier - {}_n:{}::{}|{}".format(
+    layout = dict(title="FT Pareto Frontier - {}_n:{}({0:.3f}|{0:.3f})".format(
         args.method, args.name, act_f1, pred_f1))
 
     # send to visdom

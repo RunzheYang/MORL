@@ -186,7 +186,7 @@ if args.pltcontrol:
 
     print("discrepancies: policy-{}|predict-{}".format(policy_loss, predict_loss))
 
-    layout_opt = dict(title="DST Control Frontier - {}_n:{}::{}|{}".format(
+    layout_opt = dict(title="DST Control Frontier - {}_n:{}({0:.3f}|{0:.3f})".format(
         args.method, args.name, policy_loss, predict_loss),
         xaxis=dict(title='teasure value'),
         yaxis=dict(title='time penalty'))
