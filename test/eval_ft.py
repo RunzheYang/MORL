@@ -251,8 +251,8 @@ if args.pltcontrol:
                  name='predicted')
 
     ## quantitative evaluation
-    policy_loss = np.inf
-    predict_loss = np.inf
+    policy_loss = 0.0
+    predict_loss = 0.0
     for i in range(2000):
         w = np.random.randn(6)
         w = np.abs(w) / np.linalg.norm(w, ord=1)
@@ -284,13 +284,19 @@ if args.pltcontrol:
             cnt += 1
         ttrw_w = w.dot(ttrw) * w_e
 
-        policy_loss = np.linalg.norm(realc - ttrw_w, ord=1)
+        policy_loss += np.linalg.norm(realc - ttrw_w, ord=1)
         if args.method != 'crl-naive':
-            predict_loss = np.linalg.norm(realc - qc, ord=1)
+            predict_loss += np.linalg.norm(realc - qc, ord=1)
+        else:
+            predict_loss = np.inf
+
+    policy_loss /= 2000.0
+    predict_loss /= 2000.0
+
 
     print("discrepancies: policy-{}|predict-{}".format(policy_loss, predict_loss))
 
-    layout_opt = dict(title="FT Control Frontier - {}_n:{}({0:.3f}|{0:.3f})".format(
+    layout_opt = dict(title="FT Control Frontier - {}_n:{}({:.3f}|{:.3f})".format(
         args.method, args.name, policy_loss, predict_loss),
         xaxis=dict(title='1st objective'),
         yaxis=dict(title='2nd objective'))
@@ -404,7 +410,7 @@ if args.pltpareto:
                            size=3),
                        name='Predicted')
 
-    layout = dict(title="FT Pareto Frontier - {}_n:{}({0:.3f}|{0:.3f})".format(
+    layout = dict(title="FT Pareto Frontier - {}_n:{}({:.3f}|{:.3f})".format(
         args.method, args.name, act_f1, pred_f1))
 
     # send to visdom
