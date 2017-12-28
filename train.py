@@ -113,7 +113,7 @@ def train(env, agent, args):
                        loss / cnt)
     # if num_eps+1 % 100 == 0:
     # 	agent.save(args.save, args.model+args.name+"_tmp_{}".format(number))
-    agent.save(args.save, "m:{}_e:{}_n:{}".format(args.model, args.env_name, args.name))
+    agent.save(args.save, "m.{}_e.{}_n.{}".format(args.model, args.env_name, args.name))
 
 
 if __name__ == '__main__':
@@ -141,7 +141,7 @@ if __name__ == '__main__':
 
     if args.serialize:
         model = torch.load("{}{}.pkl".format(args.save,
-                                             "m:{}_e:{}_n:{}".format(args.model, args.env_name, args.name)))
+                                             "m.{}_e.{}_n.{}".format(args.model, args.env_name, args.name)))
     else:
         model = get_new_model(args.model, state_size, action_size, reward_size)
     agent = MetaAgent(model, args, is_train=True)

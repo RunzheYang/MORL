@@ -172,7 +172,7 @@ if args.pltcontrol:
     elif args.method == 'crl-energy':
         from crl.energy.meta import MetaAgent
     model = torch.load("{}{}.pkl".format(args.save,
-                                         "m:{}_e:{}_n:{}".format(args.model, args.env_name, args.name)))
+                                         "m.{}_e.{}_n.{}".format(args.model, args.env_name, args.name)))
     agent = MetaAgent(model, args, is_train=False)
 
     # compute opt
@@ -312,7 +312,7 @@ if args.pltpareto:
     elif args.method == 'crl-energy':
         from crl.energy.meta import MetaAgent
     model = torch.load("{}{}.pkl".format(args.save,
-                                         "m:{}_e:{}_n:{}".format(args.model, args.env_name, args.name)))
+                                         "m.{}_e.{}_n.{}".format(args.model, args.env_name, args.name)))
     agent = MetaAgent(model, args, is_train=False)
 
     # compute recovered Pareto
