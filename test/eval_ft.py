@@ -151,8 +151,9 @@ def find_in(A, B):
     cnt = 0.0
     for a in A:
         for b in B:
-            if np.linalg.norm(a - b, ord=1) < 0.01 * np.linalg.norm(b, ord=1):
+            if np.linalg.norm(a - b, ord=1) < 0.5:
                 cnt += 1.0
+                break
     return cnt / len(A)
 
 
