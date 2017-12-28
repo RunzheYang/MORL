@@ -2,3 +2,5 @@
 
 *.pyc
 *.pkl
+.idea/*
+.ipynb_checkpoints/*
