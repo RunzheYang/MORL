@@ -295,7 +295,7 @@ if args.pltcontrol:
 
     print("discrepancies: policy-{}|predict-{}".format(policy_loss, predict_loss))
 
-    layout_opt = dict(title="FT Control Frontier - {}_n:{}({:.3f}|{:.3f})".format(
+    layout_opt = dict(title="FT Control Frontier - {} {}({:.3f}|{:.3f})".format(
         args.method, args.name, policy_loss, predict_loss),
         xaxis=dict(title='1st objective'),
         yaxis=dict(title='2nd objective'))
@@ -365,7 +365,8 @@ if args.pltpareto:
         pred = np.array(pred)
         pred_precition = find_in(pred, FRUITS)
         pred_recall = find_in(FRUITS, pred)
-        pred_f1 = 2 * pred_precition * pred_recall / (pred_precition + pred_recall)
+        if pred_precition > 1e-8 and pred_recall > 1e-8:
+            pred_f1 = 2 * pred_precition * pred_recall / (pred_precition + pred_recall)
 
     FRUITS = np.tile(FRUITS, (30, 1))
     ALL = np.concatenate([FRUITS, act, pred])
@@ -409,7 +410,7 @@ if args.pltpareto:
                            size=3),
                        name='Predicted')
 
-    layout = dict(title="FT Pareto Frontier - {}_n:{}({:.3f}|{:.3f})".format(
+    layout = dict(title="FT Pareto Frontier - {} {}({:.3f}|{:.3f})".format(
         args.method, args.name, act_f1, pred_f1))
 
     # send to visdom
