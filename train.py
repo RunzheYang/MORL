@@ -54,7 +54,7 @@ Tensor = FloatTensor
 
 def train(env, agent, args):
     monitor = Monitor(train=True, spec="-{}".format(args.method))
-    monitor.init_log(args.save, "m.{}_e.{}_n.{}".format(args.model, args.env_name, args.name))
+    monitor.init_log(args.log, "m.{}_e.{}_n.{}".format(args.model, args.env_name, args.name))
     env.reset()
     for num_eps in range(args.episode_num):
         terminal = False
