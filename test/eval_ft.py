@@ -153,7 +153,7 @@ def find_in(A, B):
     cnt = 0.0
     for a in A:
         for b in B:
-            if np.linalg.norm(a - b, ord=1) < 0.5:
+            if np.linalg.norm(a - b, ord=1) < 1.0:
                 cnt += 1.0
                 break
     return cnt / len(A)
@@ -287,10 +287,7 @@ if args.pltcontrol:
         ttrw_w = w.dot(ttrw) * w_e
 
         policy_loss += np.linalg.norm(realc - ttrw_w, ord=1)
-        if args.method != 'crl-naive':
-            predict_loss += np.linalg.norm(realc - qc, ord=1)
-        else:
-            predict_loss = np.inf
+        predict_loss += np.linalg.norm(realc - qc, ord=1)
 
     policy_loss /= 2000.0
     predict_loss /= 2000.0
