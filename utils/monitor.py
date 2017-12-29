@@ -50,5 +50,8 @@ class Monitor(object):
             win=self.text_window,
             append=True)
 
-    def add_logs(self, **record):
-        pass
+    def init_log(self, save_path, name):
+        self.log_file = open("{}{}.log".format(save_path, name), 'w')
+
+    def add_log(self, state, action, reward, terminal, preference):
+        self.log_file.write("{}\t{}\t{}\t{}\t{}".format(state, action, reward, terminal, preference))

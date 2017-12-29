@@ -54,6 +54,7 @@ Tensor = FloatTensor
 
 def train(env, agent, args):
     monitor = Monitor(train=True, spec="-{}".format(args.method))
+    monitor.init_log(args.save, "m.{}_e.{}_n.{}".format(args.model, args.env_name, args.name))
     env.reset()
     for num_eps in range(args.episode_num):
         terminal = False
@@ -73,7 +74,7 @@ def train(env, agent, args):
             action = agent.act(state)
             next_state, reward, terminal = env.step(action)
             if args.log:
-                monitor.log(state, action, reward, terminal, agent.w_kept)
+                monitor.add_log(state, action, reward, terminal, agent.w_kept)
             agent.memorize(state, action, next_state, reward, terminal)
             loss += agent.learn()
             if cnt > 100:
