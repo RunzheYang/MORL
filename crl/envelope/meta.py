@@ -40,6 +40,7 @@ class MetaAgent(object):
         self.batch_size = args.batch_size
         self.weight_num = args.weight_num
         self.beta = args.beta
+        self.beta_delta = (0.99 - args.beta) / args.episode_num
         self.trans_mem = deque()
         self.trans = namedtuple('trans', ['s', 'a', 's_', 'r', 'd'])
         self.priority_mem = deque()
@@ -119,6 +120,8 @@ class MetaAgent(object):
             self.w_kept = None
             if self.epsilon_decay:
                 self.epsilon -= self.epsilon_delta
+            if self.homotopy:
+                self.beta += self.beta_delta
             p = abs(wr - wq)
         p += 1e-5
 
@@ -232,6 +235,8 @@ class MetaAgent(object):
         self.w_kept = None
         if self.epsilon_decay:
             self.epsilon -= self.epsilon_delta
+        if self.homotopy:
+            self.beta += self.beta_delta
 
     def predict(self, probe):
         return self.model(Variable(FloatTensor([0, 0]).unsqueeze(0), volatile=True),

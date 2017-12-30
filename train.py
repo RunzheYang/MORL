@@ -33,8 +33,10 @@ parser.add_argument('--optimizer', default='Adam', metavar='OPT',
                     help='optimizer: Adam | RMSprop')
 parser.add_argument('--update-freq', type=int, default=100, metavar='OPT',
                     help='optimizer: Adam | RMSprop')
-parser.add_argument('--beta', type=float, default=0.02, metavar='BETA',
-                    help='beta for evelope algorithm, default = 0.02')
+parser.add_argument('--beta', type=float, default=0.01, metavar='BETA',
+                    help='(initial) beta for evelope algorithm, default = 0.01')
+parser.add_argument('--homotopy', default=False, action='store_true',
+                    help='use homotopy optimization method')
 # LOG & SAVING
 parser.add_argument('--serialize', default=False, action='store_true',
                     help='serialize a model')
