@@ -59,6 +59,8 @@ parser.add_argument('--update-freq', type=int, default=32, metavar='OPT',
                     help='optimizer: Adam | RMSprop')
 parser.add_argument('--beta', type=float, default=0.02, metavar='BETA',
                     help='beta for evelope algorithm, default = 0.02')
+parser.add_argument('--homotopy', default=False, action='store_true',
+                    help='use homotopy optimization method')
 
 args = parser.parse_args()
 
