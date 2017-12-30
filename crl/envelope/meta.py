@@ -40,6 +40,7 @@ class MetaAgent(object):
         self.batch_size = args.batch_size
         self.weight_num = args.weight_num
         self.beta = args.beta
+        self.homotopy = args.homotopy
         self.beta_delta = (0.99 - args.beta) / args.episode_num
         self.trans_mem = deque()
         self.trans = namedtuple('trans', ['s', 'a', 's_', 'r', 'd'])
