@@ -39,9 +39,15 @@ class MetaAgent(object):
         self.mem_size = args.mem_size
         self.batch_size = args.batch_size
         self.weight_num = args.weight_num
-        self.beta = args.beta
-        self.homotopy = args.homotopy
-        self.beta_delta = (0.50 - args.beta) / args.episode_num
+        
+        self.beta            = args.beta
+        self.homotopy        = args.homotopy
+        self.tau             = 100.
+        self.beta_uplim      = 0.99
+        self.beta_expbase    = np.power(self.tau*(self.beta_uplim-self.beta), 1./args.episode_num)/self.tau
+        self.beta_delta      = self.beta_expbase
+        self.beta_delta_last = 0.0
+        
         self.trans_mem = deque()
         self.trans = namedtuple('trans', ['s', 'a', 's_', 'r', 'd'])
         self.priority_mem = deque()
@@ -123,6 +129,9 @@ class MetaAgent(object):
                 self.epsilon -= self.epsilon_delta
             if self.homotopy:
                 self.beta += self.beta_delta
+                new_delta = (self.beta_delta+self.beta_delta_last)*self.beta_expbase*self.tau - self.beta_delta
+                self.beta_delta_last = self.beta_delta
+                self.beta_delta = new_delta
             p = abs(wr - wq)
         p += 1e-5
 
