@@ -151,13 +151,25 @@ def matrix2lists(MATRIX):
     return X, Y
 
 
-def find_in(A, B):
+def find_in(A, B, base=0):
+    # base = 0: tolerance w.r.t. A
+    # base = 1: tolerance w.r.t. B
+    # base = 2: no tolerance
     cnt = 0.0
     for a in A:
         for b in B:
-            if np.linalg.norm(a - b, ord=1) < 1.0:
-                cnt += 1.0
-                break
+            if base = 0:
+              if np.linalg.norm(a - b, ord=1) < 0.05*np.linalg.norm(a):
+                  cnt += 1.0
+                  break
+            elif base = 1:
+              if np.linalg.norm(a - b, ord=1) < 0.05*np.linalg.norm(b):
+                  cnt += 1.0
+                  break
+            elif base = 2:
+              if np.linalg.norm(a - b, ord=1) < 0.5:
+                  cnt += 1.0
+                  break
     return cnt / len(A)
 
 
@@ -288,11 +300,12 @@ if args.pltcontrol:
             cnt += 1
         ttrw_w = w.dot(ttrw) * w_e
 
-        policy_loss += np.linalg.norm(realc - ttrw_w, ord=1)
-        predict_loss += np.linalg.norm(realc - qc, ord=1)
+        base = np.linalg.norm(realc, ord=2)
+        policy_loss += np.linalg.norm(realc - ttrw_w, ord=2)/base
+        predict_loss += np.linalg.norm(realc - qc, ord=2)/base
 
-    policy_loss /= 2000.0
-    predict_loss /= 2000.0
+    policy_loss /= 2000.0 * 100
+    predict_loss /= 2000.0 * 100
 
 
     print("discrepancies: policy-{}|predict-{}".format(policy_loss, predict_loss))
@@ -356,8 +369,8 @@ if args.pltpareto:
 
     act = np.array(act)
 
-    act_precition = find_in(act, FRUITS)
-    act_recall = find_in(FRUITS, act)
+    act_precition = find_in(act, FRUITS, 2)
+    act_recall = find_in(FRUITS, act, 2)
     act_f1 = 2 * act_precition * act_recall / (act_precition + act_recall)
     pred_f1 = 0.0
 
@@ -365,8 +378,8 @@ if args.pltpareto:
         pred = act
     else:
         pred = np.array(pred)
-        pred_precition = find_in(pred, FRUITS)
-        pred_recall = find_in(FRUITS, pred)
+        pred_precition = find_in(pred, FRUITS, 1)
+        pred_recall = find_in(FRUITS, pred, 0)
         if pred_precition > 1e-8 and pred_recall > 1e-8:
             pred_f1 = 2 * pred_precition * pred_recall / (pred_precition + pred_recall)
 
