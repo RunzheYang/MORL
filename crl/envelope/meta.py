@@ -44,10 +44,9 @@ class MetaAgent(object):
         self.beta_init       = args.beta
         self.homotopy        = args.homotopy
         self.beta_uplim      = 1.00
-        # self.tau             = 1000.
-        # self.beta_expbase    = float(np.power(self.tau*(self.beta_uplim-self.beta), 1./args.episode_num))
-        # self.beta_delta      = self.beta_expbase / self.tau
-        self.beta_delta      = (self.beta_uplim - self.beta) / self.episode_num
+        self.tau             = 1000.
+        self.beta_expbase    = float(np.power(self.tau*(self.beta_uplim-self.beta), 1./args.episode_num))
+        self.beta_delta      = self.beta_expbase / self.tau
 
         self.trans_mem = deque()
         self.trans = namedtuple('trans', ['s', 'a', 's_', 'r', 'd'])
@@ -131,7 +130,7 @@ class MetaAgent(object):
                 self.epsilon -= self.epsilon_delta
             if self.homotopy:
                 self.beta += self.beta_delta
-                # self.beta_delta = (self.beta-self.beta_init)*self.beta_expbase+self.beta_init-self.beta
+                self.beta_delta = (self.beta-self.beta_init)*self.beta_expbase+self.beta_init-self.beta
             p = abs(wr - wq)
         p += 1e-5
 
@@ -247,7 +246,7 @@ class MetaAgent(object):
             self.epsilon -= self.epsilon_delta
         if self.homotopy:
             self.beta += self.beta_delta
-            # self.beta_delta = (self.beta-self.beta_init)*self.beta_expbase+self.beta_init-self.beta
+            self.beta_delta = (self.beta-self.beta_init)*self.beta_expbase+self.beta_init-self.beta
 
     def predict(self, probe):
         return self.model(Variable(FloatTensor([0, 0]).unsqueeze(0), volatile=True),
