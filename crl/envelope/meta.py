@@ -39,15 +39,15 @@ class MetaAgent(object):
         self.mem_size = args.mem_size
         self.batch_size = args.batch_size
         self.weight_num = args.weight_num
-        
+
         self.beta            = args.beta
         self.beta_init       = args.beta
         self.homotopy        = args.homotopy
-        self.tau             = 100.
+        self.tau             = 1000.
         self.beta_uplim      = 1.00
         self.beta_expbase    = float(np.power(self.tau*(self.beta_uplim-self.beta), 1./args.episode_num))
         self.beta_delta      = self.beta_expbase / self.tau
-        
+
         self.trans_mem = deque()
         self.trans = namedtuple('trans', ['s', 'a', 's_', 'r', 'd'])
         self.priority_mem = deque()
@@ -124,6 +124,7 @@ class MetaAgent(object):
             whq = preference.dot(hq)
             p = abs(wr + self.gamma * whq - wq)
         else:
+            print(self.beta)
             self.w_kept = None
             if self.epsilon_decay:
                 self.epsilon -= self.epsilon_delta
@@ -223,8 +224,8 @@ class MetaAgent(object):
                             Tau_Q.unsqueeze(2)).squeeze()
 
             # loss = F.mse_loss(Q.view(-1), Tau_Q.view(-1))
-            loss = (1-self.beta) * F.mse_loss(wQ.view(-1), wTQ.view(-1))
-            loss += self.beta * F.mse_loss(Q.view(-1), Tau_Q.view(-1))
+            loss = self.beta * F.mse_loss(wQ.view(-1), wTQ.view(-1))
+            loss += (1-self.beta) * F.mse_loss(Q.view(-1), Tau_Q.view(-1))
 
             self.optimizer.zero_grad()
             loss.backward()

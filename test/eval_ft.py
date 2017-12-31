@@ -415,6 +415,8 @@ if args.pltpareto:
     layout = dict(title="FT Pareto Frontier - {} {}({:.3f}|{:.3f})".format(
         args.method, args.name, act_f1, pred_f1))
 
+    print("F1: policy-{}|prediction-{}".format(act_f1, pred_f1))
+
     # send to visdom
     if args.method == "crl-naive":
         vis._send({'data': [trace_pareto, act_pareto], 'layout': layout})
