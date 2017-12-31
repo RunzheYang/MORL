@@ -159,11 +159,11 @@ def find_in(A, B, base=0):
     for a in A:
         for b in B:
             if base == 0:
-              if np.linalg.norm(a - b, ord=1) < 0.05*np.linalg.norm(a):
+              if np.linalg.norm(a - b, ord=1) < 0.20*np.linalg.norm(a):
                   cnt += 1.0
                   break
             elif base == 1:
-              if np.linalg.norm(a - b, ord=1) < 0.05*np.linalg.norm(b):
+              if np.linalg.norm(a - b, ord=1) < 0.20*np.linalg.norm(b):
                   cnt += 1.0
                   break
             elif base == 2:
@@ -270,7 +270,7 @@ if args.pltcontrol:
     policy_loss = 0.0
     predict_loss = 0.0
     TEST_N = 5000.0
-    for i in range(TEST_N):
+    for i in range(int(TEST_N)):
         w = np.random.randn(6)
         w = np.abs(w) / np.linalg.norm(w, ord=1)
         # w = np.random.dirichlet(np.ones(2))
