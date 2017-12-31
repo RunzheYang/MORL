@@ -305,8 +305,8 @@ if args.pltcontrol:
         policy_loss += np.linalg.norm(realc - ttrw_w, ord=2)/base
         predict_loss += np.linalg.norm(realc - qc, ord=2)/base
 
-    policy_loss /= TEST_N * 100
-    predict_loss /= TEST_N * 100
+    policy_loss /= TEST_N / 100
+    predict_loss /= TEST_N / 100
 
 
     print("discrepancies: policy-{}|predict-{}".format(policy_loss, predict_loss))
