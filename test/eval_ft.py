@@ -269,7 +269,8 @@ if args.pltcontrol:
     ## quantitative evaluation
     policy_loss = 0.0
     predict_loss = 0.0
-    for i in range(2000):
+    TEST_N = 5000.0
+    for i in range(TEST_N):
         w = np.random.randn(6)
         w = np.abs(w) / np.linalg.norm(w, ord=1)
         # w = np.random.dirichlet(np.ones(2))
@@ -304,8 +305,8 @@ if args.pltcontrol:
         policy_loss += np.linalg.norm(realc - ttrw_w, ord=2)/base
         predict_loss += np.linalg.norm(realc - qc, ord=2)/base
 
-    policy_loss /= 2000.0 * 100
-    predict_loss /= 2000.0 * 100
+    policy_loss /= TEST_N * 100
+    predict_loss /= TEST_N * 100
 
 
     print("discrepancies: policy-{}|predict-{}".format(policy_loss, predict_loss))

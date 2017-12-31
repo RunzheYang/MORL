@@ -54,7 +54,6 @@ python test/eval_ft.py --env-name ft --method crl-envelope --model  linear --gam
 python test/eval_ft.py --env-name ft --method crl-envelope --model  linear --gamma  0.99 --save crl/envelope/saved/ --pltpareto  --name m+he
 python test/eval_ft.py --env-name ft --method crl-envelope --model  linear --gamma  0.99 --save crl/envelope/saved/ --pltcontrol --name m+he
 
-
 # ENEVELOPE:
 # 0+_e: 4000 | 256 | 32 | 100 | 1e-3 | 0.00
 # 1+_e: 8000 | 256 | 32 | 100 | 1e-3 | 0.00
