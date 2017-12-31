@@ -44,7 +44,7 @@ class MetaAgent(object):
         self.beta_init       = args.beta
         self.homotopy        = args.homotopy
         self.tau             = 100.
-        self.beta_uplim      = 0.99
+        self.beta_uplim      = 1.00
         self.beta_expbase    = float(np.power(self.tau*(self.beta_uplim-self.beta), 1./args.episode_num))
         self.beta_delta      = self.beta_expbase / self.tau
         
