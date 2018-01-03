@@ -188,7 +188,7 @@ if args.pltcontrol:
 
     print("discrepancies: policy-{}|predict-{}".format(policy_loss, predict_loss))
 
-    layout_opt = dict(title="DST Control Frontier - {}_n:{}({0:.3f}|{0:.3f})".format(
+    layout_opt = dict(title="DST Control Frontier - {}_n:{}({:.3f}|{:.3f})".format(
         args.method, args.name, policy_loss, predict_loss),
         xaxis=dict(title='teasure value'),
         yaxis=dict(title='time penalty'))
@@ -292,7 +292,7 @@ if args.pltpareto:
                              zeroline=False),
                   yaxis=dict(title='time penalty',
                              zeroline=False))
-
+    
     # send to visdom
     if args.method == "crl-naive":
         vis._send({'data': [trace_pareto, act_pareto], 'layout': layout})
