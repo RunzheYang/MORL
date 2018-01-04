@@ -87,6 +87,27 @@ treasure = [0.7, 8.2, 11.5, 14., 15.1, 16.1, 19.6, 20.3, 22.4, 23.7]
 dis_time = (-(1 - np.power(gamma, -np.asarray(time))) / (1 - gamma)).tolist()
 dis_treasure = (np.power(gamma, -np.asarray(time) - 1) * np.asarray(treasure)).tolist()
 
+def find_in(A, B, base=0):
+    # base = 0: tolerance w.r.t. A
+    # base = 1: tolerance w.r.t. B
+    # base = 2: no tolerance
+    cnt = 0.0
+    for a in A:
+        for b in B:
+            if base == 0:
+              if np.linalg.norm(a - b, ord=1) < 0.20*np.linalg.norm(a):
+                  cnt += 1.0
+                  break
+            elif base == 1:
+              if np.linalg.norm(a - b, ord=1) < 0.20*np.linalg.norm(b):
+                  cnt += 1.0
+                  break
+            elif base == 2:
+              if np.linalg.norm(a - b, ord=1) < 0.5:
+                  cnt += 1.0
+                  break
+    return cnt / len(A)
+
 ################# Control Frontier #################
 
 if args.pltcontrol:
@@ -221,7 +242,7 @@ if args.pltpareto:
     # predicted solution
     pred_x = []
     pred_y = []
-
+    pred = []
     for i in range(2000):
         w = np.random.randn(2)
         w = np.abs(w) / np.linalg.norm(w, ord=1)
@@ -250,7 +271,29 @@ if args.pltpareto:
         act_x.append(ttrw[0])
         act_y.append(ttrw[1])
 
-    # Create and style traces
+        
+    act = np.vstack((act_x,act_y))
+    act = act.transpose()
+    print(act)
+    obj = np.vstack((dis_treasure,dis_time))
+    obj = obj.transpose()
+
+    act_precition = find_in(act, obj, 2)
+    act_recall = find_in(obj, act, 2)
+    act_f1 = 2 * act_precition * act_recall / (act_precition + act_recall)
+    pred_f1 = 0.0
+
+    if not pred:
+        pred = act
+    else:
+        pred = np.array(pred)
+        pred_precition = find_in(pred, obj, 1)
+        pred_recall = find_in(obj, pred, 0)
+        if pred_precition > 1e-8 and pred_recall > 1e-8:
+            pred_f1 = 2 * pred_precition * pred_recall / (pred_precition + pred_recall)
+
+
+    # Create and style traces(())
     trace_pareto = dict(x=dis_treasure,
                         y=dis_time,
                         mode="markers+lines",
@@ -287,12 +330,12 @@ if args.pltpareto:
                            dash='dash'),
                        name='Predicted')
 
-    layout = dict(title="DST Pareto Frontier - {}:{}".format(args.method, args.name),
+    layout = dict(title="DST Pareto Frontier - {}:{}({:.3f}|{:.3f})".format(args.method, args.name,act_f1,pred_f1),
                   xaxis=dict(title='teasure value',
                              zeroline=False),
                   yaxis=dict(title='time penalty',
                              zeroline=False))
-    
+    print("F1: policy-{}|prediction-{}".format(act_f1, pred_f1))
     # send to visdom
     if args.method == "crl-naive":
         vis._send({'data': [trace_pareto, act_pareto], 'layout': layout})
