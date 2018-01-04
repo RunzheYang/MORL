@@ -41,11 +41,11 @@ parser.add_argument('--homotopy', default=False, action='store_true',
 parser.add_argument('--serialize', default=False, action='store_true',
                     help='serialize a model')
 parser.add_argument('--save', default='crl/naive/saved/', metavar='SAVE',
-                    help='address for saving trained models')
+                    help='path for saving trained models')
 parser.add_argument('--name', default='', metavar='name',
                     help='specify a name for saving the model')
 parser.add_argument('--log', default='crl/naive/logs/', metavar='LOG',
-                    help='address for recording training informtions')
+                    help='path for recording training informtion')
 
 use_cuda = torch.cuda.is_available()
 FloatTensor = torch.cuda.FloatTensor if use_cuda else torch.FloatTensor
