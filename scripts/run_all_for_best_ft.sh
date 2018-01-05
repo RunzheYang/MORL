@@ -1,11 +1,11 @@
-# mem_size | batch_size | weight_num | update_freq | lr | beta
+# mem_size | batch_size | weight_num | update_freq | lr |
 # NAIVE:
-# 0: 4000 | 256 | 32 | 100 | 1e-3 | 0.01
-# 1: 8000 | 256 | 32 | 100 | 1e-3 | 0.01
-# 2: 4000 | 512 | 16 | 100 | 1e-3 | 0.01
-# 3: 4000 | 128 | 64 | 100 | 1e-3 | 0.01
-# 4: 4000 | 256 | 32 | 50  | 1e-3 | 0.01
-# 5: 4000 | 256 | 32 | 100 | 5e-4 | 0.01
+# 0: 4000 | 256 | 32 | 100 | 1e-3 |
+# 1: 8000 | 256 | 32 | 100 | 1e-3 |
+# 2: 4000 | 512 | 16 | 100 | 1e-3 |
+# 3: 4000 | 128 | 64 | 100 | 1e-3 |
+# 4: 4000 | 256 | 32 | 50  | 1e-3 |
+# 5: 4000 | 256 | 32 | 100 | 5e-4 |
 # python train.py --env-name ft --method crl-naive --model linear --gamma  0.99 --mem-size 4000 --batch-size 256 --lr  1e-3 --epsilon 0.5 --epsilon-decay --weight-num 32 --episode-num 5000 --optimizer Adam --save crl/naive/saved/ --log crl/naive/logs/ --update-freq 100 --name 0
 python test/eval_ft.py --env-name ft --method crl-naive --model  linear --gamma  0.99 --save crl/naive/saved/ --pltpareto  --name 0
 python test/eval_ft.py --env-name ft --method crl-naive --model  linear --gamma  0.99 --save crl/naive/saved/ --pltcontrol --name 0
