@@ -92,6 +92,7 @@ python test/eval_ft.py --env-name ft --method crl-naive --model  linear_ext --ga
 python test/eval_ft.py --env-name ft --method crl-naive --model  linear_ext --gamma  0.99 --save crl/naive/saved/ --pltpareto --name s5_r3
 python test/eval_ft.py --env-name ft --method crl-naive --model  linear_ext --gamma  0.99 --save crl/naive/saved/ --pltpareto --name s5_r4
 
+python test/eval_ft.py --env-name ft --method crl-naive --model  linear_ext --gamma  0.99 --save crl/naive/saved/ --pltcontrol --name s0_r0
 python test/eval_ft.py --env-name ft --method crl-naive --model  linear_ext --gamma  0.99 --save crl/naive/saved/ --pltcontrol --name s0_r1
 python test/eval_ft.py --env-name ft --method crl-naive --model  linear_ext --gamma  0.99 --save crl/naive/saved/ --pltcontrol --name s0_r2
 python test/eval_ft.py --env-name ft --method crl-naive --model  linear_ext --gamma  0.99 --save crl/naive/saved/ --pltcontrol --name s0_r3
