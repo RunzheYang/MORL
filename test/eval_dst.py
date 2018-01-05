@@ -276,13 +276,11 @@ if args.pltpareto:
     act = act.transpose()
     obj = np.vstack((dis_treasure,dis_time))
     obj = obj.transpose()
-    pred = np.vstack((pred_x,pred_y))
-    pred = pred.transpose()
     act_precition = find_in(act, obj, 2)
     act_recall = find_in(obj, act, 2)
     act_f1 = 2 * act_precition * act_recall / (act_precition + act_recall)
+
     pred_f1 = 0.0
-    #print(pred_x)
     pred = np.vstack((pred_x,pred_y))
     pred = pred.transpose()
     pred_precition = find_in(pred, obj, 1)
