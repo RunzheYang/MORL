@@ -271,26 +271,24 @@ if args.pltpareto:
         act_x.append(ttrw[0])
         act_y.append(ttrw[1])
 
-        
+
     act = np.vstack((act_x,act_y))
     act = act.transpose()
-    print(act)
     obj = np.vstack((dis_treasure,dis_time))
     obj = obj.transpose()
-
+    pred = np.vstack((pred_x,pred_y))
+    pred = pred.transpose()
     act_precition = find_in(act, obj, 2)
     act_recall = find_in(obj, act, 2)
     act_f1 = 2 * act_precition * act_recall / (act_precition + act_recall)
     pred_f1 = 0.0
-
-    if not pred:
-        pred = act
-    else:
-        pred = np.array(pred)
-        pred_precition = find_in(pred, obj, 1)
-        pred_recall = find_in(obj, pred, 0)
-        if pred_precition > 1e-8 and pred_recall > 1e-8:
-            pred_f1 = 2 * pred_precition * pred_recall / (pred_precition + pred_recall)
+    #print(pred_x)
+    pred = np.vstack((pred_x,pred_y))
+    pred = pred.transpose()
+    pred_precition = find_in(pred, obj, 1)
+    pred_recall = find_in(obj, pred, 0)
+    if pred_precition > 1e-8 and pred_recall > 1e-8:
+        pred_f1 = 2 * pred_precition * pred_recall / (pred_precition + pred_recall)
 
 
     # Create and style traces(())
