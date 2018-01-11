@@ -68,7 +68,7 @@ def train(env, agent, args):
         probe = None
         if args.env_name == "dst":
             probe = FloatTensor([0.8, 0.2])
-        elif args.env_name == "ft":
+        elif args.env_name in ['ft', 'ft5', 'ft7']:
             probe = FloatTensor([0.8, 0.2, 0.0, 0.0, 0.0, 0.0])
 
         while not terminal:
