@@ -103,7 +103,7 @@ def find_in(A, B, base=0):
                   cnt += 1.0
                   break
             elif base == 2:
-              if np.linalg.norm(a - b, ord=1) < 0.5:
+              if np.linalg.norm(a - b, ord=1) < 0.3:
                   cnt += 1.0
                   break
     return cnt / len(A)
@@ -202,7 +202,11 @@ if args.pltcontrol:
                        symbol="circle",
                        size=1),
                    name='policy')
+<<<<<<< HEAD
           ## quantitative evaluation
+=======
+      ## quantitative evaluation
+>>>>>>> 2f22650ff876a86ba4390764d3b3d6d4f41ac888
     policy_loss = 0.0
     predict_loss = 0.0
     TEST_N = 5000.0
@@ -247,7 +251,11 @@ if args.pltcontrol:
 
     # policy_loss = np.linalg.norm(realc - ttrw_w, ord=1)
     # if args.method != 'crl-naive':
+<<<<<<< HEAD
     #     predict_loss = np.linalg.norm(realc - qc, ord=1)
+=======
+    #    predict_loss = np.linalg.norm(realc - qc, ord=1)
+>>>>>>> 2f22650ff876a86ba4390764d3b3d6d4f41ac888
 
     print("discrepancies: policy-{}|predict-{}".format(policy_loss, predict_loss))
 
@@ -321,14 +329,15 @@ if args.pltpareto:
     act_precition = find_in(act, obj, 2)
     act_recall = find_in(obj, act, 2)
     act_f1 = 2 * act_precition * act_recall / (act_precition + act_recall)
-
     pred_f1 = 0.0
-    pred = np.vstack((pred_x,pred_y))
-    pred = pred.transpose()
-    pred_precition = find_in(pred, obj, 1)
-    pred_recall = find_in(obj, pred, 0)
-    if pred_precition > 1e-8 and pred_recall > 1e-8:
-        pred_f1 = 2 * pred_precition * pred_recall / (pred_precition + pred_recall)
+    if args.method != 'crl-naive':
+
+        pred = np.vstack((pred_x,pred_y))
+        pred = pred.transpose()
+        pred_precition = find_in(pred, obj, 1)
+        pred_recall = find_in(obj, pred, 0)
+        if pred_precition > 1e-8 and pred_recall > 1e-8:
+            pred_f1 = 2 * pred_precition * pred_recall / (pred_precition + pred_recall)
 
 
     # Create and style traces(())
