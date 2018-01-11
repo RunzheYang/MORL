@@ -1,6 +1,6 @@
 import numpy as np
-from .deep_sea_treasure import DeepSeaTreasure
-from .fruit_tree import FruitTree
+from deep_sea_treasure import DeepSeaTreasure
+from fruit_tree import FruitTree
 
 
 class MultiObjectiveEnv(object):
@@ -13,6 +13,16 @@ class MultiObjectiveEnv(object):
             self.reward_spec = self.env.reward_spec
         if env_name == "ft":
             self.env = FruitTree()
+            self.state_spec = self.env.state_spec
+            self.action_spec = self.env.action_spec
+            self.reward_spec = self.env.reward_spec
+        if env_name == "ft5":
+            self.env = FruitTree(5)
+            self.state_spec = self.env.state_spec
+            self.action_spec = self.env.action_spec
+            self.reward_spec = self.env.reward_spec
+        if env_name == "ft7":
+            self.env = FruitTree(7)
             self.state_spec = self.env.state_spec
             self.action_spec = self.env.action_spec
             self.reward_spec = self.env.reward_spec
@@ -36,7 +46,7 @@ if __name__ == "__main__":
     '''
         Test ENVs
     '''
-    dst_env = MultiObjectiveEnv("ft")
+    dst_env = MultiObjectiveEnv("ft7")
     dst_env.reset()
     terminal = False
     print("DST STATE SPEC:", dst_env.state_spec)

@@ -7,7 +7,7 @@ from envs.mo_env import MultiObjectiveEnv
 parser = argparse.ArgumentParser(description='MORL')
 # CONFIG
 parser.add_argument('--env-name', default='dst', metavar='ENVNAME',
-                    help='environment to train on: dst | ft ')
+                    help='environment to train on: dst | ft | ft5 | ft7')
 parser.add_argument('--method', default='crl-naive', metavar='METHODS',
                     help='methods: crl-naive | crl-envelope | crl-energy')
 parser.add_argument('--model', default='linear', metavar='MODELS',
