@@ -90,7 +90,7 @@ def train(env, agent, args):
         if args.env_name == "dst":
             act_1 = q[0, 3]
             act_2 = q[0, 1]
-        elif args.env_name == "ft":
+        elif args.env_name in ['ft', 'ft5', 'ft7']:
             act_1 = q[0, 1]
             act_2 = q[0, 0]
 
