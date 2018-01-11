@@ -202,11 +202,7 @@ if args.pltcontrol:
                        symbol="circle",
                        size=1),
                    name='policy')
-<<<<<<< HEAD
-          ## quantitative evaluation
-=======
       ## quantitative evaluation
->>>>>>> 2f22650ff876a86ba4390764d3b3d6d4f41ac888
     policy_loss = 0.0
     predict_loss = 0.0
     TEST_N = 5000.0
@@ -251,11 +247,7 @@ if args.pltcontrol:
 
     # policy_loss = np.linalg.norm(realc - ttrw_w, ord=1)
     # if args.method != 'crl-naive':
-<<<<<<< HEAD
-    #     predict_loss = np.linalg.norm(realc - qc, ord=1)
-=======
     #    predict_loss = np.linalg.norm(realc - qc, ord=1)
->>>>>>> 2f22650ff876a86ba4390764d3b3d6d4f41ac888
 
     print("discrepancies: policy-{}|predict-{}".format(policy_loss, predict_loss))
 
