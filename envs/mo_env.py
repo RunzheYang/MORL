@@ -1,6 +1,6 @@
 import numpy as np
-from deep_sea_treasure import DeepSeaTreasure
-from fruit_tree import FruitTree
+from .deep_sea_treasure import DeepSeaTreasure
+from .fruit_tree import FruitTree
 
 
 class MultiObjectiveEnv(object):
