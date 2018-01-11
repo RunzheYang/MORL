@@ -202,10 +202,52 @@ if args.pltcontrol:
                        symbol="circle",
                        size=1),
                    name='policy')
+          ## quantitative evaluation
+    policy_loss = 0.0
+    predict_loss = 0.0
+    TEST_N = 5000.0
 
-    policy_loss = np.linalg.norm(realc - ttrw_w, ord=1)
-    if args.method != 'crl-naive':
-        predict_loss = np.linalg.norm(realc - qc, ord=1)
+    for i in range(int(TEST_N)):
+        w = np.random.randn(2)
+        w = np.abs(w) / np.linalg.norm(w, ord=1)
+        # w = np.random.dirichlet(np.ones(2))
+        w_e = w / np.linalg.norm(w, ord=2)
+        if args.method == 'crl-naive' or args.method == 'crl-envelope':
+            hq, _ = agent.predict(torch.from_numpy(w).type(FloatTensor))
+        elif args.method == 'crl-energy':
+            hq, _ = agent.predict(torch.from_numpy(w).type(FloatTensor), alpha=1e-5)
+        realc = w.dot(real_sol).max() * w_e
+        qc = w_e
+        if args.method == 'crl-naive':
+            qc = hq.data[0] * w_e
+        elif args.method == 'crl-envelope':
+            qc = w.dot(hq.data.cpu().numpy().squeeze()) * w_e
+        elif args.method == 'crl-energy':
+            qc = w.dot(hq.data.cpu().numpy().squeeze()) * w_e
+        ttrw = np.array([0, 0])
+        terminal = False
+        env.reset()
+        cnt = 0
+        while not terminal:
+            state = env.observe()
+            action = agent.act(state, preference=torch.from_numpy(w).type(FloatTensor))
+            next_state, reward, terminal = env.step(action)
+            if cnt > 30:
+                terminal = True
+            ttrw = ttrw + reward * np.power(args.gamma, cnt)
+            cnt += 1
+        ttrw_w = w.dot(ttrw) * w_e
+
+        base = np.linalg.norm(realc, ord=2)
+        policy_loss += np.linalg.norm(realc - ttrw_w, ord=2)/base
+        predict_loss += np.linalg.norm(realc - qc, ord=2)/base
+
+    policy_loss /= TEST_N / 100
+    predict_loss /= TEST_N / 100
+
+    # policy_loss = np.linalg.norm(realc - ttrw_w, ord=1)
+    # if args.method != 'crl-naive':
+    #     predict_loss = np.linalg.norm(realc - qc, ord=1)
 
     print("discrepancies: policy-{}|predict-{}".format(policy_loss, predict_loss))
 
