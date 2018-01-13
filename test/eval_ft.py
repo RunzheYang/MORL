@@ -318,18 +318,28 @@ def matrix2lists(MATRIX):
 
 def find_in(A, B, eps=0.2):
     # find element of A in B with a tolerance of relative err of eps.
-    cnt = 0.0
+    cnt1, cnt2 = 0.0, 0.0
     for a in A:
         for b in B:
             if eps > 0.001:
               if np.linalg.norm(a - b, ord=1) < eps*np.linalg.norm(b):
-                  cnt += 1.0
+                  cnt1 += 1.0
                   break
             else:
               if np.linalg.norm(a - b, ord=1) < 0.5:
-                  cnt += 1.0
+                  cnt1 += 1.0
                   break
-    return cnt
+    for b in B:
+        for a in A:
+            if eps > 0.001:
+              if np.linalg.norm(a - b, ord=1) < eps*np.linalg.norm(b):
+                  cnt2 += 1.0
+                  break
+            else:
+              if np.linalg.norm(a - b, ord=1) < 0.5:
+                  cnt2 += 1.0
+                  break
+    return cnt1, cnt2
 
 
 ################# Control Frontier #################
@@ -528,19 +538,21 @@ if args.pltpareto:
         act.append(ttrw)
 
     act = np.array(act)
-    correct_cnt = find_in(act, FRUITS, 0.0)
-    act_precition = correct / len(act)
-    act_recall = correct / len(FRUITS)
+    cnt1, cnt2 = find_in(act, FRUITS, 0.0)
+    act_precition = cnt1 / len(act)
+    act_recall = cnt2 / len(FRUITS)
     act_f1 = 2 * act_precition * act_recall / (act_precition + act_recall)
     pred_f1 = 0.0
+    pred_precition = 0.0
+    pred_recall = 0.0
 
     if not pred:
         pred = act
     else:
         pred = np.array(pred)
-        correct_cnt = find_in(pred, FRUITS)
-        pred_precition = correct_cnt / len(pred)
-        pred_recall = correct_cnt / len(FRUITS)
+        cnt1, cnt2 = find_in(pred, FRUITS)
+        pred_precition = cnt1 / len(pred)
+        pred_recall = cnt2 / len(FRUITS)
         if pred_precition > 1e-8 and pred_recall > 1e-8:
             pred_f1 = 2 * pred_precition * pred_recall / (pred_precition + pred_recall)
 
