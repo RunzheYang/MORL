@@ -2,6 +2,7 @@ import argparse
 import visdom
 import torch
 import numpy as np
+import plotly.graph_objs as go
 from sklearn.manifold import TSNE
 
 import sys
@@ -31,7 +32,13 @@ parser.add_argument('--pltcontrol', default=False, action='store_true',
                     help='plot control curve')
 parser.add_argument('--pltdemo', default=False, action='store_true',
                     help='plot demo')
+parser.add_argument('--mergepareto', default=False, action='store_true',
+                    help='plot demo')
+parser.add_argument('--mergecontrol', default=False, action='store_true',
+                    help='plot demo')
 # LOG & SAVING
+parser.add_argument('--replot', default=False, action='store_true',
+                    help='replot if there is a result_storage')
 parser.add_argument('--save', default='crl/naive/saved/', metavar='SAVE',
                     help='address for saving trained models')
 parser.add_argument('--name', default='', metavar='name',
@@ -491,84 +498,94 @@ if args.pltcontrol:
 
 if args.pltpareto:
 
-    # setup the environment
-    env = MultiObjectiveEnv(args.env_name)
+    SAMPLE_N = 2000
 
-    # generate an agent for plotting
-    agent = None
-    if args.method == 'crl-naive':
-        from crl.naive.meta import MetaAgent
-    elif args.method == 'crl-envelope':
-        from crl.envelope.meta import MetaAgent
-    elif args.method == 'crl-energy':
-        from crl.energy.meta import MetaAgent
-    model = torch.load("{}{}.pkl".format(args.save,
-                                         "m.{}_e.{}_n.{}".format(args.model, args.env_name, args.name)))
-    agent = MetaAgent(model, args, is_train=False)
+    if not args.replot:
+        # setup the environment
+        env = MultiObjectiveEnv(args.env_name)
 
-    # compute recovered Pareto
-    act = []
+        # generate an agent for plotting
+        agent = None
+        if args.method == 'crl-naive':
+            from crl.naive.meta import MetaAgent
+        elif args.method == 'crl-envelope':
+            from crl.envelope.meta import MetaAgent
+        elif args.method == 'crl-energy':
+            from crl.energy.meta import MetaAgent
+        model = torch.load("{}{}.pkl".format(args.save,
+                                             "m.{}_e.{}_n.{}".format(args.model, args.env_name, args.name)))
+        agent = MetaAgent(model, args, is_train=False)
 
-    # predicted solution
-    pred = []
+        # compute recovered Pareto
+        act = []
 
-    for i in range(2000):
-        w = np.random.randn(6)
-        w = np.abs(w) / np.linalg.norm(w, ord=1)
-        # w = np.random.dirichlet(np.ones(6))
-        ttrw = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
-        terminal = False
-        env.reset()
-        cnt = 0
-        if args.method == "crl-envelope":
-            hq, _ = agent.predict(torch.from_numpy(w).type(FloatTensor))
-            pred.append(hq.data.cpu().numpy().squeeze() * 1.0)
-        elif args.method == "crl-energy":
-            hq, _ = agent.predict(torch.from_numpy(w).type(FloatTensor), alpha=1e-5)
-            pred.append(hq.data.cpu().numpy().squeeze() * 1.0)
-        while not terminal:
-            state = env.observe()
-            action = agent.act(state, preference=torch.from_numpy(w).type(FloatTensor))
-            next_state, reward, terminal = env.step(action)
-            if cnt > 50:
-                terminal = True
-            ttrw = ttrw + reward * np.power(args.gamma, cnt)
-            cnt += 1
+        # predicted solution
+        pred = []
 
-        act.append(ttrw)
+        for i in range(SAMPLE_N):
+            w = np.random.randn(6)
+            w = np.abs(w) / np.linalg.norm(w, ord=1)
+            # w = np.random.dirichlet(np.ones(6))
+            ttrw = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+            terminal = False
+            env.reset()
+            cnt = 0
+            if args.method == "crl-envelope":
+                hq, _ = agent.predict(torch.from_numpy(w).type(FloatTensor))
+                pred.append(hq.data.cpu().numpy().squeeze() * 1.0)
+            elif args.method == "crl-energy":
+                hq, _ = agent.predict(torch.from_numpy(w).type(FloatTensor), alpha=1e-5)
+                pred.append(hq.data.cpu().numpy().squeeze() * 1.0)
+            while not terminal:
+                state = env.observe()
+                action = agent.act(state, preference=torch.from_numpy(w).type(FloatTensor))
+                next_state, reward, terminal = env.step(action)
+                if cnt > 50:
+                    terminal = True
+                ttrw = ttrw + reward * np.power(args.gamma, cnt)
+                cnt += 1
 
-    act = np.array(act)
-    cnt1, cnt2 = find_in(act, FRUITS, 0.0)
-    act_precition = cnt1 / len(act)
-    act_recall = cnt2 / len(FRUITS)
-    act_f1 = 2 * act_precition * act_recall / (act_precition + act_recall)
-    pred_f1 = 0.0
-    pred_precition = 0.0
-    pred_recall = 0.0
+            act.append(ttrw)
 
-    if not pred:
-        pred = act
+        act = np.array(act)
+
+        if not pred:
+            pred = act
+        else:
+            pred = np.array(pred)
+        
+
+        FRUITS = np.tile(FRUITS, (30, 1))
+        ALL = np.concatenate([FRUITS, act, pred])
+        ALL = TSNE(n_components=2).fit_transform(ALL)
+        p1 = FRUITS.shape[0]
+        p2 = FRUITS.shape[0] + SAMPLE_N
+
+        fruit = ALL[:p1, :]
+        act = ALL[p1:p2, :]
+        pred = ALL[p2:, :]
+
+        fruit_x, fruit_y = matrix2lists(fruit)
+        act_x, act_y = matrix2lists(act)
+        pred_x, pred_y = matrix2lists(pred)
+
+        torch.save(ALL, "test/tmp/result_pareto_me.{}_m.{}_e.{}_n.{}.pkl".format(
+                    args.method, args.model, args.env_name, args.name))
+
     else:
-        pred = np.array(pred)
-        cnt1, cnt2 = find_in(pred, FRUITS)
-        pred_precition = cnt1 / len(pred)
-        pred_recall = cnt2 / len(FRUITS)
-        if pred_precition > 1e-8 and pred_recall > 1e-8:
-            pred_f1 = 2 * pred_precition * pred_recall / (pred_precition + pred_recall)
+        ALL = torch.load("test/tmp/result_pareto_me.{}_m.{}_e.{}_n.{}.pkl".format(
+                args.method, args.model, args.env_name, args.name))
+        FRUITS = np.tile(FRUITS, (30, 1))
+        p1 = FRUITS.shape[0]
+        p2 = FRUITS.shape[0] + SAMPLE_N
 
-    FRUITS = np.tile(FRUITS, (30, 1))
-    ALL = np.concatenate([FRUITS, act, pred])
-    ALL = TSNE(n_components=2).fit_transform(ALL)
-    p1 = FRUITS.shape[0]
-    p2 = FRUITS.shape[0] + act.shape[0]
+        fruit = ALL[:p1, :]
+        act = ALL[p1:p2, :]
+        pred = ALL[p2:, :]
 
-    fruit = ALL[:p1, :]
-    act = ALL[p1:p2, :]
-    pred = ALL[p2:, :]
-
-    fruit_x, fruit_y = matrix2lists(fruit)
-    act_x, act_y = matrix2lists(act)
-    pred_x, pred_y = matrix2lists(pred)
+        fruit_x, fruit_y = matrix2lists(fruit)
+        act_x, act_y = matrix2lists(act)
+        pred_x, pred_y = matrix2lists(pred)
 
     # Create and style traces
     trace_pareto = dict(x=fruit_x,
@@ -577,8 +594,10 @@ if args.pltpareto:
                         type='custom',
                         marker=dict(
                             symbol="circle",
-                            size=10),
-                        name='Pareto')
+                            # color="rgb(31,128,128)",
+                            color="rgb(164,181,201)",
+                            size=12),
+                        name='Real CCS')
 
     act_pareto = dict(x=act_x,
                       y=act_y,
@@ -586,8 +605,9 @@ if args.pltpareto:
                       type='custom',
                       marker=dict(
                           symbol="circle",
-                          size=10),
-                      name='Recovered')
+                          color="rgb(246,128,131)",
+                          size=8),
+                      name='Execution')
 
     pred_pareto = dict(x=pred_x,
                        y=pred_y,
@@ -596,14 +616,10 @@ if args.pltpareto:
                        marker=dict(
                            symbol="circle",
                            size=3),
-                       name='Predicted')
+                       name='Prediction')
 
-    layout = dict(title="FT Pareto Frontier - {} {}({:.3f}|{:.3f})".format(
-        args.method, args.name, act_f1, pred_f1))
-
-    print("Precison: policy-{}|prediction-{}".format(act_precition, pred_precition))
-    print("Recall: policy-{}|prediction-{}".format(act_recall, pred_recall))
-    print("F1: policy-{}|prediction-{}".format(act_f1, pred_f1))
+    layout = dict(title="FT Pareto Frontier - {} {}".format(
+        args.method, args.name))
 
     # send to visdom
     if args.method == "crl-naive":
@@ -627,3 +643,337 @@ if args.pltmap:
                            name='Pareto')
     layout = dict(title="FRUITS")
     vis._send({'data': [trace_fruit_emb], 'layout': layout})
+
+################# Special For Paper ###############
+
+
+if args.mergepareto:
+    SAMPLE_N = 2000
+
+    if not args.replot:
+        # setup the environment
+        env = MultiObjectiveEnv(args.env_name)
+
+        # generate an agent for plotting
+        agent = None
+        
+        import crl.naive.meta
+        import crl.envelope.meta
+
+        naive_model = torch.load("{}{}.pkl".format("crl/naive/saved/",
+                                             "m.{}_e.{}_n.{}".format("linear", "ft", "s3_r3")))
+        naive_agent = crl.naive.meta.MetaAgent(naive_model, args, is_train=False)
+
+        enve_model = torch.load("{}{}.pkl".format("crl/envelope/saved/",
+                                             "m.{}_e.{}_n.{}".format("linear", "ft", "s3_r1")))
+        enve_agent = crl.envelope.meta.MetaAgent(enve_model, args, is_train=False)
+
+        # compute recovered Pareto
+        naive_act = []
+        enve_act = []
+        enve_pred = []
+
+        for i in range(SAMPLE_N):
+            w = np.random.randn(6)
+            w = np.abs(w) / np.linalg.norm(w, ord=1)
+            # w = np.random.dirichlet(np.ones(6))
+            ttrw = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+            terminal = False
+            env.reset()
+            cnt = 0
+            while not terminal:
+                state = env.observe()
+                action = naive_agent.act(state, preference=torch.from_numpy(w).type(FloatTensor))
+                next_state, reward, terminal = env.step(action)
+                if cnt > 50:
+                    terminal = True
+                ttrw = ttrw + reward * np.power(args.gamma, cnt)
+                cnt += 1
+
+            naive_act.append(ttrw)
+
+        naive_act = np.array(naive_act)
+
+
+        for i in range(SAMPLE_N):
+            w = np.random.randn(6)
+            w = np.abs(w) / np.linalg.norm(w, ord=1)
+            # w = np.random.dirichlet(np.ones(6))
+            ttrw = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+            terminal = False
+            env.reset()
+            cnt = 0            
+            hq, _ = enve_agent.predict(torch.from_numpy(w).type(FloatTensor))
+            enve_pred.append(hq.data.cpu().numpy().squeeze() * 1.0)
+            while not terminal:
+                state = env.observe()
+                action = enve_agent.act(state, preference=torch.from_numpy(w).type(FloatTensor))
+                next_state, reward, terminal = env.step(action)
+                if cnt > 50:
+                    terminal = True
+                ttrw = ttrw + reward * np.power(args.gamma, cnt)
+                cnt += 1
+
+            enve_act.append(ttrw)
+
+        enve_act = np.array(enve_act)
+        enve_pred = np.array(enve_pred)
+
+        
+        FRUITS = np.tile(FRUITS, (30, 1))
+        
+        ALL = np.concatenate([FRUITS, naive_act, enve_act, enve_pred])
+        ALL = TSNE(n_components=2).fit_transform(ALL)
+        p1 = FRUITS.shape[0]
+        p2 = p1 + SAMPLE_N
+        p3 = p2 + SAMPLE_N
+
+        fruit = ALL[:p1, :]
+        naive_act = ALL[p1:p2, :]
+        enve_act = ALL[p2:p3, :]
+        enve_pred = ALL[p3:, :]
+
+        fruit_x, fruit_y = matrix2lists(fruit)
+        naive_act_x, naive_act_y = matrix2lists(naive_act)
+        enve_act_x, enve_act_y = matrix2lists(enve_act)
+        enve_pred_x, enve_pred_y = matrix2lists(enve_pred)
+
+        torch.save(ALL, "test/tmp/result_pareto_merged.pkl")
+
+    else:
+        ALL = torch.load("test/tmp/result_pareto_merged.pkl")
+        FRUITS = np.tile(FRUITS, (30, 1))
+        p1 = FRUITS.shape[0]
+        p2 = p1 + SAMPLE_N
+        p3 = p2 + SAMPLE_N
+
+        fruit = ALL[:p1, :]
+        naive_act = ALL[p1:p2, :]
+        enve_act = ALL[p2:p3, :]
+        enve_pred = ALL[p3:, :]
+
+        fruit_x, fruit_y = matrix2lists(fruit)
+        naive_act_x, naive_act_y = matrix2lists(naive_act)
+        enve_act_x, enve_act_y = matrix2lists(enve_act)
+        enve_pred_x, enve_pred_y = matrix2lists(enve_pred)
+
+    # Create and style traces
+    trace_pareto = dict(x=fruit_x,
+                        y=fruit_y,
+                        mode="markers",
+                        type='custom',
+                        marker=dict(
+                            symbol="circle",
+                            color="rgb(164,181,201)",
+                            size=14),
+                        name='Real CCS')
+
+    naive_act_pareto = dict(x=naive_act_x,
+                      y=naive_act_y,
+                      mode="markers",
+                      type='custom',
+                      marker=dict(
+                          symbol="circle",
+                          # color="rgb(31,128,128)",
+                          color="rgb(246,128,131)",
+                          size=5),
+                      name='Execution(Naive)')
+
+    enve_act_pareto = dict(x=enve_act_x,
+                      y=enve_act_y,
+                      mode="markers",
+                      type='custom',
+                      marker=dict(
+                          symbol="circle",
+                          # color="rgb(246,128,131)",
+                          color="rgb(31,128,128)",
+                          size=9),
+                      name='Execution(Envelope)')
+
+    pred_pareto = dict(x=enve_pred_x,
+                       y=enve_pred_y,
+                       mode="markers",
+                       type='custom',
+                       marker=dict(
+                           symbol="circle",
+                           color="rgb(114,150,129)",
+                           size=3),
+                       name='Prediction(Envelope)')
+
+    layout = dict(title="FT Pareto Frontier")
+
+    # send to visdom
+    vis._send({'data': [trace_pareto, enve_act_pareto, naive_act_pareto, pred_pareto], 'layout': layout})
+
+
+if args.mergecontrol:
+    # setup the environment
+    env = MultiObjectiveEnv(args.env_name)
+
+    SAMPLE_N = 2000
+
+    obj_names=["Protein", "Carbs", "Fats", "Vitamins", "Minerals", "Water"]
+    first, second = 3, 4
+
+    # generate an agent for plotting
+    import crl.naive.meta
+    import crl.envelope.meta
+    naive_model = torch.load("{}{}.pkl".format("crl/naive/saved/",
+                                             "m.{}_e.{}_n.{}".format("linear", "ft", "s3_r0")))
+    naive_agent = crl.naive.meta.MetaAgent(naive_model, args, is_train=False)
+
+    enve_model = torch.load("{}{}.pkl".format("crl/envelope/saved/",
+                                         "m.{}_e.{}_n.{}".format("linear", "ft", "s3_r4")))
+    enve_agent = crl.envelope.meta.MetaAgent(enve_model, args, is_train=False)
+
+    # compute opt
+    opt_x = []
+    opt_y = []
+    naive_q_x = []
+    naive_q_y = []
+    naive_act_x = []
+    naive_act_y = []
+    enve_q_x = []
+    enve_q_y = []
+    enve_act_x = []
+    enve_act_y = []
+    real_sol = FRUITS
+
+    if not args.replot:
+        # pre-sampled weight
+        ws = np.random.randn(SAMPLE_N, 2)
+        ws = np.pad(ws, ((0,0),(first,4-first)), 'constant', constant_values=(0,0))
+        ws = np.abs(ws) / np.linalg.norm(ws, ord=1, axis=1).reshape(-1, 1)
+        ws = ws[ws[:,first].argsort()]
+
+        for w in ws:
+            # w = np.random.randn(6)
+            # w[2], w[3], w[4], w[5] = 0, 0, 0, 0
+            # w = np.abs(w) / np.linalg.norm(w, ord=1)
+            # w = np.random.dirichlet(np.ones(2))
+            w_e = w / np.linalg.norm(w, ord=2)
+            hq, _ = naive_agent.predict(torch.from_numpy(w).type(FloatTensor))
+            realc = real_sol.dot(w).max() * w_e
+            qc = hq.data[0] * w_e
+            ttrw = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+            terminal = False
+            env.reset()
+            cnt = 0
+            while not terminal:
+                state = env.observe()
+                action = naive_agent.act(state, preference=torch.from_numpy(w).type(FloatTensor))
+                next_state, reward, terminal = env.step(action)
+                if cnt > 30:
+                    terminal = True
+                ttrw = ttrw + reward * np.power(args.gamma, cnt)
+                cnt += 1
+            ttrw_w = w.dot(ttrw) * w_e
+            opt_x.append(realc[first])
+            opt_y.append(realc[second])
+            naive_q_x.append(qc[first])
+            naive_q_y.append(qc[second])
+            naive_act_x.append(ttrw_w[first])
+            naive_act_y.append(ttrw_w[second])
+
+        for w in ws:
+            # w = np.random.randn(6)
+            # w[2], w[3], w[4], w[5] = 0, 0, 0, 0
+            # w = np.abs(w) / np.linalg.norm(w, ord=1)
+            # w = np.random.dirichlet(np.ones(2))
+            w_e = w / np.linalg.norm(w, ord=2)
+            hq, _ = enve_agent.predict(torch.from_numpy(w).type(FloatTensor))
+            # realc = real_sol.dot(w).max() * w_e
+            qc = w_e
+            qc = w.dot(hq.data.cpu().numpy().squeeze()) * w_e
+            ttrw = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+            terminal = False
+            env.reset()
+            cnt = 0
+            while not terminal:
+                state = env.observe()
+                action = enve_agent.act(state, preference=torch.from_numpy(w).type(FloatTensor))
+                next_state, reward, terminal = env.step(action)
+                if cnt > 30:
+                    terminal = True
+                ttrw = ttrw + reward * np.power(args.gamma, cnt)
+                cnt += 1
+            ttrw_w = w.dot(ttrw) * w_e
+            # opt_x.append(realc[0])
+            # opt_y.append(realc[1])
+            enve_q_x.append(qc[first])
+            enve_q_y.append(qc[second])
+            enve_act_x.append(ttrw_w[first])
+            enve_act_y.append(ttrw_w[second])
+
+        storage = (opt_x, opt_y, 
+            enve_act_x, enve_act_y, 
+            enve_q_x, enve_q_y, 
+            naive_act_x, naive_act_y, 
+            naive_q_x, naive_q_y)
+        torch.save(storage, "test/tmp/result_control_merged.pkl")
+    else:
+        opt_x, opt_y, enve_act_x, enve_act_y, enve_q_x, enve_q_y, naive_act_x, naive_act_y, naive_q_x, naive_q_y = torch.load("test/tmp/result_control_merged.pkl")
+
+    trace_opt = dict(x=opt_x,
+                     y=opt_y,
+                     mode="markers",
+                     type='custom',
+                     marker=dict(
+                         symbol="circle",
+                         color="rgb(114,131,151)",
+                         # color="rgb(31,128,128)",
+                         size=1),
+                     fill='tozeroy',
+                     name='Real Control Frontier')
+
+    enve_act_opt = dict(x=enve_act_x,
+                   y=enve_act_y,
+                   mode="markers",
+                   type='custom',
+                   marker=dict(
+                       symbol="circle",
+                       color="rgb(51,148,148)",
+                       # color="rgb(246,128,131)",
+                       size=1),
+                   fill='tozeroy',
+                   name='Execution(Envelope)')
+
+    enve_q_opt = dict(x=enve_q_x,
+                 y=enve_q_y,
+                 mode="markers",
+                 type='custom',
+                 marker=dict(
+                     symbol="circle",
+                     color="rgb(71,168,108)",
+                     size=1),
+                 fill='tozeroy',
+                 name='Prediction(Envelope)')
+
+    naive_act_opt = dict(x=naive_act_x,
+                   y=naive_act_y,
+                   mode="markers",
+                   type='custom',
+                   marker=dict(
+                       symbol="circle",
+                       color="rgb(255,138,141)",
+                       # color="rgb(164,181,201)",
+                       size=1),
+                   fill='tozeroy',
+                   name='Execution(Naive)')
+
+    naive_q_opt = dict(x=naive_q_x,
+                 y=naive_q_y,
+                 mode="markers",
+                 type='custom',
+                 marker=dict(
+                     symbol="circle",
+                     color="rgb(255,178,111)",
+                     size=1),
+                 fill='tozeroy',
+                 name='Prediction(Naive)')
+
+    layout_opt = dict(title="FT Control Frontier",
+        xaxis=dict(title=obj_names[first]),
+        yaxis=dict(title=obj_names[second]))
+
+    vis._send({'data': [trace_opt, enve_act_opt, naive_act_opt, enve_q_opt, naive_q_opt], 'layout': layout_opt})
