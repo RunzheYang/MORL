@@ -1,3 +1,4 @@
+from __future__ import absolute_import, division, print_function
 import numpy as np
 from .deep_sea_treasure import DeepSeaTreasure
 from .fruit_tree import FruitTree

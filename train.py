@@ -1,3 +1,4 @@
+from __future__ import absolute_import, division, print_function
 import argparse
 import numpy as np
 import torch
@@ -95,8 +96,8 @@ def train(env, agent, args):
             act_2 = q[0, 0]
 
         if args.method == "crl-naive":
-            act_1 = act_1.data.cpu()[0]
-            act_2 = act_2.data.cpu()[0]
+            act_1 = act_1.data.cpu()
+            act_2 = act_2.data.cpu()
         elif args.method == "crl-envelope":
             act_1 = probe.dot(act_1.data)
             act_2 = probe.dot(act_2.data)

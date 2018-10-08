@@ -1,3 +1,4 @@
+from __future__ import absolute_import, division, print_function
 import random
 import torch
 import copy
@@ -70,8 +71,8 @@ class MetaAgent(object):
         state = torch.from_numpy(state).type(FloatTensor)
 
         _, Q = self.model_(
-            Variable(state.unsqueeze(0), volatile=True),
-            Variable(preference.unsqueeze(0), volatile=True))
+            Variable(state.unsqueeze(0), requires_grad=False),
+            Variable(preference.unsqueeze(0), requires_grad=False))
 
         action = Q.max(1)[1].data.cpu().numpy()
         action = int(action[0])
@@ -99,14 +100,14 @@ class MetaAgent(object):
 
         state = torch.from_numpy(state).type(FloatTensor)
 
-        _, q = self.model_(Variable(state.unsqueeze(0), volatile=True),
-                           Variable(preference.unsqueeze(0), volatile=True))
-        q = q[0, action].data[0]
+        _, q = self.model_(Variable(state.unsqueeze(0), requires_grad=False),
+                           Variable(preference.unsqueeze(0), requires_grad=False))
+        q = q[0, action].data
         wr = preference.dot(torch.from_numpy(reward).type(FloatTensor))
         if not terminal:
             next_state = torch.from_numpy(next_state).type(FloatTensor)
-            hq, _ = self.model_(Variable(next_state.unsqueeze(0), volatile=True),
-                                Variable(preference.unsqueeze(0), volatile=True))
+            hq, _ = self.model_(Variable(next_state.unsqueeze(0), requires_grad=False),
+                                Variable(preference.unsqueeze(0), requires_grad=False))
             hq = hq.data[0]
             p = abs(wr + self.gamma * hq - q)
         else:
@@ -166,10 +167,10 @@ class MetaAgent(object):
             # detach since we don't want gradients to propagate
             # HQ, _    = self.model_(Variable(torch.cat(next_state_batch, dim=0), volatile=True),
             # 					  Variable(w_batch, volatile=True))
-            _, DQ = self.model(Variable(torch.cat(next_state_batch, dim=0), volatile=True),
-                               Variable(w_batch, volatile=True))
-            _, act = self.model_(Variable(torch.cat(next_state_batch, dim=0), volatile=True),
-                                 Variable(w_batch, volatile=True))[1].max(1)
+            _, DQ = self.model(Variable(torch.cat(next_state_batch, dim=0), requires_grad=False),
+                               Variable(w_batch, requires_grad=False))
+            _, act = self.model_(Variable(torch.cat(next_state_batch, dim=0), requires_grad=False),
+                                 Variable(w_batch, requires_grad=False))[1].max(1)
             HQ = DQ.gather(1, act.unsqueeze(dim=1)).squeeze()
 
             w_reward_batch = torch.bmm(w_batch.unsqueeze(1),
@@ -177,15 +178,15 @@ class MetaAgent(object):
                                        ).squeeze()
 
             nontmlmask = self.nontmlinds(terminal_batch)
-            Tau_Q = Variable(torch.zeros(self.batch_size * self.weight_num).type(FloatTensor))
-            Tau_Q[nontmlmask] = self.gamma * HQ[nontmlmask]
-            Tau_Q.volatile = False
-            Tau_Q += Variable(w_reward_batch)
+            with torch.no_grad():
+                Tau_Q = Variable(torch.zeros(self.batch_size * self.weight_num).type(FloatTensor))
+                Tau_Q[nontmlmask] = self.gamma * HQ[nontmlmask]
+                Tau_Q += Variable(w_reward_batch)
 
             actions = Variable(torch.cat(action_batch, dim=0))
 
             # Compute Huber loss
-            loss = F.smooth_l1_loss(Q.gather(1, actions.unsqueeze(dim=1)), Tau_Q)
+            loss = F.smooth_l1_loss(Q.gather(1, actions.unsqueeze(dim=1)), Tau_Q.unsqueeze(dim=1))
 
             self.optimizer.zero_grad()
             loss.backward()
@@ -196,7 +197,7 @@ class MetaAgent(object):
             if self.update_count % self.update_freq == 0:
                 self.model.load_state_dict(self.model_.state_dict())
 
-            return loss.data[0]
+            return loss.data
 
         return 0.0
 
@@ -206,8 +207,8 @@ class MetaAgent(object):
             self.epsilon -= self.epsilon_delta
 
     def predict(self, probe):
-        return self.model(Variable(FloatTensor([0, 0]).unsqueeze(0), volatile=True),
-                          Variable(probe.unsqueeze(0), volatile=True))
+        return self.model(Variable(FloatTensor([0, 0]).unsqueeze(0), requires_grad=False),
+                          Variable(probe.unsqueeze(0), requires_grad=False))
 
     def save(self, save_path, model_name):
         torch.save(self.model, "{}{}.pkl".format(save_path, model_name))
