@@ -1,0 +1,2886 @@
+{
+    "venues": [
+        {
+            "addr": "196 mill road", 
+            "area": "romsey", 
+            "food": [
+                "turkish"
+            ], 
+            "childrenallowed": "true", 
+            "price": "the price for main courses ranges from 10 pounds to 12 pounds 50 and the price for a cheapest glass of wine is 2 pounds 90 and the price for a cappuccino is 1 pound 80", 
+            "hastv": "false", 
+            "hasinternet": "false", 
+            "phone": "01223410519", 
+            "near": [], 
+            "pricerange": "moderate", 
+            "postcode": "cb1 3nf", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "196 meze bar"
+        }, 
+        {
+            "addr": "18 broadway, mill road", 
+            "area": "romsey", 
+            "food": [
+                "indian"
+            ], 
+            "price": "the price for main courses ranges from 4 pounds 25 to 10 pounds 95", 
+            "phone": "01223243377", 
+            "near": [], 
+            "pricerange": "moderate", 
+            "postcode": "cb1 3ah", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "ahar"
+        }, 
+        {
+            "addr": "3-5 quayside", 
+            "area": "riverside", 
+            "food": [
+                "fusion"
+            ], 
+            "price": "the price for main courses ranges from 8 pounds 80 to 11 pounds 80", 
+            "phone": "01223323888", 
+            "near": [
+                "magdalene college", 
+                "saint johns college"
+            ], 
+            "pricerange": "moderate", 
+            "postcode": "cb5 8ab", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "aki teri"
+        }, 
+        {
+            "addr": "62 mill road", 
+            "area": "romsey", 
+            "food": [
+                "mediterranean", 
+                "middle eastern"
+            ], 
+            "price": "the price for main courses ranges from 8 pounds 95 to 12 pounds 95", 
+            "phone": "01223579500", 
+            "near": [
+                "williams art and antiques"
+            ], 
+            "pricerange": "moderate", 
+            "postcode": "cb1 2as", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "al casbah"
+        }, 
+        {
+            "addr": "59 hills road", 
+            "area": "riverside", 
+            "food": [
+                "indian"
+            ], 
+            "price": "the price for main courses ranges from 8 pounds 50 to 12 pounds", 
+            "phone": "01223369696", 
+            "near": [], 
+            "pricerange": "moderate", 
+            "postcode": "cb2 1nt", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "ali baba"
+        }, 
+        {
+            "addr": "152-154 hills road", 
+            "area": "addenbrookes", 
+            "food": [
+                "continental", 
+                "french"
+            ], 
+            "childrenallowed": "true", 
+            "price": "the price for main courses ranges from 17 pounds 50 to 21 pounds and the price for a glass of wine ranges from 6 pounds 50 to 10 pounds 50", 
+            "hastv": "false", 
+            "hasinternet": "true", 
+            "phone": "01223413000", 
+            "near": [], 
+            "pricerange": "expensive", 
+            "postcode": "cb2 8pb", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "alimentum"
+        }, 
+        {
+            "addr": "36 saint andrews street", 
+            "area": "centre", 
+            "food": [
+                "contemporary"
+            ], 
+            "childrenallowed": "true", 
+            "price": "the price for main courses ranges from 7 pounds 95 to 12 pounds 95 and the price for a glass of wine ranges from 2 pounds 85 to 6 pounds 95", 
+            "hastv": "false", 
+            "hasinternet": "false", 
+            "phone": "01223371081", 
+            "near": [
+                "emmanuel college"
+            ], 
+            "pricerange": "cheap", 
+            "postcode": "cb2 3ar", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "all bar one"
+        }, 
+        {
+            "addr": "30 bridge street", 
+            "area": "riverside", 
+            "food": [
+                "turkish"
+            ], 
+            "price": "the price for main courses ranges from 11 pounds 50 to 15 pounds 95", 
+            "phone": "01223902117", 
+            "near": [], 
+            "pricerange": "expensive", 
+            "postcode": "cb2 1uj", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "anatolia turkish restaurant"
+        }, 
+        {
+            "addr": "chesterton road", 
+            "area": "riverside", 
+            "food": [
+                "contemporary"
+            ], 
+            "price": "a single room ranges from 75 pounds and to 100 pounds and a double room ranges from 95 pounds and to 120 pounds and a family room ranges from 120 pounds and to 140 pounds and the price for main courses ranges from 10 pounds to 15 pounds", 
+            "hasinternet": "true", 
+            "phone": "01223367701", 
+            "near": [], 
+            "pricerange": "expensive", 
+            "postcode": "cb4 3an", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "arundel house hotel"
+        }, 
+        {
+            "addr": "66 regent street", 
+            "area": "riverside", 
+            "food": [
+                "indian"
+            ], 
+            "price": "the price for main courses ranges from 3 pounds 50 to 17 pounds 50", 
+            "phone": "01223902143", 
+            "near": [], 
+            "pricerange": "moderate", 
+            "postcode": "cb2 1dp", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "asia"
+        }, 
+        {
+            "addr": "12 bridge street", 
+            "area": "riverside", 
+            "food": [
+                "italian"
+            ], 
+            "childrenallowed": "true", 
+            "price": "the price for main courses ranges from 6 pounds 25 to 11 pounds 95 and the price for a glass of wine ranges from 4 pounds 85 to 6 pounds 5", 
+            "hastv": "false", 
+            "hasinternet": "false", 
+            "phone": "01223364917", 
+            "near": [
+                "trinity college"
+            ], 
+            "pricerange": "expensive", 
+            "postcode": "cb2 1uf", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "ask restaurant"
+        }, 
+        {
+            "addr": "1 saint mary's passage", 
+            "area": "girton", 
+            "food": [
+                "english"
+            ], 
+            "price": "the price for main courses ranges from 3 pounds to 8 pounds and the price for a cappuccino is 2 pounds", 
+            "phone": "01223315641", 
+            "near": [], 
+            "pricerange": "moderate", 
+            "postcode": "cb2 3pq", 
+            "type": [
+                "coffeeshop"
+            ], 
+            "name": "auntie's tea shop"
+        }, 
+        {
+            "addr": "8 market passage", 
+            "area": "centre", 
+            "food": [
+                "contemporary"
+            ], 
+            "childrenallowed": "false", 
+            "price": "the price for main courses ranges from 5 pounds 95 to 10 pounds 95 and the price for a glass of wine ranges from 3 pounds 25 to 5 pounds 85", 
+            "hastv": "false", 
+            "hasinternet": "true", 
+            "phone": "01223902086", 
+            "near": [
+                "castle galleries", 
+                "christs college", 
+                "gonville and caius college", 
+                "great saint marys church", 
+                "holy trinity church", 
+                "michaelhouse centre", 
+                "sidney sussex college"
+            ], 
+            "pricerange": "moderate", 
+            "postcode": "cb2 3pf", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "b bar and restaurant"
+        }, 
+        {
+            "addr": "2 sturton street", 
+            "area": "romsey", 
+            "food": [
+                "contemporary", 
+                "english"
+            ], 
+            "price": "the price for main courses ranges from 10 pounds 95 to 14 pounds 25", 
+            "phone": "01223306306", 
+            "near": [], 
+            "pricerange": "expensive", 
+            "postcode": "cb1 2qa", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "backstreet bistro"
+        }, 
+        {
+            "addr": "24 green street", 
+            "area": "centre", 
+            "food": [
+                "thai"
+            ], 
+            "price": "the price for main courses ranges from 7 pounds 50 to 13 pounds 90", 
+            "phone": "01223354382", 
+            "near": [
+                "gonville and caius college", 
+                "great saint marys church", 
+                "holy trinity church", 
+                "michaelhouse centre", 
+                "museum of archaeology and anthropology", 
+                "old schools", 
+                "trinity college"
+            ], 
+            "pricerange": "moderate", 
+            "postcode": "cb2 3jx", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "bangkok city"
+        }, 
+        {
+            "addr": "huntingdon road", 
+            "area": "castle hill", 
+            "food": [
+                "contemporary"
+            ], 
+            "price": "the price for main courses ranges from 5 pounds 99 to 19 pounds 99", 
+            "phone": "01223276182", 
+            "near": [], 
+            "pricerange": "expensive", 
+            "postcode": "cb3 0dl", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "beefeater travellers rest"
+        }, 
+        {
+            "addr": "the mill, newnham road", 
+            "area": "castle hill", 
+            "food": [
+                "italian"
+            ], 
+            "price": "the price for main courses ranges from 6 pounds 50 to 14 pounds 75", 
+            "phone": "01223367507", 
+            "near": [], 
+            "pricerange": "moderate", 
+            "postcode": "cb3 9ey", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "bella italia, the mill"
+        }, 
+        {
+            "addr": "cambridge leisure park, clifton way", 
+            "area": "addenbrookes", 
+            "food": [
+                "italian"
+            ], 
+            "price": "the price for main courses ranges from 6 pounds 50 to 14 pounds 75 and the price for a cappuccino is 2 pounds", 
+            "phone": "01223247099", 
+            "near": [], 
+            "pricerange": "moderate", 
+            "postcode": "cb1 7dy", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "bella italia, leisure park"
+        }, 
+        {
+            "addr": "106, grafton centre", 
+            "area": "riverside", 
+            "food": [
+                "italian"
+            ], 
+            "price": "the price for main courses ranges from 6 pounds 50 to 14 pounds 75", 
+            "phone": "01223462464", 
+            "near": [
+                "ruskin gallery"
+            ], 
+            "pricerange": "moderate", 
+            "postcode": "cb1 1ps", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "bella italia, grafton centre"
+        }, 
+        {
+            "addr": "unit f1, cambridge leisure park, clifton way", 
+            "area": "girton", 
+            "food": [
+                "indian"
+            ], 
+            "price": "the price for main courses ranges from 12 pounds 50 to 12 pounds 50", 
+            "phone": "01223413337", 
+            "near": [], 
+            "pricerange": "expensive", 
+            "postcode": "cb1 7dy", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "blue spice"
+        }, 
+        {
+            "addr": "27-28 bridge street", 
+            "area": "riverside", 
+            "food": [
+                "french"
+            ], 
+            "price": "the price for main courses ranges from 7 pounds 95 to 18 pounds 95", 
+            "phone": "01223448620", 
+            "near": [
+                "saint johns college"
+            ], 
+            "pricerange": "expensive", 
+            "postcode": "cb2 1uj", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "brasserie gerard"
+        }, 
+        {
+            "addr": "23 trumpington street", 
+            "area": "riverside", 
+            "food": [
+                "contemporary"
+            ], 
+            "childrenallowed": "true", 
+            "price": "the price for main courses ranges from 8 pounds 95 to 18 pounds 95 and the price for a glass of wine ranges from 3 pounds 25 to 6 pounds", 
+            "hastv": "true", 
+            "hasinternet": "false", 
+            "phone": "01223461655", 
+            "near": [
+                "the fitzwilliam museum"
+            ], 
+            "pricerange": "moderate", 
+            "postcode": "cb2 1qa", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "browns restaurant"
+        }, 
+        {
+            "addr": "the grafton centre", 
+            "food": [
+                "fast food"
+            ], 
+            "price": "the price for main courses ranges from 1 pound 99 to 6 pounds 79", 
+            "phone": "01223322666", 
+            "near": [
+                "ruskin gallery"
+            ], 
+            "pricerange": "cheap", 
+            "postcode": "cb1 1ps", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "burger king"
+        }, 
+        {
+            "addr": "11 burleigh street", 
+            "food": [
+                "english"
+            ], 
+            "price": "the price for main courses ranges from 1 pound 50 to 6 pounds and the price for a cappuccino is 1 pound 75", 
+            "phone": "01223369157", 
+            "near": [
+                "ruskin gallery"
+            ], 
+            "pricerange": "moderate", 
+            "postcode": "cb1 1dg", 
+            "type": [
+                "coffeeshop"
+            ], 
+            "name": "cafe eleven"
+        }, 
+        {
+            "addr": "45-47 castle street", 
+            "area": "castle hill", 
+            "food": [
+                "indian"
+            ], 
+            "price": "the price for main courses ranges from 5 pounds 95 to 13 pounds 95", 
+            "phone": "01223363666", 
+            "near": [
+                "kettles yard"
+            ], 
+            "pricerange": "moderate", 
+            "postcode": "cb3 0ah", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "cafe naz"
+        }, 
+        {
+            "addr": "24-26 bridge street", 
+            "area": "riverside", 
+            "food": [
+                "french"
+            ], 
+            "price": "the price for main courses ranges from 6 pounds 50 to 14 pounds 95 and the price for a cappuccino is 2 pounds 35", 
+            "phone": "01223364961", 
+            "near": [
+                "saint johns college"
+            ], 
+            "pricerange": "expensive", 
+            "postcode": "cb2 1uj", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "cafe rouge"
+        }, 
+        {
+            "addr": "11 market street", 
+            "food": [
+                "italian"
+            ], 
+            "price": "the price for main courses ranges from 3 pounds 50 to 3 pounds 85 and the price for a cappuccino is 2 pounds 15", 
+            "phone": "01223307728", 
+            "near": [
+                "castle galleries", 
+                "christs college", 
+                "gonville and caius college", 
+                "great saint marys church", 
+                "holy trinity church", 
+                "michaelhouse centre", 
+                "sidney sussex college", 
+                "trinity college"
+            ], 
+            "pricerange": "expensive", 
+            "postcode": "cb2 3pa", 
+            "type": [
+                "coffeeshop"
+            ], 
+            "name": "caffe nero"
+        }, 
+        {
+            "addr": "32 bridge street", 
+            "area": "riverside", 
+            "food": [
+                "italian"
+            ], 
+            "childrenallowed": "true", 
+            "price": "the price for main courses ranges from 6 pounds 95 to 16 pounds 95 and the price for a glass of wine ranges from 3 pounds 25 to 6 pounds 50", 
+            "hastv": "false", 
+            "hasinternet": "false", 
+            "phone": "01223314954", 
+            "near": [], 
+            "pricerange": "moderate", 
+            "postcode": "cb2 1uj", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "caffe uno"
+        }, 
+        {
+            "addr": "24 regent street", 
+            "food": [
+                "english"
+            ], 
+            "price": "the price for main courses ranges from 1 pound 20 to 2 pounds 50 and the price for a cappuccino is 1 pound 35", 
+            "phone": "01223369222", 
+            "near": [], 
+            "pricerange": "cheap", 
+            "postcode": "cb2 1db", 
+            "type": [
+                "coffeeshop"
+            ], 
+            "name": "cambridge blue sandwiches"
+        }, 
+        {
+            "addr": "1 fisher's square, the grande arcade", 
+            "area": "girton", 
+            "food": [
+                "italian"
+            ], 
+            "price": "the price for main courses ranges from 7 pounds 50 to 14 pounds 95 and the price for a cappuccino is 2 pounds 15", 
+            "phone": "01223307046", 
+            "near": [], 
+            "pricerange": "expensive", 
+            "postcode": "cb2 3qf", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "carluccio's"
+        }, 
+        {
+            "addr": "23 market street", 
+            "area": "centre", 
+            "food": [
+                "cafe food", 
+                "english"
+            ], 
+            "price": "the price for main courses ranges from 4 pounds 25 to 6 pounds 25 and the price for a cappuccino is 1 pound 95", 
+            "phone": "01223361792", 
+            "near": [
+                "castle galleries", 
+                "christs college", 
+                "gonville and caius college", 
+                "holy trinity church", 
+                "michaelhouse centre", 
+                "sidney sussex college"
+            ], 
+            "pricerange": "moderate", 
+            "postcode": "cb2 3nz", 
+            "type": [
+                "coffeeshop", 
+                "restaurant"
+            ], 
+            "name": "carringtons cafe restaurant"
+        }, 
+        {
+            "addr": "5-7 norfolk street", 
+            "area": "riverside", 
+            "food": [
+                "contemporary"
+            ], 
+            "price": "the price for main courses ranges from 3 pounds 75 to 14 pounds 95 and the price for a cappuccino is 1 pound 90", 
+            "phone": "01223508503", 
+            "near": [], 
+            "pricerange": "moderate", 
+            "postcode": "cb1 2ld", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "cb two"
+        }, 
+        {
+            "addr": "14 regent street", 
+            "area": "centre", 
+            "food": [
+                "chinese"
+            ], 
+            "price": "the price for main courses ranges from 5 pounds 39 to 15 pounds", 
+            "phone": "01223902114", 
+            "near": [], 
+            "pricerange": "moderate", 
+            "postcode": "cb2 1db", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "charlie chan"
+        }, 
+        {
+            "addr": "cambridge leisure park", 
+            "area": "addenbrookes", 
+            "food": [
+                "mexican tex mex"
+            ], 
+            "price": "the price for main courses ranges from 7 pounds 95 to 15 pounds 95", 
+            "phone": "01223400170", 
+            "near": [], 
+            "pricerange": "expensive", 
+            "postcode": "cb1 7dy", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "chiquito mexican bar and grill"
+        }, 
+        {
+            "addr": "54 king street", 
+            "area": "centre", 
+            "food": [
+                "italian"
+            ], 
+            "price": "the price for main courses ranges from 5 pounds to 11 pounds and the price for a cappuccino is 1 pound 50", 
+            "phone": "01223355711", 
+            "near": [
+                "broughton house gallery"
+            ], 
+            "pricerange": "cheap", 
+            "postcode": "cb1 1ln", 
+            "type": [
+                "coffeeshop", 
+                "restaurant"
+            ], 
+            "name": "clowns"
+        }, 
+        {
+            "addr": "71 castle street", 
+            "area": "castle hill", 
+            "food": [
+                "indian"
+            ], 
+            "price": "the price for main courses ranges from 5 pounds 95 to 7 pounds 95", 
+            "phone": "01223312569", 
+            "near": [], 
+            "pricerange": "cheap", 
+            "postcode": "cb3 0ah", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "cocum"
+        }, 
+        {
+            "addr": "183 east road", 
+            "area": "riverside", 
+            "food": [
+                "contemporary"
+            ], 
+            "price": "the price for main courses ranges from 5 pounds to 16 pounds 50", 
+            "phone": "01223302010", 
+            "near": [], 
+            "pricerange": "moderate", 
+            "postcode": "cb1 1bg", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "cotto"
+        }, 
+        {
+            "addr": "fitzwilliam museum, trumpington street", 
+            "area": "riverside", 
+            "food": [
+                "contemporary"
+            ], 
+            "price": "the price for main courses ranges from 3 pounds 75 to 8 pounds 95 and the price for a cappuccino is 2 pounds 5", 
+            "phone": "01223764402", 
+            "near": [
+                "the fitzwilliam museum"
+            ], 
+            "pricerange": "moderate", 
+            "postcode": "cb2 1rb", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "courtyard cafe at the fitzwilliam museum"
+        }, 
+        {
+            "addr": "2-4 king street", 
+            "area": "centre", 
+            "food": [
+                "traditional"
+            ], 
+            "childrenallowed": "true", 
+            "price": "the price for main courses ranges from 8 pounds to 18 pounds and the price for a glass of wine ranges from 3 pounds to 3 pounds 90 and the price for a cheapest pint of beer is 3 pounds 70", 
+            "hastv": "true", 
+            "hasinternet": "true", 
+            "phone": "01223902119", 
+            "near": [], 
+            "pricerange": "expensive", 
+            "postcode": "cb1 1ln", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "d arrys"
+        }, 
+        {
+            "addr": "83 regent street", 
+            "area": "riverside", 
+            "food": [
+                "italian"
+            ], 
+            "childrenallowed": "true", 
+            "price": "the price for main courses ranges from 9 pounds 95 to 23 pounds 50 and the price for a cheapest glass of wine is 3 pounds 75", 
+            "hastv": "false", 
+            "hasinternet": "true", 
+            "phone": "01223902120", 
+            "near": [], 
+            "pricerange": "moderate", 
+            "postcode": "cb2 1aw", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "de luca cucina and bar"
+        }, 
+        {
+            "addr": "miller's yard", 
+            "area": "girton", 
+            "food": [
+                "fusion"
+            ], 
+            "price": "the price for main courses ranges from 5 pounds 70 to 7 pounds", 
+            "phone": "01223363471", 
+            "near": [], 
+            "pricerange": "cheap", 
+            "postcode": "cb2 1rq", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "dojo noodle bar"
+        }, 
+        {
+            "addr": "cambridge market stall", 
+            "area": "centre", 
+            "food": [
+                "italian"
+            ], 
+            "price": "the price for main courses ranges from 5 pounds 35 to 15 pounds 50", 
+            "phone": "01223350106", 
+            "near": [
+                "castle galleries", 
+                "christs college", 
+                "gonville and caius college", 
+                "great saint marys church", 
+                "holy trinity church", 
+                "michaelhouse centre", 
+                "museum of archaeology and anthropology", 
+                "old schools", 
+                "trinity college"
+            ], 
+            "pricerange": "moderate", 
+            "postcode": "cb2 3nj", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "don pasquale restaurant"
+        }, 
+        {
+            "addr": "granta place, mill lane", 
+            "area": "riverside", 
+            "food": [
+                "contemporary"
+            ], 
+            "price": "a cheapest single room is 129 pounds and a cheapest double room is 129 pounds and a cheapest family room is 229 pounds and the price for main courses ranges from 13 pounds 95 to 17 pounds 50", 
+            "hasinternet": "true", 
+            "phone": "01223259988", 
+            "near": [], 
+            "pricerange": "expensive", 
+            "postcode": "cb2 1rt", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "doubletree by hilton, cambridge garden house"
+        }, 
+        {
+            "addr": "21-24 bridge street", 
+            "area": "riverside", 
+            "food": [
+                "contemporary"
+            ], 
+            "childrenallowed": "true", 
+            "price": "the price for main courses ranges from 8 pounds 55 to 17 pounds 95 and the price for a glass of wine ranges from 4 pounds to 6 pounds 95", 
+            "hastv": "false", 
+            "hasinternet": "true", 
+            "phone": "01223902125", 
+            "near": [
+                "trinity college"
+            ], 
+            "pricerange": "moderate", 
+            "postcode": "cb2 1uj", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "edwinns bar and restaurant"
+        }, 
+        {
+            "addr": "78-80 king street", 
+            "area": "riverside", 
+            "food": [
+                "turkish"
+            ], 
+            "price": "the price for main courses ranges from 9 pounds 25 to 11 pounds 95", 
+            "phone": "01223500005", 
+            "near": [
+                "broughton house gallery"
+            ], 
+            "pricerange": "moderate", 
+            "postcode": "cb1 1ll", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "efes restaurant"
+        }, 
+        {
+            "addr": "2 free school lane", 
+            "area": "centre", 
+            "food": [
+                "greek"
+            ], 
+            "price": "the price for main courses ranges from 6 pounds 50 to 13 pounds 95", 
+            "phone": "01223902126", 
+            "near": [
+                "kings college", 
+                "pembroke college", 
+                "primavera", 
+                "saint catharines college", 
+                "whipple museum of the history of science"
+            ], 
+            "pricerange": "moderate", 
+            "postcode": "cb2 3qa", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "eraina taverna"
+        }, 
+        {
+            "addr": "51 trumpington street", 
+            "area": "riverside", 
+            "food": [
+                "contemporary"
+            ], 
+            "price": "the price for main courses ranges from 2 pounds 25 to 16 pounds 75", 
+            "phone": "01223902128", 
+            "near": [
+                "kings college", 
+                "pembroke college", 
+                "primavera", 
+                "saint catharines college", 
+                "whipple museum of the history of science"
+            ], 
+            "pricerange": "moderate", 
+            "postcode": "cb2 1rg", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "fitzbillies restaurant"
+        }, 
+        {
+            "addr": "midsummer common", 
+            "area": "riverside", 
+            "food": [
+                "pub food"
+            ], 
+            "childrenallowed": "true", 
+            "price": "the price for main courses ranges from 6 pounds 95 to 11 pounds 95 and the price for a cheapest pint of beer is 2 pounds 75", 
+            "hastv": "true", 
+            "hasinternet": "true", 
+            "phone": "01223354327", 
+            "near": [], 
+            "pricerange": "moderate", 
+            "postcode": "cb4 1ha", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "fort saint george"
+        }, 
+        {
+            "addr": "6 cambridge leisure park, clifton road", 
+            "area": "romsey", 
+            "food": [
+                "italian"
+            ], 
+            "childrenallowed": "true", 
+            "price": "the price for main courses ranges from 6 pounds to 15 pounds and the price for a glass of wine ranges from 3 pounds 35 to 5 pounds", 
+            "hastv": "true", 
+            "hasinternet": "false", 
+            "phone": "01223412430", 
+            "near": [], 
+            "pricerange": "moderate", 
+            "postcode": "cb1 7dy", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "frankie and bennys"
+        }, 
+        {
+            "addr": "33 bridge street", 
+            "area": "riverside", 
+            "food": [
+                "continental"
+            ], 
+            "price": "the price for main courses ranges from 9 pounds 95 to 16 pounds 95", 
+            "phone": "01223362054", 
+            "near": [
+                "trinity college"
+            ], 
+            "pricerange": "expensive", 
+            "postcode": "cb2 1uw", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "galleria"
+        }, 
+        {
+            "addr": "christ's lane", 
+            "area": "centre", 
+            "food": [
+                "international"
+            ], 
+            "price": "the price for main courses ranges from 6 pounds 95 to 14 pounds 95 and the price for a cappuccino is 2 pounds 10", 
+            "phone": "01223300707", 
+            "near": [
+                "christs college", 
+                "emmanuel college"
+            ], 
+            "pricerange": "moderate", 
+            "postcode": "cb1 1np", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "giraffe"
+        }, 
+        {
+            "addr": "43-45 regent street", 
+            "area": "centre", 
+            "food": [
+                "american"
+            ], 
+            "price": "the price for main courses ranges from 3 pounds 95 to 8 pounds 45", 
+            "phone": "01223312598", 
+            "near": [], 
+            "pricerange": "cheap", 
+            "postcode": "cb2 1ab", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "gourmet burger kitchen"
+        }, 
+        {
+            "addr": "hotel felix, whitehouse lane, huntingdon road", 
+            "area": "girton", 
+            "food": [
+                "contemporary"
+            ], 
+            "price": "a cheapest single room is 155 pounds and a cheapest double room is 190 pounds and a cheapest family room is 285 pounds and the price for main courses ranges from 15 pounds to 21 pounds 50", 
+            "hasinternet": "true", 
+            "phone": "01223902137", 
+            "near": [], 
+            "pricerange": "expensive", 
+            "postcode": "cb3 0lx", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "graffiti restaurant"
+        }, 
+        {
+            "addr": "55 trumpington high street, trumpington", 
+            "area": "trumpington", 
+            "food": [
+                "contemporary"
+            ], 
+            "childrenallowed": "true", 
+            "price": "the price for main courses ranges from 7 pounds 95 to 14 pounds 50 and the price for a cheapest pint of beer is 2 pounds 75", 
+            "hastv": "true", 
+            "hasinternet": "false", 
+            "phone": "01223844903", 
+            "near": [], 
+            "pricerange": "moderate", 
+            "postcode": "cb2 2hz", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "green man"
+        }, 
+        {
+            "addr": "24 milton road", 
+            "area": "new chesterton", 
+            "food": [
+                "chinese"
+            ], 
+            "price": "the price for main courses ranges from 5 pounds to 13 pounds", 
+            "phone": "01223568988", 
+            "near": [], 
+            "pricerange": "moderate", 
+            "postcode": "cb4 1jy", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "hakka"
+        }, 
+        {
+            "addr": "quayside", 
+            "area": "riverside", 
+            "food": [
+                "contemporary"
+            ], 
+            "childrenallowed": "true", 
+            "price": "the price for main courses ranges from 6 pounds to 12 pounds and the price for a glass of wine ranges from 3 pounds 50 to 5 pounds 30", 
+            "hastv": "true", 
+            "hasinternet": "true", 
+            "phone": "01223324649", 
+            "near": [
+                "magdalene college", 
+                "saint johns college"
+            ], 
+            "pricerange": "moderate", 
+            "postcode": "cb5 8ab", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "henrys cafe bar"
+        }, 
+        {
+            "addr": "21 burleigh street", 
+            "area": "cherry hinton", 
+            "food": [
+                "chinese"
+            ], 
+            "price": "the price for main courses ranges from 5 pounds to 8 pounds", 
+            "phone": "01223355909", 
+            "near": [], 
+            "pricerange": "cheap", 
+            "postcode": "cb1 1dg", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "hk fusion"
+        }, 
+        {
+            "addr": "15-19 trumpington street", 
+            "area": "riverside", 
+            "food": [
+                "french"
+            ], 
+            "price": "the price for main courses ranges from 17 pounds to 25 pounds", 
+            "phone": "01223227330", 
+            "near": [
+                "the fitzwilliam museum"
+            ], 
+            "pricerange": "expensive", 
+            "postcode": "cb2 1qa", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "hotel du vin and bistro"
+        }, 
+        {
+            "addr": "66 chesterton road", 
+            "area": "riverside", 
+            "food": [
+                "chinese"
+            ], 
+            "price": "the price for main courses ranges from 2 pounds 20 to 8 pounds 50", 
+            "phone": "01223366552", 
+            "near": [], 
+            "pricerange": "cheap", 
+            "postcode": "cb4 1ep", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "hotpot restaurant"
+        }, 
+        {
+            "addr": "31 newnham road", 
+            "area": "riverside", 
+            "food": [
+                "indian"
+            ], 
+            "price": "the price for main courses ranges from 5 pounds 29 to 15 pounds", 
+            "phone": "01223461661", 
+            "near": [], 
+            "pricerange": "moderate", 
+            "postcode": "cb3 9ey", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "india house"
+        }, 
+        {
+            "addr": "86, regent street", 
+            "area": "riverside", 
+            "food": [
+                "chinese"
+            ], 
+            "price": "the price for main courses ranges from 8 pounds to 12 pounds", 
+            "phone": "01223307273", 
+            "near": [
+                "the fitzwilliam museum"
+            ], 
+            "pricerange": "moderate", 
+            "postcode": "cb2 1dp", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "j restaurant"
+        }, 
+        {
+            "addr": "11 peas hill", 
+            "area": "centre", 
+            "food": [
+                "chinese"
+            ], 
+            "price": "the price for main courses ranges from 6 pounds 50 to 10 pounds", 
+            "phone": "01223566188", 
+            "near": [
+                "corpus christi", 
+                "gonville and caius college", 
+                "great saint marys church", 
+                "holy trinity church", 
+                "kings college", 
+                "museum of archaeology and anthropology", 
+                "old schools", 
+                "primavera", 
+                "whipple museum of the history of science"
+            ], 
+            "pricerange": "moderate", 
+            "postcode": "cb2 3pn", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "jinling"
+        }, 
+        {
+            "addr": "john lewis, 10 downing street", 
+            "area": "centre", 
+            "food": [
+                "contemporary"
+            ], 
+            "price": "the price for main courses ranges from 5 pounds 95 to 16 pounds 95", 
+            "phone": "01223361292", 
+            "near": [
+                "castle galleries", 
+                "gonville and caius college", 
+                "great saint marys church", 
+                "holy trinity church", 
+                "kings college", 
+                "michaelhouse centre", 
+                "primavera", 
+                "whipple museum of the history of science"
+            ], 
+            "pricerange": "expensive", 
+            "postcode": "cb2 3ds", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "john lewis brasserie"
+        }, 
+        {
+            "addr": "52, mill road", 
+            "area": "romsey", 
+            "food": [
+                "chinese takeaway", 
+                "fusion"
+            ], 
+            "price": "the price for main courses ranges from 7 pounds 10 to 9 pounds 70", 
+            "phone": "01223311911", 
+            "near": [], 
+            "pricerange": "moderate", 
+            "postcode": "cb1 2as", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "kymmoy noodle bar and restaurant"
+        }, 
+        {
+            "addr": "15 magdalene street", 
+            "area": "castle hill", 
+            "food": [
+                "italian"
+            ], 
+            "price": "the price for main courses ranges from 6 pounds 90 to 17 pounds 50 and the price for a cappuccino is 2 pounds", 
+            "phone": "01223902145", 
+            "near": [
+                "magdalene college"
+            ], 
+            "pricerange": "moderate", 
+            "postcode": "cb3 0af", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "la margherita"
+        }, 
+        {
+            "addr": "thompson's lane", 
+            "area": "girton", 
+            "food": [
+                "italian"
+            ], 
+            "childrenallowed": "true", 
+            "price": "the price for main courses ranges from 7 pounds 90 to 21 pounds 90 and the price for a glass of wine ranges from 3 pounds 75 to 4 pounds 50", 
+            "hastv": "false", 
+            "hasinternet": "false", 
+            "phone": "01223362525", 
+            "near": [], 
+            "pricerange": "moderate", 
+            "postcode": "cb5 8aq", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "la mimosa"
+        }, 
+        {
+            "addr": "4-6, the basement, rose crescent", 
+            "area": "centre", 
+            "food": [
+                "spanish"
+            ], 
+            "price": "the price for main courses ranges from 1 pound 95 to 13 pounds 95 and the entrance for adults is 4 pounds", 
+            "phone": "01223464550", 
+            "near": [
+                "cambridge contemporary art", 
+                "castle galleries", 
+                "gonville and caius college", 
+                "great saint marys church", 
+                "holy trinity church", 
+                "kings college", 
+                "michaelhouse centre", 
+                "primavera", 
+                "whipple museum of the history of science"
+            ], 
+            "pricerange": "cheap", 
+            "postcode": "cb2 3ll", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "la raza"
+        }, 
+        {
+            "addr": "14-16 bridge street", 
+            "area": "riverside", 
+            "food": [
+                "spanish"
+            ], 
+            "childrenallowed": "true", 
+            "price": "the price for main courses ranges from 5 pounds to 10 pounds and the price for a cheapest glass of wine is 2 pounds 50", 
+            "hastv": "true", 
+            "hasinternet": "true", 
+            "phone": "01223902146", 
+            "near": [
+                "trinity college"
+            ], 
+            "pricerange": "cheap", 
+            "postcode": "cb2 1uf", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "la tasca"
+        }, 
+        {
+            "addr": "12 norfolk street", 
+            "area": "riverside", 
+            "food": [
+                "chinese"
+            ], 
+            "price": "the price for main courses ranges from 5 pounds to 5 pounds 50", 
+            "phone": "01223355227", 
+            "near": [], 
+            "pricerange": "cheap", 
+            "postcode": "cb1 2lf", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "lan hong house"
+        }, 
+        {
+            "addr": "57 hills road", 
+            "area": "trumpington", 
+            "food": [
+                "french"
+            ], 
+            "price": "the price for main courses ranges from 14 pounds 95 to 19 pounds 95 and the price for a cappuccino is 2 pounds 65", 
+            "phone": "01223902149", 
+            "near": [], 
+            "pricerange": "expensive", 
+            "postcode": "cb2 1nt", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "le gros franck"
+        }, 
+        {
+            "addr": "108 regent street", 
+            "area": "riverside", 
+            "food": [
+                "east asian"
+            ], 
+            "price": "the price for main courses ranges from 6 pounds 90 to 7 pounds 90", 
+            "phone": "01223308681", 
+            "near": [], 
+            "pricerange": "moderate", 
+            "postcode": "cb2 1dp", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "little seoul"
+        }, 
+        {
+            "addr": "37 trumpington street", 
+            "area": "riverside", 
+            "food": [
+                "seafood"
+            ], 
+            "price": "the price for main courses ranges from 9 pounds to 20 pounds", 
+            "phone": "01223902103", 
+            "near": [], 
+            "pricerange": "expensive", 
+            "postcode": "cb2 1qy", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "loch fyne restaurant"
+        }, 
+        {
+            "addr": "unit", 
+            "area": "addenbrookes", 
+            "food": [
+                "chinese"
+            ], 
+            "price": "the price for main courses ranges from 12 pounds 99 to 14 pounds 99", 
+            "phone": "01223244277", 
+            "near": [], 
+            "pricerange": "expensive", 
+            "postcode": "cb1 7dy", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "lucky star chinese buffet restaurant"
+        }, 
+        {
+            "addr": "9 to 13 castle street", 
+            "area": "castle hill", 
+            "food": [
+                "indian"
+            ], 
+            "price": "the price for main courses ranges from 5 pounds 50 to 11 pounds", 
+            "phone": "01223358399", 
+            "near": [
+                "kettles yard", 
+                "magdalene college"
+            ], 
+            "pricerange": "moderate", 
+            "postcode": "cb3 0ah", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "maharajah restaurant"
+        }, 
+        {
+            "addr": "hobbs pavilion, park terrace", 
+            "area": "riverside", 
+            "food": [
+                "thai"
+            ], 
+            "price": "the price for main courses ranges from 5 pounds to 14 pounds 95", 
+            "phone": "01223367480", 
+            "near": [
+                "ruskin gallery"
+            ], 
+            "pricerange": "moderate", 
+            "postcode": "cb1 1jh", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "mai thai"
+        }, 
+        {
+            "addr": "205 victoria road", 
+            "area": "castle hill", 
+            "food": [
+                "indian"
+            ], 
+            "price": "the price for main courses ranges from 5 pounds 90 to 9 pounds 90", 
+            "phone": "01223727410", 
+            "near": [], 
+            "pricerange": "moderate", 
+            "postcode": "cb4 3lf", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "meghna"
+        }, 
+        {
+            "addr": "michaelhouse, trinity street", 
+            "area": "centre", 
+            "food": [
+                "contemporary"
+            ], 
+            "price": "the price for main courses ranges from 3 pounds 30 to 8 pounds 95 and the price for a cappuccino is 1 pound 75 and the entrance is free of charge", 
+            "phone": "01223309147", 
+            "near": [
+                "gonville and caius college", 
+                "great saint marys church", 
+                "holy trinity church", 
+                "museum of archaeology and anthropology", 
+                "old schools", 
+                "trinity college"
+            ], 
+            "pricerange": "free", 
+            "postcode": "cb2 1su", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "michaelhouse centre"
+        }, 
+        {
+            "addr": "midsummer common", 
+            "area": "riverside", 
+            "food": [
+                "french"
+            ], 
+            "price": "the price for main courses ranges from 29 pounds 50 to 55 pounds", 
+            "phone": "01223369299", 
+            "near": [], 
+            "pricerange": "expensive", 
+            "postcode": "cb4 1ha", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "midsummer house"
+        }, 
+        {
+            "addr": "milton park golf course, ely road, milton", 
+            "area": "fen ditton", 
+            "food": [
+                "thai"
+            ], 
+            "price": "the price for main courses ranges from 4 pounds 50 to 8 pounds 50", 
+            "phone": "01223864602", 
+            "near": [], 
+            "pricerange": "cheap", 
+            "postcode": "cb24 6dd", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "milton park english and thai restaurant"
+        }, 
+        {
+            "addr": "33-34 saint andrews street", 
+            "area": "centre", 
+            "food": [
+                "mediterranean"
+            ], 
+            "price": "the price for main courses ranges from 3 pounds 50 to 12 pounds 45", 
+            "phone": "01223327908", 
+            "near": [], 
+            "pricerange": "moderate", 
+            "postcode": "cb2 3ar", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "nando's restaurant, saint andrews street"
+        }, 
+        {
+            "addr": "unit g5, cambridge leisure park, clifton way", 
+            "area": "addenbrookes", 
+            "food": [
+                "mediterranean"
+            ], 
+            "price": "the price for main courses ranges from 3 pounds 50 to 12 pounds 45", 
+            "phone": "01223246568", 
+            "near": [], 
+            "pricerange": "moderate", 
+            "postcode": "cb1 7dy", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "nando's restaurant, cambridge leisure park"
+        }, 
+        {
+            "addr": "33 regent street", 
+            "area": "centre", 
+            "food": [
+                "mexican tex mex"
+            ], 
+            "price": "the price for main courses ranges from 5 pounds 35 to 15 pounds 50 and the price for a cappuccino is 2 pounds 95", 
+            "phone": "01223902150", 
+            "near": [
+                "downing college"
+            ], 
+            "pricerange": "expensive", 
+            "postcode": "cb2 1ab", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "nanna mexico"
+        }, 
+        {
+            "addr": "8 norfolk street", 
+            "area": "riverside", 
+            "food": [
+                "indian"
+            ], 
+            "price": "the price for main courses ranges from 4 pounds 65 to 12 pounds 50", 
+            "phone": "01223355012", 
+            "near": [], 
+            "pricerange": "moderate", 
+            "postcode": "cb1 2lf", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "panahar tandoori restaurant"
+        }, 
+        {
+            "addr": "unit 3, the belvedere, homerton street", 
+            "area": "addenbrookes", 
+            "food": [
+                "chinese"
+            ], 
+            "price": "the price for main courses ranges from 3 pounds to 9 pounds", 
+            "phone": "01223902166", 
+            "near": [], 
+            "pricerange": "cheap", 
+            "postcode": "cb2 8nx", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "peking restaurant"
+        }, 
+        {
+            "addr": "529c newmarket road", 
+            "area": "riverside", 
+            "food": [
+                "indian"
+            ], 
+            "price": "the price for main courses ranges from 5 pounds 50 to 13 pounds 20", 
+            "phone": "01223577786", 
+            "near": [], 
+            "pricerange": "moderate", 
+            "postcode": "cb5 8lg", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "pipasha restaurant"
+        }, 
+        {
+            "addr": "7a jesus lane", 
+            "area": "centre", 
+            "food": [
+                "italian"
+            ], 
+            "price": "the price for main courses ranges from 6 pounds 25 to 10 pounds 95", 
+            "phone": "01223324033", 
+            "near": [
+                "sidney sussex college", 
+                "trinity college"
+            ], 
+            "pricerange": "moderate", 
+            "postcode": "cb5 8ba", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "pizza express"
+        }, 
+        {
+            "addr": "19-21 regent street", 
+            "area": "centre", 
+            "food": [
+                "italian"
+            ], 
+            "price": "the price for main courses ranges from 3 pounds 99 to 15 pounds 99", 
+            "phone": "01223323737", 
+            "near": [], 
+            "pricerange": "moderate", 
+            "postcode": "cb2 1ab", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "pizza hut"
+        }, 
+        {
+            "addr": "231 chesterton road", 
+            "area": "riverside", 
+            "food": [
+                "northern european"
+            ], 
+            "price": "the price for main courses ranges from 1 pound 50 to 7 pounds 50", 
+            "phone": "01223902138", 
+            "near": [], 
+            "pricerange": "cheap", 
+            "postcode": "cb4 1as", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "polonia"
+        }, 
+        {
+            "addr": "21-24 northampton street", 
+            "area": "castle hill", 
+            "food": [
+                "italian"
+            ], 
+            "price": "the price for main courses ranges from 10 pounds to 24 pounds", 
+            "phone": "01223353110", 
+            "near": [
+                "magdalene college", 
+                "museum of classical archaeology"
+            ], 
+            "pricerange": "expensive", 
+            "postcode": "cb3 0ad", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "prezzo"
+        }, 
+        {
+            "addr": "9a kings parade", 
+            "area": "girton", 
+            "food": [
+                "traditional", 
+                "vegetarian"
+            ], 
+            "price": "the price for main courses ranges from 7 pounds 95 to 10 pounds 95 and the price for a cappuccino is 1 pound 75", 
+            "phone": "01223321551", 
+            "near": [], 
+            "pricerange": "moderate", 
+            "postcode": "cb2 1sj", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "rainbow vegetarian cafe"
+        }, 
+        {
+            "addr": "100 histon road", 
+            "area": "kings hedges", 
+            "food": [
+                "american"
+            ], 
+            "price": "the price for main courses ranges from 6 pounds to 12 pounds 50", 
+            "phone": "01223322772", 
+            "near": [], 
+            "pricerange": "moderate", 
+            "postcode": "cb4 3jp", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "ranch"
+        }, 
+        {
+            "addr": "17 regent street", 
+            "area": "centre", 
+            "food": [
+                "contemporary"
+            ], 
+            "price": "the price for main courses ranges from 10 pounds to 19 pounds 50", 
+            "phone": "01223902169", 
+            "near": [], 
+            "pricerange": "expensive", 
+            "postcode": "cb2 1ad", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "restaurant seventeen"
+        }, 
+        {
+            "addr": "22 chesterton road", 
+            "area": "riverside", 
+            "food": [
+                "contemporary"
+            ], 
+            "price": "the price for main courses ranges from 28 pounds 95 to 28 pounds 95", 
+            "phone": "01223351880", 
+            "near": [], 
+            "pricerange": "expensive", 
+            "postcode": "cb4 3ax", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "restaurant twenty two"
+        }, 
+        {
+            "addr": "3-7 downing street", 
+            "area": "centre", 
+            "food": [
+                "pub food"
+            ], 
+            "childrenallowed": "false", 
+            "price": "the price for main courses ranges from 6 pounds 45 to 9 pounds 95 and the price for a cheapest glass of wine is 10 pounds", 
+            "hastv": "true", 
+            "hasinternet": "true", 
+            "phone": "01223364895", 
+            "near": [
+                "emmanuel college", 
+                "pembroke college"
+            ], 
+            "pricerange": "expensive", 
+            "postcode": "cb2 3ds", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "revolution"
+        }, 
+        {
+            "addr": "quayside, off bridge street", 
+            "area": "fen ditton", 
+            "food": [
+                "contemporary"
+            ], 
+            "childrenallowed": "true", 
+            "price": "the price for main courses ranges from 10 pounds to 20 pounds and the price for a cheapest glass of wine is 3 pounds 50", 
+            "hastv": "false", 
+            "hasinternet": "false", 
+            "phone": "01223307030", 
+            "near": [], 
+            "pricerange": "moderate", 
+            "postcode": "cb5 8aq", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "river bar and kitchen"
+        }, 
+        {
+            "addr": "university centre, granta place", 
+            "area": "riverside", 
+            "food": [
+                "traditional"
+            ], 
+            "price": "the price for main courses ranges from 14 pounds 95 to 16 pounds 95", 
+            "phone": "01223902174", 
+            "near": [], 
+            "pricerange": "expensive", 
+            "postcode": "cb2 1ru", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "riverside restaurant and granta bar"
+        }, 
+        {
+            "addr": "cambridge regional college, newmarket road", 
+            "area": "fen ditton", 
+            "food": [
+                "contemporary"
+            ], 
+            "price": "the price for main courses ranges from 21 pounds 95 to 25 pounds 95", 
+            "phone": "01223418997", 
+            "near": [], 
+            "pricerange": "expensive", 
+            "postcode": "cb5 8dz", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "riverside restaurant"
+        }, 
+        {
+            "addr": "trumpington street", 
+            "area": "riverside", 
+            "food": [
+                "traditional"
+            ], 
+            "price": "a single room ranges from 91 pounds and to 98 pounds and a cheapest double room is 108 pounds and a family room ranges from 135 pounds and to 169 pounds and the price for main courses ranges from 12 pounds to 18 pounds", 
+            "hasinternet": "true", 
+            "phone": "01223351631", 
+            "near": [
+                "the fitzwilliam museum"
+            ], 
+            "pricerange": "expensive", 
+            "postcode": "cb2 1py", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "royal cambridge hotel"
+        }, 
+        {
+            "addr": "292 mill road", 
+            "area": "romsey", 
+            "food": [
+                "indian"
+            ], 
+            "price": "the price for main courses ranges from 4 pounds 75 to 7 pounds 50", 
+            "phone": "01223902175", 
+            "near": [], 
+            "pricerange": "cheap", 
+            "postcode": "cb1 3nl", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "royal standard"
+        }, 
+        {
+            "addr": "169 high street, chesterton", 
+            "area": "riverside", 
+            "food": [
+                "chinese takeaway"
+            ], 
+            "price": "the price for main courses ranges from 4 pounds 60 to 5 pounds 10", 
+            "phone": "01223356555", 
+            "near": [], 
+            "pricerange": "cheap", 
+            "postcode": "cb4 1nl", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "saigon city"
+        }, 
+        {
+            "addr": "35 newnham road", 
+            "area": "riverside", 
+            "food": [
+                "thai"
+            ], 
+            "price": "the price for main courses ranges from 7 pounds 95 to 16 pounds 95", 
+            "phone": "01223323178", 
+            "near": [], 
+            "pricerange": "expensive", 
+            "postcode": "cb3 9ey", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "sala thong restaurant"
+        }, 
+        {
+            "addr": "17 hills road", 
+            "area": "riverside", 
+            "food": [
+                "chinese"
+            ], 
+            "price": "the price for main courses ranges from 5 pounds to 6 pounds 80", 
+            "phone": "01223358899", 
+            "near": [], 
+            "pricerange": "cheap", 
+            "postcode": "cb2 1nw", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "sesame restaurant and bar"
+        }, 
+        {
+            "addr": "39 burleigh street", 
+            "area": "riverside", 
+            "food": [
+                "chinese"
+            ], 
+            "price": "the price for main courses ranges from 6 pounds 80 to 22 pounds and the price for a cappuccino is 1 pound 70", 
+            "phone": "01223301761", 
+            "near": [], 
+            "pricerange": "moderate", 
+            "postcode": "cb1 1dg", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "shanghai family restaurant"
+        }, 
+        {
+            "addr": "84 regent street", 
+            "area": "riverside", 
+            "food": [
+                "east asian"
+            ], 
+            "price": "the price for main courses ranges from 9 pounds to 14 pounds 15", 
+            "phone": "01223902104", 
+            "near": [], 
+            "pricerange": "expensive", 
+            "postcode": "cb2 1dp", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "shiraz"
+        }, 
+        {
+            "addr": "43 high street, cherry hinton", 
+            "area": "cherry hinton", 
+            "food": [
+                "indian"
+            ], 
+            "price": "the price for main courses ranges from 4 pounds 95 to 9 pounds 95", 
+            "phone": "01223249955", 
+            "near": [], 
+            "pricerange": "moderate", 
+            "postcode": "cb1 9hx", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "sitar tandoori"
+        }, 
+        {
+            "addr": "60 trumpington road", 
+            "area": "cherry hinton", 
+            "food": [
+                "indian"
+            ], 
+            "price": "the price for main courses ranges from 4 pounds 95 to 7 pounds 95", 
+            "phone": "01223843436", 
+            "near": [], 
+            "pricerange": "cheap", 
+            "postcode": "cb2 8ex", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "spice merchants indian restaurant"
+        }, 
+        {
+            "addr": "1 and 3a market hill, and 39-41 petty cury", 
+            "area": "centre", 
+            "food": [
+                "italian"
+            ], 
+            "childrenallowed": "false", 
+            "price": "the price for main courses ranges from 5 pounds 10 to 24 pounds and the price for a cheapest glass of wine is 4 pounds 10 and the price for a cappuccino is 1 pound 95", 
+            "hastv": "true", 
+            "hasinternet": "true", 
+            "phone": "01223352607", 
+            "near": [
+                "castle galleries", 
+                "christs college", 
+                "gonville and caius college", 
+                "great saint marys church", 
+                "holy trinity church", 
+                "kings college", 
+                "michaelhouse centre"
+            ], 
+            "pricerange": "moderate", 
+            "postcode": "cb2 3nj", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "stazione restaurant and coffee bar"
+        }, 
+        {
+            "addr": "17 trinity street", 
+            "area": "centre", 
+            "food": [
+                "italian"
+            ], 
+            "childrenallowed": "true", 
+            "price": "the price for main courses ranges from 7 pounds 50 to 16 pounds 75 and the price for a cheapest glass of wine is 6 pounds 25 and the price for a cappuccino is 2 pounds 10", 
+            "hastv": "false", 
+            "hasinternet": "true", 
+            "phone": "01223352166", 
+            "near": [
+                "gonville and caius college", 
+                "great saint marys church", 
+                "holy trinity church", 
+                "michaelhouse centre", 
+                "museum of archaeology and anthropology", 
+                "old schools", 
+                "trinity college"
+            ], 
+            "pricerange": "moderate", 
+            "postcode": "cb2 1tb", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "strada"
+        }, 
+        {
+            "addr": "40-42 mill road", 
+            "area": "riverside", 
+            "food": [
+                "cafe food"
+            ], 
+            "price": "the price for main courses ranges from 1 pound 99 to 5 pounds 60", 
+            "phone": "01223461323", 
+            "near": [], 
+            "pricerange": "cheap", 
+            "postcode": "cb1 2ad", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "subway"
+        }, 
+        {
+            "addr": "10-15 market passage", 
+            "area": "centre", 
+            "food": [
+                "french"
+            ], 
+            "childrenallowed": "false", 
+            "price": "the price for main courses ranges from 5 pounds 45 to 10 pounds 95 and the entrance is free of charge", 
+            "hastv": "false", 
+            "hasinternet": "true", 
+            "phone": "01223462277", 
+            "near": [], 
+            "pricerange": "free", 
+            "postcode": "cb2 3pf", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "ta bouche"
+        }, 
+        {
+            "addr": "68 histon road", 
+            "area": "castle hill", 
+            "food": [
+                "indian"
+            ], 
+            "price": "the price for main courses ranges from 1 pound 70 to 3 pounds 95", 
+            "phone": "01223506055", 
+            "near": [], 
+            "pricerange": "cheap", 
+            "postcode": "cb4 3le", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "tandoori palace"
+        }, 
+        {
+            "addr": "napier street", 
+            "area": "riverside", 
+            "food": [
+                "chinese"
+            ], 
+            "price": "the price for main courses ranges from 5 pounds to 7 pounds 80", 
+            "phone": "01223902135", 
+            "near": [], 
+            "pricerange": "cheap", 
+            "postcode": "cb1 1hr", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "tang chinese"
+        }, 
+        {
+            "addr": "6-8 quayside", 
+            "area": "riverside", 
+            "food": [
+                "japanese"
+            ], 
+            "childrenallowed": "true", 
+            "price": "the price for main courses ranges from 2 pounds 80 to 11 pounds 80 and the price for a glass of wine ranges from 3 pounds 80 to 5 pounds 80", 
+            "hastv": "false", 
+            "hasinternet": "false", 
+            "phone": "01223882288", 
+            "near": [
+                "cambridge and county folk museum", 
+                "magdalene college", 
+                "saint johns college"
+            ], 
+            "pricerange": "moderate", 
+            "postcode": "cb5 8ab", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "teri-aki"
+        }, 
+        {
+            "addr": "17 magdalene street", 
+            "area": "riverside", 
+            "food": [
+                "east asian"
+            ], 
+            "price": "the price for main courses ranges from 8 pounds 50 to 14 pounds", 
+            "phone": "01223362456", 
+            "near": [
+                "magdalene college"
+            ], 
+            "pricerange": "expensive", 
+            "postcode": "cb3 0af", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "thanh binh"
+        }, 
+        {
+            "addr": "4 king's parade", 
+            "area": "centre", 
+            "food": [
+                "turkish"
+            ], 
+            "price": "the price for main courses ranges from 9 pounds to 11 pounds 50 and the price for a cappuccino is 2 pounds 25", 
+            "phone": "01223308448", 
+            "near": [
+                "clare college", 
+                "gonville and caius college", 
+                "great saint marys church", 
+                "holy trinity church", 
+                "kings college", 
+                "michaelhouse centre", 
+                "museum of archaeology and anthropology", 
+                "old schools", 
+                "primavera"
+            ], 
+            "pricerange": "expensive", 
+            "postcode": "cb2 1sj", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "the agora at the copper kettle"
+        }, 
+        {
+            "addr": "russell court", 
+            "hastv": "true", 
+            "food": [], 
+            "childrenallowed": "true", 
+            "price": "the price for main courses ranges from 3 pounds 75 to 8 pounds 95 and the price for a cheapest pint of beer is 3 pounds", 
+            "hasinternet": "false", 
+            "phone": "01223316722", 
+            "near": [], 
+            "pricerange": "moderate", 
+            "postcode": "cb2 1hw", 
+            "type": [
+                "pub"
+            ], 
+            "name": "the alma"
+        }, 
+        {
+            "addr": "silver street", 
+            "hastv": "true", 
+            "food": [], 
+            "childrenallowed": "true", 
+            "price": "the price for main courses ranges from 6 pounds 50 to 11 pounds and the price for a cheapest pint of beer is 2 pounds 70", 
+            "area": "castle hill", 
+            "hasinternet": "false", 
+            "phone": "01223353554", 
+            "near": [], 
+            "pricerange": "moderate", 
+            "postcode": "cb3 9el", 
+            "type": [
+                "pub"
+            ], 
+            "name": "the anchor"
+        }, 
+        {
+            "addr": "69-73 regent street", 
+            "hastv": "true", 
+            "food": [], 
+            "childrenallowed": "true", 
+            "price": "the price for main courses ranges from 4 pounds 49 to 7 pounds 49 and the price for a cheapest glass of wine is 3 pounds 30 and the price for a cheapest pint of beer is 2 pounds 40", 
+            "area": "riverside", 
+            "hasinternet": "false", 
+            "phone": "01223323405", 
+            "near": [], 
+            "pricerange": "cheap", 
+            "postcode": "cb2 1ab", 
+            "type": [
+                "pub"
+            ], 
+            "name": "the avery"
+        }, 
+        {
+            "addr": "176 east road", 
+            "hastv": "true", 
+            "food": [], 
+            "childrenallowed": "true", 
+            "price": "the price for main courses ranges from 6 pounds to 8 pounds 49 and the price for a cheapest pint of beer is 2 pounds 25", 
+            "area": "riverside", 
+            "hasinternet": "true", 
+            "phone": "01223304121", 
+            "near": [
+                "ruskin gallery"
+            ], 
+            "pricerange": "cheap", 
+            "postcode": "cb1 1bg", 
+            "type": [
+                "pub"
+            ], 
+            "name": "the bakers"
+        }, 
+        {
+            "addr": "bridge street", 
+            "hastv": "true", 
+            "food": [], 
+            "childrenallowed": "true", 
+            "price": "the price for main courses ranges from 4 pounds 99 to 7 pounds 99 and the price for a cheapest pint of beer is 2 pounds 55", 
+            "hasinternet": "false", 
+            "phone": "01223505022", 
+            "near": [], 
+            "pricerange": "cheap", 
+            "postcode": "cb2 1uf", 
+            "type": [
+                "pub"
+            ], 
+            "name": "the baron of beef"
+        }, 
+        {
+            "addr": "millers yard, mill lane", 
+            "area": "riverside", 
+            "food": [
+                "indian"
+            ], 
+            "price": "the price for main courses ranges from 4 pounds 95 to 10 pounds 95", 
+            "phone": "01223360409", 
+            "near": [], 
+            "pricerange": "moderate", 
+            "postcode": "cb2 1rq", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "the bombay brasserie"
+        }, 
+        {
+            "addr": "1 king's parade", 
+            "area": "girton", 
+            "food": [
+                "traditional"
+            ], 
+            "price": "the price for main courses ranges from 11 pounds to 15 pounds", 
+            "phone": "01223359506", 
+            "near": [], 
+            "pricerange": "expensive", 
+            "postcode": "cb2 1sj", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "the cambridge chop house"
+        }, 
+        {
+            "addr": "corn exchange street", 
+            "area": "centre", 
+            "food": [
+                "italian"
+            ], 
+            "childrenallowed": "true", 
+            "price": "the price for main courses ranges from 6 pounds to 9 pounds and the price for a cheapest glass of wine is 2 pounds 75 and the price for a cheapest pint of beer is 3 pounds 25", 
+            "hastv": "true", 
+            "hasinternet": "true", 
+            "phone": "01223308871", 
+            "near": [
+                "great saint marys church", 
+                "pembroke college", 
+                "primavera", 
+                "whipple museum of the history of science"
+            ], 
+            "pricerange": "expensive", 
+            "postcode": "cb2 3qf", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "the cow"
+        }, 
+        {
+            "addr": "71 castle street", 
+            "area": "castle hill", 
+            "food": [
+                "indian"
+            ], 
+            "price": "the price for main courses ranges from 5 pounds 95 to 12 pounds", 
+            "phone": "01223312569", 
+            "near": [], 
+            "pricerange": "moderate", 
+            "postcode": "cb3 0ah", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "the curry house"
+        }, 
+        {
+            "addr": "5 jordan's yard, bridge street", 
+            "area": "girton", 
+            "food": [
+                "indian"
+            ], 
+            "price": "the price for main courses ranges from 6 pounds 50 to 12 pounds 95", 
+            "phone": "01223324351", 
+            "near": [], 
+            "pricerange": "moderate", 
+            "postcode": "cb2 1ug", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "the curry king"
+        }, 
+        {
+            "addr": "106 mill road", 
+            "area": "romsey", 
+            "food": [
+                "indian"
+            ], 
+            "price": "the price for main courses ranges from 2 pounds 95 to 12 pounds 50", 
+            "phone": "01223350407", 
+            "near": [], 
+            "pricerange": "moderate", 
+            "postcode": "cb1 2bd", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "the curry queen tandoori"
+        }, 
+        {
+            "addr": "8 benet street", 
+            "area": "centre", 
+            "food": [
+                "traditional"
+            ], 
+            "childrenallowed": "true", 
+            "price": "the price for main courses ranges from 5 pounds 95 to 12 pounds 95 and the price for a cheapest glass of wine is 3 pounds 50 and the price for a cheapest pint of beer is 3 pounds", 
+            "hastv": "false", 
+            "hasinternet": "false", 
+            "phone": "01223505020", 
+            "near": [
+                "gonville and caius college", 
+                "great saint marys church", 
+                "kings college", 
+                "museum of archaeology and anthropology", 
+                "old schools", 
+                "primavera", 
+                "saint catharines college", 
+                "whipple museum of the history of science"
+            ], 
+            "pricerange": "moderate", 
+            "postcode": "cb2 3qn", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "the eagle"
+        }, 
+        {
+            "addr": "73 humberstone road", 
+            "area": "riverside", 
+            "food": [
+                "drinks and snacks only"
+            ], 
+            "childrenallowed": "false", 
+            "price": "the price for main courses ranges from 6 pounds 75 to 12 pounds 95 and the price for a cheapest glass of wine is 3 pounds 50", 
+            "hastv": "true", 
+            "hasinternet": "true", 
+            "phone": "01223902183", 
+            "near": [], 
+            "pricerange": "moderate", 
+            "postcode": "cb4 1jd", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "the fleur bar and bistro"
+        }, 
+        {
+            "addr": "12 regent street", 
+            "area": "centre", 
+            "food": [
+                "pub food"
+            ], 
+            "childrenallowed": "true", 
+            "price": "the price for main courses ranges from 4 pounds 95 to 7 pounds 95 and the price for a glass of wine ranges from 3 pounds to 4 pounds 50 and the price for a cheapest pint of beer is 2 pounds", 
+            "hastv": "true", 
+            "hasinternet": "true", 
+            "phone": "01223366540", 
+            "near": [], 
+            "pricerange": "cheap", 
+            "postcode": "cb2 1db", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "the fountain inn"
+        }, 
+        {
+            "addr": "72 regent street", 
+            "area": "riverside", 
+            "food": [
+                "indian"
+            ], 
+            "price": "the price for main courses ranges from 7 pounds 50 to 12 pounds 90", 
+            "phone": "01223353942", 
+            "near": [], 
+            "pricerange": "moderate", 
+            "postcode": "cb2 1dp", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "the gandhi"
+        }, 
+        {
+            "addr": "111-113 mill road", 
+            "area": "romsey", 
+            "food": [
+                "indian"
+            ], 
+            "price": "the price for main courses ranges from 4 pounds 75 to 9 pounds 95", 
+            "phone": "01223329432", 
+            "near": [], 
+            "pricerange": "moderate", 
+            "postcode": "cb1 2az", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "the golden curry"
+        }, 
+        {
+            "addr": "19 hatter street", 
+            "area": "riverside", 
+            "food": [
+                "chinese"
+            ], 
+            "price": "the price for main courses ranges from 2 pounds 20 to 5 pounds 50", 
+            "phone": "01284754311", 
+            "near": [], 
+            "pricerange": "cheap", 
+            "postcode": "ip33 1ne", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "the golden palace"
+        }, 
+        {
+            "addr": "33 kingston street", 
+            "area": "romsey", 
+            "food": [
+                "pub food"
+            ], 
+            "childrenallowed": "true", 
+            "price": "the price for main courses ranges from 3 pounds to 12 pounds 50 and the price for a cheapest pint of beer is 2 pounds 20", 
+            "hastv": "true", 
+            "hasinternet": "true", 
+            "phone": "01223319414", 
+            "near": [], 
+            "pricerange": "cheap", 
+            "postcode": "cb1 2nu", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "the kingston arms"
+        }, 
+        {
+            "addr": "74 mill road", 
+            "area": "romsey", 
+            "food": [
+                "indian"
+            ], 
+            "price": "the price for main courses ranges from 4 pounds 50 to 8 pounds 15", 
+            "phone": "01223361435", 
+            "near": [], 
+            "pricerange": "cheap", 
+            "postcode": "cb1 2as", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "the kohinoor tandoori restaurant"
+        }, 
+        {
+            "addr": "high street, milton", 
+            "area": "fen ditton", 
+            "food": [
+                "pub food"
+            ], 
+            "childrenallowed": "true", 
+            "price": "the price for main courses ranges from 5 pounds to 15 pounds and the price for a cheapest pint of beer is 3 pounds", 
+            "hastv": "true", 
+            "hasinternet": "false", 
+            "phone": "01223860202", 
+            "near": [], 
+            "pricerange": "moderate", 
+            "postcode": "cb4 6df", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "the lion and lamb"
+        }, 
+        {
+            "addr": "6 lensfield road", 
+            "area": "trumpington", 
+            "food": [
+                "contemporary"
+            ], 
+            "price": "the price for main courses ranges from 11 pounds 50 to 17 pounds 75", 
+            "phone": "01223323361", 
+            "near": [], 
+            "pricerange": "expensive", 
+            "postcode": "cb2 1eg", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "the oak bistro"
+        }, 
+        {
+            "addr": "89 high saint, girton", 
+            "area": "girton", 
+            "food": [
+                "traditional"
+            ], 
+            "childrenallowed": "true", 
+            "price": "the price for main courses ranges from 8 pounds 50 to 12 pounds 95 and the price for a cheapest pint of beer is 2 pounds 90", 
+            "hastv": "false", 
+            "hasinternet": "false", 
+            "phone": "01223277217", 
+            "near": [], 
+            "pricerange": "moderate", 
+            "postcode": "cb3 0qd", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "the old crown"
+        }, 
+        {
+            "addr": "20 green street, histon", 
+            "area": "girton", 
+            "food": [
+                "chinese"
+            ], 
+            "price": "the price for main courses ranges from 2 pounds 80 to 24 pounds", 
+            "phone": "01223233766", 
+            "near": [], 
+            "pricerange": "expensive", 
+            "postcode": "cb4 9ja", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "the phoenix chinese restaurant"
+        }, 
+        {
+            "addr": "3 pound hill", 
+            "area": "castle hill", 
+            "food": [
+                "contemporary"
+            ], 
+            "childrenallowed": "true", 
+            "price": "the price for main courses ranges from 11 pounds to 15 pounds and the price for a cheapest pint of beer is 3 pounds 30", 
+            "hastv": "true", 
+            "hasinternet": "true", 
+            "phone": "01223902167", 
+            "near": [
+                "magdalene college", 
+                "museum of classical archaeology"
+            ], 
+            "pricerange": "expensive", 
+            "postcode": "cb3 0ae", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "the punter"
+        }, 
+        {
+            "addr": "11 barton road, newnham", 
+            "area": "newnham", 
+            "food": [
+                "italian"
+            ], 
+            "childrenallowed": "true", 
+            "price": "the price for main courses ranges from 4 pounds 25 to 11 pounds 95 and the price for a cappuccino is 1 pound 95 and the price for a cheapest pint of beer is 2 pounds 65", 
+            "hastv": "true", 
+            "hasinternet": "true", 
+            "phone": "01223902124", 
+            "near": [], 
+            "pricerange": "moderate", 
+            "postcode": "cb3 9jz", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "the red bull"
+        }, 
+        {
+            "addr": "37 newnham road", 
+            "area": "riverside", 
+            "food": [
+                "indian"
+            ], 
+            "price": "the price for main courses ranges from 3 pounds 50 to 10 pounds", 
+            "phone": "01223902170", 
+            "near": [], 
+            "pricerange": "cheap", 
+            "postcode": "cb3 9ey", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "the rice boat"
+        }, 
+        {
+            "addr": "36-38 hills road", 
+            "area": "riverside", 
+            "food": [
+                "indian"
+            ], 
+            "price": "the price for main courses ranges from 5 pounds 25 to 10 pounds 95", 
+            "phone": "01223354679", 
+            "near": [], 
+            "pricerange": "moderate", 
+            "postcode": "cb2 1la", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "the saffron brasserie"
+        }, 
+        {
+            "addr": "9 high saint, fulbourn", 
+            "area": "cherry hinton", 
+            "food": [
+                "pub food"
+            ], 
+            "childrenallowed": "true", 
+            "price": "the price for main courses ranges from 8 pounds to 12 pounds and the price for a cheapest pint of beer is 2 pounds 90", 
+            "hastv": "true", 
+            "hasinternet": "false", 
+            "phone": "01223880244", 
+            "near": [], 
+            "pricerange": "moderate", 
+            "postcode": "cb1 5dh", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "the six bells, high saint"
+        }, 
+        {
+            "addr": "67 lensfield road", 
+            "area": "riverside", 
+            "food": [
+                "contemporary"
+            ], 
+            "childrenallowed": "false", 
+            "price": "the price for main courses ranges from 5 pounds 95 to 12 pounds 95 and the price for a glass of wine ranges from 4 pounds 95 to 6 pounds 95", 
+            "hastv": "true", 
+            "hasinternet": "true", 
+            "phone": "01223367684", 
+            "near": [
+                "the fitzwilliam museum"
+            ], 
+            "pricerange": "expensive", 
+            "postcode": "cb2 1en", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "the snug, lensfield road"
+        }, 
+        {
+            "addr": "170 east road", 
+            "area": "riverside", 
+            "food": [
+                "contemporary"
+            ], 
+            "childrenallowed": "false", 
+            "price": "the price for main courses ranges from 5 pounds 95 to 12 pounds 95 and the price for a glass of wine ranges from 4 pounds 95 to 6 pounds 95", 
+            "hastv": "true", 
+            "hasinternet": "true", 
+            "phone": "01223367888", 
+            "near": [], 
+            "pricerange": "expensive", 
+            "postcode": "cb1 1db", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "the snug, east road"
+        }, 
+        {
+            "addr": "196 cherry hinton road", 
+            "area": "addenbrookes", 
+            "food": [
+                "italian"
+            ], 
+            "price": "the price for main courses ranges from 9 pounds to 16 pounds 95", 
+            "phone": "01223243533", 
+            "near": [], 
+            "pricerange": "expensive", 
+            "postcode": "cb1 7an", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "the sorrento hotel and restaurant"
+        }, 
+        {
+            "addr": "5 dover street", 
+            "area": "riverside", 
+            "food": [
+                "pub food"
+            ], 
+            "childrenallowed": "false", 
+            "price": "the price for main courses ranges from 5 pounds 50 to 8 pounds 25 and the price for a cheapest pint of beer is 3 pounds", 
+            "hastv": "true", 
+            "hasinternet": "false", 
+            "phone": "01223324553", 
+            "near": [], 
+            "pricerange": "moderate", 
+            "postcode": "cb1 1dy", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "the tram depot"
+        }, 
+        {
+            "addr": "church lane, trumpington", 
+            "area": "trumpington", 
+            "food": [
+                "traditional"
+            ], 
+            "childrenallowed": "true", 
+            "price": "the price for main courses ranges from 4 pounds 50 to 10 pounds and the price for a cheapest pint of beer is 3 pounds", 
+            "hastv": "true", 
+            "hasinternet": "true", 
+            "phone": "01223845102", 
+            "near": [], 
+            "pricerange": "moderate", 
+            "postcode": "cb2 2la", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "the unicorn steak and ale house"
+        }, 
+        {
+            "addr": "14 trinity street", 
+            "area": "centre", 
+            "food": [
+                "contemporary"
+            ], 
+            "childrenallowed": "true", 
+            "price": "the price for main courses ranges from 7 pounds 50 to 21 pounds and the price for a glass of wine ranges from 3 pounds 50 to 5 pounds 50 and the price for a cheapest pint of beer is 3 pounds 60", 
+            "hastv": "true", 
+            "hasinternet": "true", 
+            "phone": "01223902123", 
+            "near": [
+                "gonville and caius college", 
+                "holy trinity church", 
+                "michaelhouse centre", 
+                "trinity college"
+            ], 
+            "pricerange": "expensive", 
+            "postcode": "cb2 1tb", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "the vaults"
+        }, 
+        {
+            "addr": "337 newmarket road", 
+            "area": "riverside", 
+            "food": [
+                "thai"
+            ], 
+            "childrenallowed": "true", 
+            "price": "the price for main courses ranges from 8 pounds 50 to 9 pounds 70 and the price for a cheapest pint of beer is 3 pounds 30", 
+            "hastv": "false", 
+            "hasinternet": "false", 
+            "phone": "01223566554", 
+            "near": [], 
+            "pricerange": "expensive", 
+            "postcode": "cb5 8je", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "the wrestlers"
+        }, 
+        {
+            "addr": "80 maids causeway", 
+            "area": "riverside", 
+            "food": [
+                "pub food"
+            ], 
+            "childrenallowed": "true", 
+            "price": "the price for main courses ranges from 3 pounds 95 to 7 pounds 50 and the price for a cheapest pint of beer is 2 pounds 90", 
+            "hastv": "false", 
+            "hasinternet": "true", 
+            "phone": "01223308465", 
+            "near": [], 
+            "pricerange": "moderate", 
+            "postcode": "cb5 8dd", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "the zebra"
+        }, 
+        {
+            "addr": "24 cambridge science park, milton road", 
+            "area": "chesterton", 
+            "food": [
+                "contemporary"
+            ], 
+            "price": "the price for main courses ranges from 6 pounds to 15 pounds", 
+            "phone": "01223395800", 
+            "near": [], 
+            "pricerange": "moderate", 
+            "postcode": "cb4 0fn", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "twenty-four"
+        }, 
+        {
+            "addr": "12 saint johns street", 
+            "area": "centre", 
+            "food": [
+                "chinese"
+            ], 
+            "price": "the price for main courses ranges from 6 pounds to 10 pounds", 
+            "phone": "01223358281", 
+            "near": [
+                "gonville and caius college", 
+                "michaelhouse centre", 
+                "saint johns college", 
+                "trinity college"
+            ], 
+            "pricerange": "moderate", 
+            "postcode": "cb2 1tw", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "ugly duckling"
+        }, 
+        {
+            "addr": "35 saint andrew's street", 
+            "area": "girton", 
+            "food": [
+                "greek"
+            ], 
+            "price": "the price for main courses ranges from 9 pounds 95 to 18 pounds 95", 
+            "phone": "01223356060", 
+            "near": [], 
+            "pricerange": "expensive", 
+            "postcode": "cb2 3ar", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "varsity restaurant"
+        }, 
+        {
+            "addr": "36a saint andrews street", 
+            "area": "centre", 
+            "food": [
+                "fusion"
+            ], 
+            "price": "the price for main courses ranges from 6 pounds 65 to 11 pounds 50", 
+            "phone": "01223462354", 
+            "near": [
+                "emmanuel college"
+            ], 
+            "pricerange": "moderate", 
+            "postcode": "cb2 3ar", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "wagamama"
+        }, 
+        {
+            "addr": "stow road, stow-cum-quy", 
+            "area": "barnwell", 
+            "food": [
+                "traditional"
+            ], 
+            "childrenallowed": "false", 
+            "price": "the price for main courses ranges from 4 pounds to 13 pounds and the price for a cheapest pint of beer is 2 pounds 65", 
+            "hastv": "true", 
+            "hasinternet": "true", 
+            "phone": "01223812196", 
+            "near": [], 
+            "pricerange": "moderate", 
+            "postcode": "cb5 9ad", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "wheatsheaf"
+        }, 
+        {
+            "addr": "18 high street, trumpington", 
+            "area": "trumpington", 
+            "food": [
+                "chinese"
+            ], 
+            "price": "the price for main courses ranges from 12 pounds 80 to 12 pounds 80", 
+            "phone": "01223506248", 
+            "near": [], 
+            "pricerange": "expensive", 
+            "postcode": "cb2 2lp", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "wok n grill"
+        }, 
+        {
+            "addr": "7-9 king street", 
+            "area": "centre", 
+            "food": [
+                "chinese takeaway", 
+                "japanese"
+            ], 
+            "price": "the price for main courses ranges from 7 pounds 30 to 11 pounds 40", 
+            "phone": "01223518111", 
+            "near": [
+                "sidney sussex college"
+            ], 
+            "pricerange": "moderate", 
+            "postcode": "cb1 1lh", 
+            "type": [
+                "restaurant"
+            ], 
+            "name": "yippee noodle bar"
+        }
+    ]
+}

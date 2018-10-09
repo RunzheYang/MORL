@@ -1,0 +1,12 @@
+{
+    "allowedforkids":"kidsallowed",
+    ",":";",
+    "request(":"?request(",
+    "confirm(":"?confirm(",
+    "reqmore(":"?reqmore(",
+    "select(":"?select(",
+    "\"0\"":"\"false\"",
+    "\"1\"":"\"true\"",
+    "inform(name=none,":"inform_no_match(",
+    "addr=":"address="
+}

@@ -1,0 +1,28 @@
+{
+    "real2abstract": {
+        "name": "name", 
+        "family": "slot05", 
+        "type": "type", 
+        "price": "infoslot02", 
+        "drive": "infoslot00", 
+        "dimension": "infoslot01", 
+        "pricerange": "slot01", 
+        "batteryrating": "slot00", 
+        "weightrange": "slot02", 
+        "isforbusinesscomputing": "slot03", 
+        "driverange": "slot04"
+    }, 
+    "abstract2real": {
+        "slot02": "weightrange", 
+        "slot03": "isforbusinesscomputing", 
+        "slot00": "batteryrating", 
+        "slot01": "pricerange", 
+        "name": "name", 
+        "slot04": "driverange", 
+        "slot05": "family", 
+        "infoslot02": "price", 
+        "infoslot00": "drive", 
+        "infoslot01": "dimension", 
+        "type": "type"
+    }
+}

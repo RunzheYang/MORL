@@ -1,0 +1,36 @@
+{
+    "real2abstract": {
+        "screensizerange": "slot00", 
+        "usb": "slot03", 
+        "hdmi": "slot01", 
+        "eco": "slot04", 
+        "series": "slot02", 
+        "price": "infoslot06", 
+        "accessories": "infoslot01", 
+        "cabinet": "infoslot03", 
+        "power": "infoslot05", 
+        "pricerange": "slot05", 
+        "screensize": "infoslot02", 
+        "audio": "infoslot04", 
+        "type": "type", 
+        "pixels": "infoslot00", 
+        "name": "name"
+    }, 
+    "abstract2real": {
+        "slot02": "series", 
+        "slot03": "usb", 
+        "slot00": "screensizerange", 
+        "slot01": "hdmi", 
+        "name": "name", 
+        "slot04": "eco", 
+        "slot05": "pricerange", 
+        "infoslot02": "screensize", 
+        "infoslot03": "cabinet", 
+        "infoslot00": "pixels", 
+        "infoslot01": "accessories", 
+        "infoslot06": "price", 
+        "infoslot04": "audio", 
+        "infoslot05": "power", 
+        "type": "type"
+    }
+}

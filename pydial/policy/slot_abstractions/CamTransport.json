@@ -1,0 +1,20 @@
+{
+    "real2abstract": {
+        "addr": "infoslot00", 
+        "area": "slot01", 
+        "phone": "infoslot01", 
+        "postcode": "infoslot02", 
+        "transtype": "slot00", 
+        "type": "type", 
+        "name": "name"
+    }, 
+    "abstract2real": {
+        "slot00": "transtype", 
+        "slot01": "area", 
+        "name": "name", 
+        "infoslot02": "postcode", 
+        "infoslot00": "addr", 
+        "infoslot01": "phone", 
+        "type": "type"
+    }
+}

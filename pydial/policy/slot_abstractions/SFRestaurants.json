@@ -1,0 +1,30 @@
+{
+    "real2abstract": {
+        "goodformeal": "slot03", 
+        "name": "name", 
+        "area": "slot05", 
+        "food": "slot04", 
+        "price": "infoslot00", 
+        "allowedforkids": "slot01", 
+        "phone": "requestslot01", 
+        "near": "slot02", 
+        "pricerange": "slot00", 
+        "postcode": "requestslot00", 
+        "type": "type", 
+        "addr": "requestslot02"
+    }, 
+    "abstract2real": {
+        "slot02": "near", 
+        "slot03": "goodformeal", 
+        "slot00": "pricerange", 
+        "slot01": "allowedforkids", 
+        "name": "name", 
+        "slot04": "food", 
+        "slot05": "area", 
+        "requestslot01": "phone", 
+        "requestslot02": "addr", 
+        "requestslot00": "postcode", 
+        "infoslot00": "price", 
+        "type": "type"
+    }
+}

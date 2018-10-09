@@ -1,0 +1,20 @@
+{
+    "real2abstract": {
+        "shopkind": "slot01", 
+        "addr": "infoslot00", 
+        "area": "slot00", 
+        "phone": "infoslot01", 
+        "postcode": "infoslot02", 
+        "type": "type", 
+        "name": "name"
+    }, 
+    "abstract2real": {
+        "slot00": "area", 
+        "slot01": "shopkind", 
+        "name": "name", 
+        "infoslot02": "postcode", 
+        "infoslot00": "addr", 
+        "infoslot01": "phone", 
+        "type": "type"
+    }
+}

@@ -1,0 +1,18 @@
+The Jupyter Notebook App is a server-client application that allows editing and running
+notebook documents via a web browser. However, no internet access is required.
+
+# INSTALLATION
+It is recommended to install Jupyter through Anaconda or conda as they install this package by default.
+Alternatively just run:
+pip install jupyter
+
+# RUNNING
+To open jupyter run in terminal (cd to cued-pydial before):
+$jupyter notebook
+
+This will launch a new browser window (or a new tab) showing the Notebook Dashboard,
+a sort of control panel that allows (among other things) to select which notebook to open.
+Navigate to Tutorials folder to see available notebooks.
+
+To open on of them just click on it.  You can run the notebook document step-by-step
+(one cell a time) by pressing shift + enter. For more advanced options just press "h".

@@ -1,0 +1,28 @@
+{
+    "real2abstract": {
+        "dogsallowed": "slot00", 
+        "name": "name", 
+        "area": "slot03", 
+        "hasinternet": "slot05", 
+        "phone": "requestslot01", 
+        "near": "slot02", 
+        "pricerange": "slot01", 
+        "postcode": "requestslot00", 
+        "acceptscreditcards": "slot04", 
+        "type": "type", 
+        "addr": "requestslot02"
+    }, 
+    "abstract2real": {
+        "slot02": "near", 
+        "slot03": "area", 
+        "slot00": "dogsallowed", 
+        "slot01": "pricerange", 
+        "name": "name", 
+        "slot04": "acceptscreditcards", 
+        "slot05": "hasinternet", 
+        "requestslot02": "addr", 
+        "requestslot00": "postcode", 
+        "requestslot01": "phone", 
+        "type": "type"
+    }
+}

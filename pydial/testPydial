@@ -1,0 +1,28 @@
+echo "Running PyDial Tests"
+
+if [ ! -d tests ]; then
+	echo "No tests directory - testing aborted"
+	exit -1
+fi
+
+rm -f timeout
+rm -f _testlogs/*
+let count=0
+warn=0
+errs=0
+for f in tests/test_*.py; do
+	(time python $f ) >> timeout 2>&1
+	t=`grep real timeout | tr -d '[:space:]' | sed 's/real//'`
+	rm timeout
+	let count=count+1
+	printf "%3d %-30s time %s\n" $count $f $t
+done
+warn=`grep WARN _testlogs/*.log | wc -l`
+errs=`grep ERROR _testlogs/*.log | wc -l`
+printf "%d tests:%4d warnings,%4d errors\n" $count $warn $errs
+if [ $errs -gt 0 ]; then
+	grep ERROR _testlogs/*.log
+fi
+printf "See test logs in _testlogs for details"
+echo
+

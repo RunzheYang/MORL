@@ -1,0 +1,606 @@
+# NLG message generation rules FOR TOSHIBA SYSTEM.
+
+###############################################
+### jason williams notes - this file is derived from his toptable template.
+###############################################3
+# Last modified by JS on June 06, 2006
+#
+# This file consists of two parts:
+#
+# The first section is a list of rules defining system prompts for dialogue acts.
+# You can use $A, $B, $C as variables for slot names and $U, $V, $W, $X, $Y, $Z as variables for value names.
+# You can use vertical bars "|" to define several messages for the same dialogue act.\
+#
+# The second section contains a list of venues and locations. You can copy and paste this part from JVrules.txt.
+# Just add an asterisk "*" to all venue and location names that require the article "the" in sentences
+# like "I can recommend X"
+###############################################
+
+####################################################################################################3
+### END NOTES SECTION.
+####################################################################################################3
+
+
+# THIS doesn't work ... rewrite each as individual macros below
+%isORhas($Y){
+	$family : "is";
+	$pricerange : "is";
+	$weightrange : "is";
+	$batteryrating : "is";
+	$driverange : "has";
+	$isforbusinesscomputing : "is";
+	$price : "has";
+	$drive : "has";
+	$dimension : "has";
+}
+
+%family_j($Y){
+	$Y : "is";
+}
+
+%pricerange_j($Y){
+	$Y : "is";
+}
+
+%price_j($Y){
+	$Y : "is";
+}
+
+%weightrange_j($Y){
+	$Y : "is";
+}
+
+%batteryrating_j($Y){
+	$Y : "has";
+}
+
+%isforbusinesscomputing_j($Y){
+	$Y : "is";
+}
+
+%driverange_j($Y){
+	$Y : "is";
+}
+
+%drive_j($Y){
+	$Y : "has";
+}
+
+%dimension_j($Y){
+	$Y : "has";
+}
+
+
+########
+## end joining words logic
+########
+
+
+%count_rest($count) {
+  0 : "are no laptops";
+  1 : "is one laptop";
+  $count : "are $count laptops";
+}
+
+%q($X){
+    type : "What product type are you looking for (eg laptop)";
+    family : "What product family would you like: satellite, satellite pro, tecra, or portege";
+    weightrange : "What weight range would you like";
+    pricerange : "What price range would you like";
+    driverange : "What hard drive size range would you like";
+    batteryrating : "Would you like your battery rating to be standard, good, or exceptional";
+    isforbusinesscomputing : "Would you like your machine for business computing";
+}
+
+##############################################################
+### str replacements used during searching:
+##############################################################
+
+%type_str($type) {
+  dontcare : "if you don't care about product type";
+  $type : "it is a $type";
+}
+
+%family_str($family) {
+  dontcare : "in all prduct family";
+  $family : "in the $family family";
+}
+
+
+%pricerange_str($price) {
+  dontcare : "if you don't care about the price range";
+  $price : "in the $price price range";
+}
+
+%weightrange_str($weight) {
+  dontcare : "if you don't care about the weight range";
+  $weight : "in the $weight weight range";
+}
+
+
+%driverange_str($drive) {
+  dontcare : "if you don't care about the drive size range";
+  $drive : "in the $drive size range";
+}
+
+
+%batteryrating_str($batteryrating) {
+  dontcare : "if you don't care about the battery rating";
+  $batteryrating : "has a $batteryrating battery rating";
+}
+
+
+%isforbusinesscomputing_str($isforbusinesscomputing) {
+  dontcare : "if you don't care whether it is used for business computing";
+  1: "which is used for business computing";
+  0: "which is not used for business computing";
+  none : "I don't know if it is used for business computing";
+}
+
+
+%price_str($price) {
+    none :  "I don't know its price";
+    $price : "the price is $price";
+}
+
+%drive_str($drive) {
+  none : "I don't know its drive size";	
+  $drive : "Its actuall drive size is $drive";
+}
+
+##  %dimension_str($dimension) {
+##  none : "I don't know its dimension";	
+##  $dimension : "Its dimension is $dimension";
+## }
+
+%dimension_str($dimension) {
+  none : "I don't know its dimension";
+  "284 x 208.6 x 13.8 - 25.1": "Its dimensions are 25 inches";
+  "326.5 x 213.0 x 19.9": "Its dimensions are 20 inches";
+  "339.6 x 238.3 x 20.9": "Its dimensions are 21 inches";
+  "377.5 x 249.5 x 21": "Its dimensions are 21 inches";
+  "377.5 x 244.0 x 30.15": "Its dimensions are 30 inches";
+  "413.0 x 268.0 x 31.3 - 33.7": "Its dimensions are 34 inches";
+  "418.4 x 272.5 x 28.0 - 33.7": "Its dimensions are 34 inches";
+  "418.2 x 272.2 x 28.0 - 33.7": "Its dimensions are 34 inches";
+  "331.3 x 230 x 24.6": "Its dimensions are 25 inches";
+  "377.5 x 244.0 x 24.4": "Its dimensions are 24 inches";
+  "380.0 x 242.0 x 30.8 - 33.35": "Its dimensions are 33 inches";
+  "380.0 x 242.0 x 32.38 - 33.25": "Its dimensions are 33 inches";
+  "380.0 x 242.0 x 33.52": "Its dimensions are 34 inches";
+  "380.9 x 253.9 x 34.9": "Its dimensions are 34 inches";
+  "379.0 x 252.0 x 20.4": "Its dimensions are 20 inches";
+  "338.0 x 236.0 x 20.4": "Its dimensions are 20 inches";
+  "380.0 x 253.9 x 34.9": "Its dimensions are 35 inches";
+  "341.0 x 239.0 x 19.9 - 27.4": "Its dimensions are 27 inches";
+  "379.0 x 252.0 x 20.8 - 25.4": "Its dimensions are 25 inches";
+  "284 x 308.6 x 13.8 - 21.5": "Its dimensions are 22 inches";
+  "329 x 221 x 26.8 -30.62": "Its dimensions are 31 inches";
+  "299.0 x 220.5 x 16.9 - 19.9": "Its dimensions are 20 inches";
+  "316.0 x 227.0 x 18.3 - 26.6": "Its dimensions are 27 inches";
+  "316.0 x 227.0 x 13.9 - 17.9": "Its dimensions are 18 inches";
+  "316.0 x 227.0 x 8.3 - 15.9": "Its dimensions are 16 inches";
+  "331.1 x 214.95 x 14": "Its dimensions are 14 inches";
+  "tablet: 331.1 x 214.95 x 14": "Its dimensions are 14 inches";	  
+}
+
+
+##############################################################
+### str replacements used during informing:
+##############################################################
+
+%type_inf($type) {
+  $type : "is a $type";
+}
+
+%family_inf($family) {
+  $family : "a $family family product";
+}
+
+%weightrange_inf($weightrange) {
+  heavy : "in the heavy weight range";
+  $weightrange : "in the $weightrange range";
+}
+
+%pricerange_inf($pricerange) {
+  moderate: "in the moderate price range";
+  $pricerange : "in the $pricerange price range";
+}
+
+%driverange_inf($drive) {
+  $drive : "in the $drive drive range";
+}
+
+%batteryrating_inf($batteryrating) {
+  exceptional : "an exceptional battery rating";
+  $batteryrating : "a $batteryrating battery rating";
+}
+
+%isforbusinesscomputing_inf($isforbusinesscomputing) {
+  1: "for business computing";
+  0: "not for business computing";
+  none : "I am not sure whether it is suitable for business computing or not";
+}
+
+%price_inf($price) {
+  none : "I don't know its price";	
+  $price : "priced at $price pounds";
+}
+
+%drive_inf($drive) {
+  none : "I don't know its drive size";	
+  $drive : "a $drive hard drive";
+}
+
+## %dimension_inf($dimension) {
+##  none : "I don't know its dimensions";	
+##   $dimension : "dimensions of $dimension";
+## }
+
+%dimension_inf($dimension) {
+  none : "I don't know its dimensions";	
+    "284 x 208.6 x 13.8 - 25.1": " dimensions of 25 inches";
+  "326.5 x 213.0 x 19.9": " dimensions of 20 inches";
+  "339.6 x 238.3 x 20.9": " dimensions of 21 inches";
+  "377.5 x 249.5 x 21": " dimensions of 21 inches";
+  "377.5 x 244.0 x 30.15": " dimensions of 30 inches";
+  "413.0 x 268.0 x 31.3 - 33.7": " dimensions of 34 inches";
+  "418.4 x 272.5 x 28.0 - 33.7": " dimensions of 34 inches";
+  "418.2 x 272.2 x 28.0 - 33.7": " dimensions of 34 inches";
+  "331.3 x 230 x 24.6": " dimensions of 25 inches";
+  "377.5 x 244.0 x 24.4": " dimensions of 24 inches";
+  "380.0 x 242.0 x 30.8 - 33.35": " dimensions of 33 inches";
+  "380.0 x 242.0 x 32.38 - 33.25": " dimensions of 33 inches";
+  "380.0 x 242.0 x 33.52": " dimensions of 34 inches";
+  "380.9 x 253.9 x 34.9": " dimensions of 34 inches";
+  "379.0 x 252.0 x 20.4": " dimensions of 20 inches";
+  "338.0 x 236.0 x 20.4": " dimensions of 20 inches";
+  "380.0 x 253.9 x 34.9": " dimensions of 35 inches";
+  "341.0 x 239.0 x 19.9 - 27.4": " dimensions of 27 inches";
+  "379.0 x 252.0 x 20.8 - 25.4": " dimensions of 25 inches";
+  "284 x 308.6 x 13.8 - 21.5": " dimensions of 22 inches";
+  "329 x 221 x 26.8 -30.62": " dimensions of 31 inches";
+  "299.0 x 220.5 x 16.9 - 19.9": " dimensions of 20 inches";
+  "316.0 x 227.0 x 18.3 - 26.6": " dimensions of 27 inches";
+  "316.0 x 227.0 x 13.9 - 17.9": " dimensions of 18 inches";
+  "316.0 x 227.0 x 8.3 - 15.9": " dimensions of 16 inches";
+  "331.1 x 214.95 x 14": " dimensions of 14 inches";
+  "tablet: 331.1 x 214.95 x 14": " dimensions of 14 inches";
+}
+
+################################3
+## think i need to define combinations here: 
+# only way to organise joint information naturally into single sentence. otherwise the option is to add sentences together, which becomes too long. 
+#
+#	i don't want to go down this path as there are too many combinations and this is just not scalable at all. 
+#
+#%pricerange_inf($pricerange, $weightrange){
+#   $pricerange, $weightrange : "is in the $pricerange and the $weightrange";
+#}
+
+
+####################################################################################################3
+# --------------- RULES --------------------------
+####################################################################################################3
+
+#hello() : "Welcome to the Toshiba dialogue system? You can ask for laptops by: { product family, price range, weight range, hard drive range, battery rating }. You may also specify whether it is for business computing. How may I help you?"; 
+#hello() : "Hi, I'm a laptop dialogue system! How may I help you?"; 
+hello() : "Hello, welcome to the laptop information system, what kind of laptop are you after?";
+
+hello(more) : "Can I help you with anything else?";
+# bad() : "Mumble";
+null() : "Sorry I am a bit confused. Please tell me again what you are looking for.";
+repeat() : "Could you please repeat that?";
+bye() : "Thank you, goodbye.";
+
+####################################################################################################3
+# Requests
+####################################################################################################3
+request(task) : "What are you looking for?";
+request(type) : "What are you looking for?";
+request(family) : "What product family do you have in mind: satellite, satellite pro, tecra or portege?";
+request(name) : "What is the name of the product you are looking for?";
+request(pricerange) : "Would you like something in the cheap, moderate, or expensive price range?";
+request(weightrange) : "Regarding weight, would you like something light, mid-weight, or heavy?";
+request(driverange) : "Would you like the hard drive to be small, medium, or large?";
+request(batteryrating) : "Would you like your battery rating to be standard, good, or exceptional?";
+request(isforbusinesscomputing) : "Is the machine for business computing?";
+
+
+#######
+## NOT SURE THESE ARE EVER USED - seems at least not by the HDC policy.
+#######
+request(type, option=$X) : "What type of product do you have in mind? For example, $X?";
+request(name, option=$X) : "What is the name of the product you are looking for? For example, $X";
+request(pricerange, option=$X) : "What pricerange would you like? For example, $X";
+request(weightrange, option=$X) : "What weight range would you like? For example, $X";
+request(driverange, option=$X) : "What drive size would you like? For example, $X";
+request(batteryrating, option=$X) : "What battery rating would you like? For example, $X";
+request(family, option=$X) : "What kind of product family would you like? For example, $X?";
+
+request(family, option=$X, option=$Y) : "What product family do you have in mind? For example, $X or $Y.";
+request(name, option=$X, option=$Y) : "What is the name of the product you are looking for? For example, $X or $Y.";
+request(pricerange, option=$X, option=$Y) : "What pricerange would you like? For example, $X or $Y.";
+request(weightrange, option=$X, option=$Y) : "What weight range would you like? For example, $X or $Y.";
+request(driverange, option=$X, option=$Y) : "What drive size would you like? For example, $X or $Y.";
+request(batteryrating, option=$X, option=$Y) : "What batteryrating would you like? For example, $X or $Y.";
+request(type, option=$X, option=$Y) : "What kind of product would you like? For example, $X or $Y?";
+
+
+####################################################################################################3
+# Request more
+####################################################################################################3
+reqmore() : "Can I help you with anything else?";
+reqmore(pricerange=dontcare) : "Would you like me to look for products in any price range?";
+reqmore(weightrange=dontcare) : "Would you like me to look for products in any weight range?";
+reqmore(driverange=dontcare) : "Would you like me to look for products in any drive size range?";
+reqmore(batteryrating=dontcare) : "Would you like me to look for products in any battery rating?";
+reqmore(family=dontcare) : "Would you like me to look for products in any product family?";
+reqmore(type=dontcare) : "Would you like me to look for any product?";
+reqmore(isforbusinesscomputing=dontcare) : "Would you like me to look for a laptop, ignoring whether it is for business computing or not?";
+
+####################################################################################################3
+# Explicit Confirmations
+####################################################################################################3
+confirm() : "Please tell me more about the product you are looking for!";
+confirm(type=$U) : "You are looking for a $U is that right?";
+confirm(type=$U,family=dontcare) : "Ok, a $U and you dont care about the product family is that right?";
+confirm(type=$U,family=$V) : "Did you say you are looking for a $U in $V product family? ";
+confirm(type=$U,pricerange=dontcare) : "Ok, a $U in any price range is that right?";
+confirm(type=$U,pricerange=$V) : "Did you say you are looking for a $U in the $V price range?";
+confirm(type=$U,weightrange=dontcare) : "You are looking for a $U with any weight range right?";
+confirm(type=$U,weightrange=$V) : "You are looking for a $U that is in the $V weight range right?";
+confirm(type=$U,driverange=dontcare) : "You are looking for a $U and you don't care about the drive size is that right?";
+confirm(type=$U,driverange=$V) : "You are looking for a $U with a $V drive size right?";
+confirm(type=$U,batteryrating=dontcare) : "Let me confirm, you are looking for a $U and its battery rating is of no concern right?";
+confirm(type=$U,batteryrating=$V) : "Did you say you are looking for a $U with a $V battery rating?";
+
+confirm(type=$U,isforbusinesscomputing=dontcare) : "Let me confirm, you are looking for a $U and you don't care if it is used for business computing?";
+confirm(type=$U,isforbusinesscomputing=0) : "Did you say you are looking for a $U that is NOT used for business computing?";
+confirm(type=$U,isforbusinesscomputing=1) : "Did you say you are looking for a $U that is used for business computing?";
+
+
+confirm(family=dontcare) : "Can I confirm that you don't care about the product family?";
+confirm(family=$V) : "Can I confirm that you are looking for a laptop in the $V family? ";
+confirm(pricerange=dontcare) : "You're after a laptop in any price range right?";
+confirm(pricerange=$V) : "Did you say you are looking for a laptop in the $V price range?";
+confirm(weightrange=dontcare) : "You don't care about the weight of your laptop right?";
+confirm(weightrange=heavy) : "You are looking for a laptop in the heavy weight-range right?";
+confirm(weightrange=$V) : "You are looking for a laptop in the $V range right?";
+
+confirm(driverange=dontcare) : "Let me confirm, a laptop with any hard drive capacity right?";
+confirm(driverange=$W) : "Let me confirm, you want a laptop with a $W hard drive capacity?";
+confirm(batteryrating=dontcare) : "Let me confirm, you dont mind about the battery rating right?";
+confirm(batteryrating=$W) : "Let me confirm, a laptop with a $W battery rating right?";
+confirm(isforbusinesscomputing=0) : "Let me confirm, a laptop that is NOT for business right?";
+confirm(isforbusinesscomputing=1) : "Let me confirm, a laptop that is for business right?";
+confirm(isforbusinesscomputing=dontcare) : "Let me confirm, you dont mind whether the laptop is for business or not right?";
+
+
+# =============================== TODO SHAWN ===================================
+
+confirm(type=$U,family=$V,addr=$W) : "Let me confirm, A $U on $W in the family of $V right?";
+
+confirm(type=$U,family=dontcare,driverange=dontcare) : "Let me confirm, a $U with any number of driverange anywhere in town right?";
+confirm(type=$U,family=dontcare,driverange=$W) : "Let me confirm, A $W star $U anywhere in town right?";
+confirm(type=$U,family=$V,driverange=dontcare) : "Let me confirm, A $U with any number of driverange in the family of $V right?";
+confirm(type=$U,family=$V,driverange=$W) : "Let me confirm, A $W star $U in the family of $V right?";
+
+confirm(type=$U,family=dontcare,weightrange=dontcare) : "Let me confirm, you are looking for a $U anywhere in town right?";
+confirm(type=$U,family=dontcare,weightrange=$W) : "Let me confirm, a $U anywhere in town as long as it is weightrange $W right?";
+confirm(type=$U,family=$V,weightrange=dontcare) : "Let me confirm, a $U in the family of $V, weightrange anything, right?";
+confirm(type=$U,family=$V,weightrange=$W) : "Let me confirm, a $U in the family of $V weightrange $W right?";
+
+confirm(type=$U,food=dontcare,drinks=dontcare) : "Let me confirm, you are looking for a $U serving any kind of food and drinks right?";
+confirm(type=$U,food=dontcare,drinks=$W) : "Let me confirm, you are looking for a $U serving $W and any kind of food right?";
+confirm(type=$U,food=$W,drinks=dontcare) : "Let me confirm, you are looking for a $U serving $W food and any kind of drinks right?";
+confirm(type=$U,food=$V,drinks=$W) : "Let me confirm, you are looking for a $U serving $V food and $W right?";
+
+confirm(type=$U,weightrange=dontcare,drinks=dontcare) : "Let me confirm, you are looking for a $U serving any kind of drinks right?";
+confirm(type=$U,weightrange=dontcare,drinks=$W) : "Let me confirm, you are looking for a $U serving $W right?";
+confirm(type=$U,weightrange=$W,drinks=dontcare) : "Let me confirm, you are looking for a $U weightrange $W serving any kind of drinks right?";
+confirm(type=$U,weightrange=$V,drinks=$W) : "Let me confirm, you are looking for a $U weightrange $V serving $W right?";
+
+confirm(type=$U,weightrange=dontcare,driverange=dontcare) : "Let me confirm, You are looking for a $U with any number of driverange right?";
+confirm(type=$U,weightrange=dontcare,driverange=$W) : "Let me confirm, You are looking for a $U with $W driverange right?";
+confirm(type=$U,weightrange=$W,driverange=dontcare) : "Let me confirm, You are looking for a $U weightrange $W with any number of driverange right?";
+confirm(type=$U,weightrange=$V,driverange=$W) : "Let me confirm, You are looking for a $U weightrange $V with $W driverange right?";
+
+confirm(type=$U,pricerange=dontcare,family=dontcare) : "Let me confirm, You are looking for a $U in any price range and in any part of town right?";
+confirm(type=$U,pricerange=dontcare,family=$W) : "Let me confirm, You are looking for a $U in any price range in the $W of town right?";
+confirm(type=$U,pricerange=$W,family=dontcare) : "Let me confirm, You are looking for a $U in the $W price range and you dont care about the part of town right?";
+confirm(type=$U,pricerange=$V,family=$W) : "Let me confirm, You are looking for a $U in the $V price range and in the $W of town right?";
+
+confirm(type=$U,pricerange=dontcare,drinks=dontcare) : "Let me confirm, You are looking for a $U in any price range and you dont care about the type of drinks right?";
+confirm(type=$U,pricerange=dontcare,drinks=$W) : "Let me confirm, You are looking for a $U serving $W and you dont care about the price range right?";
+confirm(type=$U,pricerange=$W,drinks=dontcare) : "Let me confirm, You are looking for a $U in the $W price range and you dont care about the type of drinks right?";
+confirm(type=$U,pricerange=$V,drinks=$W) : "Let me confirm, You are looking for a $U in the $V price range serving $W right?";
+
+confirm(type=$U,pricerange=dontcare,food=dontcare) : "Let me confirm, You are looking for a $U serving any kind of food and you dont care about the price range right?";
+confirm(type=$U,pricerange=dontcare,food=$W) : "Let me confirm, You are looking for a $U serving $W food and you dont care about the price range right?";
+confirm(type=$U,pricerange=$V,food=dontcare) : "Let me confirm, You are looking for a $U in the $V price range serving any kind of food right?";
+confirm(type=$U,pricerange=$V,food=$W) : "Let me confirm, You are looking for a $U in the $V price range serving $W food right?";
+
+confirm(type=$U,pricerange=$V,weightrange=dontcare) : "Let me confirm, You are looking for a $U in any price range and it does not need to be weightrange a specific venue right?";
+confirm(type=$U,pricerange=$V,weightrange=dontcare) : "Let me confirm, You are looking for a $U in the $V price range and it does not need to be weightrange a specific venue right?";
+confirm(type=$U,pricerange=dontcare,weightrange=$W) : "Let me confirm, You are looking for a $U in any price range weightrange $W right?";
+confirm(type=$U,pricerange=$V,weightrange=$W) : "Let me confirm, You are looking for a $U in the $V price range weightrange $W right?";
+
+confirm(type=$U,pricerange=dontcare,driverange=dontcare) : "Let me confirm, You are looking for a $U in any price range and you dont care about the number of driverange right?";
+confirm(type=$U,pricerange=dontcare,driverange=$W) : "Let me confirm, You are looking for a $U with $W driverange and you dont care about the price range right?";
+confirm(type=$U,pricerange=$W,driverange=dontcare) : "Let me confirm, You are looking for a $U in the $W price range and you dont care about the number of driverange right?";
+confirm(type=$U,pricerange=$V,driverange=$W) : "Let me confirm, You are looking for a $U in the $V price range with $W driverange right?";
+
+
+confirm(family=$V,addr=$W) : "Let me confirm, A laptop on $W in the family of $V right?";
+
+confirm(family=dontcare,driverange=dontcare) : "Let me confirm, a laptop with any number of driverange anywhere in town right?";
+confirm(family=dontcare,driverange=$W) : "Let me confirm, A $W star laptop anywhere in town right?";
+confirm(family=$V,driverange=dontcare) : "Let me confirm, A place with any number of driverange in the family of $V right?";
+confirm(family=$V,driverange=$W) : "Let me confirm, A $W star laptop in the family of $V right?";
+
+confirm(family=dontcare,weightrange=dontcare) : "Let me confirm, you are looking for a laptop anywhere in town right?";
+confirm(family=dontcare,weightrange=$W) : "Let me confirm, a laptop anywhere in town as long as it is weightrange $W right?";
+confirm(family=$V,weightrange=dontcare) : "Let me confirm, a place in the family of $V weightrange anywhere right?";
+confirm(family=$V,weightrange=$W) : "Let me confirm, a laptop in the family of $V weightrange $W right?";
+
+confirm(food=dontcare,drinks=dontcare) : "Let me confirm, you are looking for a laptop serving any kind of food and drinks right?";
+confirm(food=dontcare,drinks=$W) : "Let me confirm, you are looking for a laptop serving $W and any kind of food right?";
+confirm(food=$W,drinks=dontcare) : "Let me confirm, you are looking for a laptop serving $W food and any kind of drinks right?";
+confirm(food=$V,drinks=$W) : "Let me confirm, you are looking for a laptop serving $V food and $W right?";
+
+confirm(weightrange=dontcare,drinks=dontcare) : "Let me confirm, you are looking for a laptop serving any kind of drinks right?";
+confirm(weightrange=dontcare,drinks=$W) : "Let me confirm, you are looking for a laptop serving $W right?";
+confirm(weightrange=$W,drinks=dontcare) : "Let me confirm, you are looking for a laptop weightrange $W serving any kind of drinks right?";
+confirm(weightrange=$V,drinks=$W) : "Let me confirm, you are looking for a laptop weightrange $V serving $W right?";
+
+confirm(weightrange=dontcare,driverange=dontcare) : "Let me confirm, You are looking for a laptop with any number of driverange right?";
+confirm(weightrange=dontcare,driverange=$W) : "Let me confirm, You are looking for a laptop with $W driverange right?";
+confirm(weightrange=$W,driverange=dontcare) : "Let me confirm, You are looking for a laptop weightrange $W with any number of driverange right?";
+confirm(weightrange=$V,driverange=$W) : "Let me confirm, You are looking for a laptop weightrange $V with $W driverange right?";
+
+confirm(pricerange=dontcare,family=dontcare) : "Let me confirm, You are looking for a laptop in any price range and in any part of town right?";
+confirm(pricerange=dontcare,family=$W) : "Let me confirm, You are looking for a laptop in any price range in the $W of town right?";
+confirm(pricerange=$W,family=dontcare) : "Let me confirm, You are looking for a laptop in the $W price range and you dont care about the part of town right?";
+confirm(pricerange=$V,family=$W) : "Let me confirm, You are looking for a laptop in the $V price range and in the $W of town right?";
+
+confirm(pricerange=dontcare,drinks=dontcare) : "Let me confirm, You are looking for a laptop in any price range and you dont care about the type of drinks right?";
+confirm(pricerange=dontcare,drinks=$W) : "Let me confirm, You are looking for a laptop serving $W and you dont care about the price range right?";
+confirm(pricerange=$W,drinks=dontcare) : "Let me confirm, You are looking for a laptop in the $W price range and you dont care about the type of drinks right?";
+confirm(pricerange=$V,drinks=$W) : "Let me confirm, You are looking for a laptop in the $V price range serving $W right?";
+
+confirm(pricerange=dontcare,food=dontcare) : "Let me confirm, You are looking for a laptop serving any kind of food and you dont care about the price range right?";
+confirm(pricerange=dontcare,food=$W) : "Let me confirm, You are looking for a laptop serving $W food and you dont care about the price range right?";
+confirm(pricerange=$V,food=dontcare) : "Let me confirm, You are looking for a laptop in the $V price range serving any kind of food right?";
+confirm(pricerange=$V,food=$W) : "Let me confirm, You are looking for a laptop in the $V price range serving $W food right?";
+
+confirm(pricerange=$V,weightrange=dontcare) : "Let me confirm, You are looking for a laptop in any price range and it does not need to be weightrange a specific venue right?";
+confirm(pricerange=$V,weightrange=dontcare) : "Let me confirm, You are looking for a laptop in the $V price range and it does not need to be weightrange a specific venue right?";
+confirm(pricerange=dontcare,weightrange=$W) : "Let me confirm, You are looking for a laptop in any price range weightrange $W right?";
+confirm(pricerange=$V,weightrange=$W) : "Let me confirm, You are looking for a laptop in the $V price range weightrange $W right?";
+
+confirm(pricerange=dontcare,driverange=dontcare) : "Let me confirm, You are looking for a laptop in any price range and you dont care about the number of driverange right?";
+confirm(pricerange=dontcare,driverange=$W) : "Let me confirm, You are looking for a laptop with $W driverange and you dont care about the price range right?";
+confirm(pricerange=$W,driverange=dontcare) : "Let me confirm, You are looking for a laptop in the $W price range and you dont care about the number of driverange right?";
+confirm(pricerange=$V,driverange=$W) : "Let me confirm, You are looking for a laptop in the $V price range with $W driverange right?";
+
+confirm($A=$X) : "confirmdefault";
+
+# =============================== TODO DAVID ===================================
+####################################################################################################3
+#Recomendation
+####################################################################################################3
+
+###############################################################
+# inform that there is no laptop of this kind (name=none)
+###############################################################
+
+inform(name=none,other=true,name=$X,type=$U,$Y=$O) : "I am sorry but there is no $U other than $X %$Y_str($O).";
+inform(name=none,other=true,name=$X,type=$U,$Y=$O,$Z=$P) : "I am sorry but there is no $U other than $X %$Y_str($O) and %$Z_str($P).";
+inform(name=none,other=true,name=$X,type=$U,$Y=$O,$Z=$P,$W=$R) : "I am sorry but there is no $U other than $X %$Y_str($O), %$Z_str($P) and %$W_str($R).";
+inform(name=none,other=true,name=$X,type=$U,$Y=$O,$Z=$P,$W=$R,$Q=$T) : "I am sorry but there is no $U other than $X %$Y_str($O), %$Z_str($P), %$W_str($R) and %$Q_str($T).";
+inform(name=none,other=true,name=$X,type=$U,$Y=$O,$Z=$P,$W=$R,$Q=$T,$G=$H) : "I am sorry but there is no $U other than $X %$Y_str($O), %$Z_str($P), %$W_str($R), %$Q_str($T) and %$G_str($H).";
+inform(name=none,other=true,name=$X,type=$U,$Y=$O,$Z=$P,$W=$R,$Q=$T,$G=$H,$B=$D) : "I am sorry but there is no $U other than $X %$Y_str($O), %$Z_str($P), %$W_str($R), %$Q_str($T), %$G_str($H) and %$B_str($D).";
+
+
+inform(name=none,other=true,name=$X,name=$E,$Y=$O) : "I am sorry but there is no laptop other than $X and $E %$Y_str($O).";
+inform(name=none,other=true,name=$X,name=$E,$Y=$O,$Z=$P) : "I am sorry but there is no laptop other than $X and $E %$Y_str($O) and %$Z_str($P).";
+inform(name=none,other=true,name=$X,name=$E,$Y=$O,$Z=$P,$W=$R) : "I am sorry but there is no laptop other than $X and $E %$Y_str($O), %$Z_str($P) and %$W_str($R).";
+inform(name=none,other=true,name=$X,name=$E,$Y=$O,$Z=$P,$W=$R,$Q=$T) : "I am sorry but there is no laptop other than $X and $E %$Y_str($O), %$Z_str($P), %$W_str($R) and %$Q_str($T).";
+inform(name=none,other=true,name=$X,name=$E,$Y=$O,$Z=$P,$W=$R,$Q=$T,$G=$H) : "I am sorry but there is no laptop other than $X and $E %$Y_str($O), %$Z_str($P), %$W_str($R), %$Q_str($T) and %$G_str($H).";
+inform(name=none,other=true,name=$X,name=$E,$Y=$O,$Z=$P,$W=$R,$Q=$T,$G=$H,$B=$D) : "I am sorry but there is no laptop other than $X and $E %$Y_str($O), %$Z_str($P), %$W_str($R), %$Q_str($T), %$G_str($H) and %$B_str($D).";
+
+inform(name=none,other=true,name=$X,name=$E,type=$U,$Y=$O) : "I am sorry but there is no $U other than $X and $E %$Y_str($O).";
+inform(name=none,other=true,name=$X,name=$E,type=$U,$Y=$O,$Z=$P) : "I am sorry but there is no $U other than $X and $E  %$Y_str($O) and %$Z_str($P).";
+inform(name=none,other=true,name=$X,name=$E,type=$U,$Y=$O,$Z=$P,$W=$R) : "I am sorry but there is no $U other than $X and $E %$Y_str($O), %$Z_str($P) and %$W_str($R).";
+inform(name=none,other=true,name=$X,name=$E,type=$U,$Y=$O,$Z=$P,$W=$R,$Q=$T) : "I am sorry but there is no $U other than $X and $E %$Y_str($O), %$Z_str($P), %$W_str($R) and %$Q_str($T).";
+inform(name=none,other=true,name=$X,name=$E,type=$U,$Y=$O,$Z=$P,$W=$R,$Q=$T,$G=$H) : "I am sorry but there is no $U other than $X and $E  %$Y_str($O), %$Z_str($P), %$W_str($R), %$Q_str($T) and %$G_str($H).";
+inform(name=none,other=true,name=$X,name=$E,type=$U,$Y=$O,$Z=$P,$W=$R,$Q=$T,$G=$H,$B=$D) : "I am sorry but there is no $U other than $X and $E %$Y_str($O), %$Z_str($P), %$W_str($R), %$Q_str($T), %$G_str($H) and %$B_str($D).";
+
+
+inform(name=none,other=true,name=$X,$Y=$O) : "I am sorry but there is no laptop other than $X %$Y_str($O).";
+inform(name=none,other=true,name=$X,$Y=$O,$Z=$P) : "I am sorry but there is no laptop other than $X %$Y_str($O) and %$Z_str($P).";
+inform(name=none,other=true,name=$X,$Y=$O,$Z=$P,$W=$R) : "I am sorry but there is no laptop other than $X %$Y_str($O), %$Z_str($P) and %$W_str($R).";
+inform(name=none,other=true,name=$X,$Y=$O,$Z=$P,$W=$R,$Q=$T) : "I am sorry but there is no laptop other than $X %$Y_str($O), %$Z_str($P), %$W_str($R) and %$Q_str($T).";
+inform(name=none,other=true,name=$X,$Y=$O,$Z=$P,$W=$R,$Q=$T,$G=$H) : "I am sorry but there is no laptop other than $X %$Y_str($O), %$Z_str($P), %$W_str($R), %$Q_str($T) and %$G_str($H).";
+inform(name=none,other=true,name=$X,$Y=$O,$Z=$P,$W=$R,$Q=$T,$G=$H,$B=$D) : "I am sorry but there is no laptop other than $X %$Y_str($O), %$Z_str($P), %$W_str($R), %$Q_str($T), %$G_str($H) and %$B_str($D).";
+
+
+
+inform(name=none,type=$U,$Y=$O) : "I am sorry but there is no $U %$Y_str($O).";
+inform(name=none,type=$U,$Y=$O,$Z=$P) : "I am sorry but there is no $U %$Y_str($O) and %$Z_str($P).";
+inform(name=none,type=$U,$Y=$O,$Z=$P,$W=$R) : "I am sorry but there is no $U %$Y_str($O), %$Z_str($P) and %$W_str($R).";
+inform(name=none,type=$U,$Y=$O,$Z=$P,$W=$R,$Q=$T) : "I am sorry but there is no $U %$Y_str($O), %$Z_str($P), %$W_str($R) and %$Q_str($T).";
+inform(name=none,type=$U,$Y=$O,$Z=$P,$W=$R,$Q=$T,$G=$H) : "I am sorry but there is no $U %$Y_str($O), %$Z_str($P), %$W_str($R), %$Q_str($T) and %$G_str($H).";
+inform(name=none,type=$U,$Y=$O,$Z=$P,$W=$R,$Q=$T,$G=$H,$B=$D) : "I am sorry but there is no $U %$Y_str($O), %$Z_str($P), %$W_str($R), %$Q_str($T), %$G_str($H) and %$B_str($D).";
+
+
+inform(name=none,$Y=$O) : "I am sorry but there is no laptop %$Y_str($O).";
+inform(name=none,$Y=$O,$Z=$P) : "I am sorry but there is no laptop, %$Y_str($O) and %$Z_str($P).";
+inform(name=none,$Y=$O,$Z=$P,$W=$R) : "I am sorry but there is no laptop, %$Y_str($O), %$Z_str($P) and %$W_str($R).";
+inform(name=none,$Y=$O,$Z=$P,$W=$R,$Q=$T) : "I am sorry but there is no laptop, %$Y_str($O), %$Z_str($P), %$W_str($R) and %$Q_str($T).";
+inform(name=none,$Y=$O,$Z=$P,$W=$R,$Q=$T,$G=$H) : "I am sorry but there is no laptop, %$Y_str($O), %$Z_str($P), %$W_str($R), %$Q_str($T) and %$G_str($H).";
+inform(name=none,$Y=$O,$Z=$P,$W=$R,$Q=$T,$G=$H,$B=$D) : "I am sorry but there is no laptop, %$Y_str($O), %$Z_str($P), %$W_str($R), %$Q_str($T), %$G_str($H) and %$B_str($D).";
+
+
+
+####################################
+# inform about a found laptop  - main area that needs work:
+# must go after name=none - defaults to this first. (anything first appearing in the file)
+####################################
+
+
+inform(name=$X,type=$U) : "This $U is called $X.";
+inform(name=$X,type=$U,$Y=$O) : "The $U $X %$Y_j($Y) %$Y_inf($O).";
+inform(name=$X,type=$U,$Y=$O,$Z=$P) : "The $U $X %$Y_j($Y) %$Y_inf($O) and %$Z_j($Z) $Z_inf($P).";
+inform(name=$X,type=$U,$Y=$O,$Z=$P,$W=$R) : "The $U $X %$Y_j($Y) %$Y_inf($O), %$Z_j($Z) %$Z_inf($P) and %$W_j($W) %$W_inf($R).";
+inform(name=$X,type=$U,$Y=$O,$Z=$P,$W=$R,$Q=$T) : "The $U $X %$Y_j($Y) %$Y_inf($O), %$Z_j($Z) %$Z_inf($P), %$W_j($W) %$W_inf($R) and %$Q_j($Q) %$Q_inf($T).";
+#here
+
+inform(name=$X,type=$U,$Y=$O,$Z=$P,$W=$R,$Q=$T,$G=$H) : "The $U $X %isORhas($Y) %$Y_inf($O), %$Z_inf($P), %$W_inf($R), %$Q_inf($T) and %$G_inf($H).";
+inform(name=$X,type=$U,$Y=$O,$Z=$P,$W=$R,$Q=$T,$G=$H,$B=$D) : "The $U $X %isORhas($Y) %$Y_inf($O), %$Z_inf($P), %$W_inf($R), %$Q_inf($T), %$G_inf($H) and %$B_inf($D).";
+inform(name=$X,type=$U,$Y=$O,$Z=$P,$W=$R,$Q=$T,$G=$H,$B=$D,$F=$C) : "The $U $X %isORhas($Y) %$Y_inf($O), %$Z_inf($P), %$W_inf($R), %$Q_inf($T), %$G_inf($H) %$B_inf($D) and %$C_inf($F).";
+inform(name=$X,type=$U,$Y=$O,$Z=$P,$W=$R,$Q=$T,$G=$H,$B=$D,$F=$C,$I=$J) : "The $U $X %isORhas($Y) %$Y_inf($O), %$Z_inf($P), %$W_inf($R), %$Q_inf($T), %$G_inf($H) %$B_inf($D) %$C_inf($F) and %$I_inf($J).";
+
+inform(name=$X,$Y=$O) : "$X %$Y_j($Y) %$Y_inf($O).";
+inform(name=$X,$Y=$O,$Z=$P) : "The $X %$Y_j($Y) %$Y_inf($O) and %$Z_j($Z) %$Z_inf($P).";
+inform(name=$X,$Y=$O,$Z=$P,$W=$R) : "The $X %$Y_j($Y) %$Y_inf($O), %$Z_j($Z) %$Z_inf($P) and %$W_j($W) %$W_inf($R).";
+inform(name=$X,$Y=$O,$Z=$P,$W=$R,$Q=$T) : "The $X %$Y_j($Y) %$Y_inf($O), %$Z_j($Z) %$Z_inf($P), %$W_j($W) %$W_inf($R) and %$Q_j($Q) %$Q_inf($T).";
+inform(name=$X,$Y=$O,$Z=$P,$W=$R,$Q=$T,$G=$H) : "The $X %$Y_j($Y) %$Y_inf($O), %$Z_j($Z) %$Z_inf($P), %$W_j($W) %$W_inf($R), %$Q_j($Q) %$Q_inf($T) and %$G_j($G) %$G_inf($H).";
+inform(name=$X,$Y=$O,$Z=$P,$W=$R,$Q=$T,$G=$H,$B=$D) : "The $X %$Y_j($Y) %$Y_inf($O), %$Z_j($Z) %$Z_inf($P), %$W_j($W) %$W_inf($R), %$Q_j($Q) %$Q_inf($T), %$G_j($G) %$G_inf($H) and %$B_j($B) %$B_inf($D).";
+inform(name=$X,$Y=$O,$Z=$P,$W=$R,$Q=$T,$G=$H,$B=$D,$F=$C) : "The $X %$Y_j($Y) %$Y_inf($O), %$Z_j($Z) %$Z_inf($P), %$W_j($W) %$W_inf($R), %$Q_j($Q) %$Q_inf($T), %$G_j($G) %$G_inf($H), %$B_j($B) %$B_inf($D) and %$C_j($C) %$C_inf($F).";
+inform(name=$X,$Y=$O,$Z=$P,$W=$R,$Q=$T,$G=$H,$B=$D,$F=$C,$I=$J) : "The $X %$Y_j($Y) %$Y_inf($O), %$Z_j($Z) %$Z_inf($P), %$W_j($W) %$W_inf($R), %$Q_j($Q) %$Q_inf($T), %$G_j($G) %$G_inf($H), %$B_j($B) %$B_inf($D), %$C_j($C) %$C_inf($F) and %$I_j($I) %$I_inf($J).";
+
+
+
+####################################################################################################3
+#Implicit confirmations
+####################################################################################################3
+confreq(count=$X,$Y=$P,$Q) : "There %count_rest($X) %$Y_str($P). %q($Q) ?";
+confreq(count=$X,$Y=$P, $Z=$R,$Q) : "There %count_rest($X) %$Y_str($P) and %$Z_str($R). %q($Q)";
+confreq(count=$X,$Y=$P, $Z=$R, $M=$T,$Q) : "There %count_rest($X) %$Y_str($P) %$Z_str($R) and %$M_str($T). %q($Q)";
+confreq(count=$X,$Y=$P, $Z=$R, $M=$T, $L=$S, $Q) : "There %count_rest($X) %$Y_str($P) %$Z_str($R) %$M_str($T) and %$L_str($S). %q($Q)";
+confreq(count=$X,$Y=$P, $Z=$R, $M=$T, $L=$S, $O=$V, $Q) : "There %count_rest($X) %$Y_str($P) %$Z_str($R) %$M_str($T) %$L_str($S) and %$O_str($V). %q($Q)";
+
+####################################################################################################3
+# Selections
+####################################################################################################3
+select(type=$X, type=dontcare) : "Sorry, is any type OK or should it be a $X?";
+select(family=$X, family=dontcare) : "Sorry would you like the $X product family or you dont care";
+select(pricerange=$X, pricerange=dontcare) : "Sorry would you like something in the $X price range or you dont care";
+select(weightrange=$X, weightrange=dontcare) : "Sorry would you like something in the $X weight range or you dont care";
+select(driverange=$X, driverange=dontcare) : "Sorry would you like something in the $X drive size range or you dont care";
+select(batteryrating=$X, batteryrating=dontcare) : "Sorry would you like something with $X battery rating or you dont care";
+select(isforbusinesscomputing=1, isforbusinesscomputing=dontcare) : "Sorry would you like it for business computing or you don't care";
+select(isforbusinesscomputing=0, isforbusinesscomputing=dontcare) : "Sorry would you like it for non-business computing or you don't care";
+
+select(type=$X,type=$Y) : "Sorry would you like $X or $Y?";
+select(family=$X,family=$Y) : "Sorry would you like $X or $Y family?";
+select(name=$X,name=$Y) : "Sorry which of these two products would you like $X or $Y?";
+select(pricerange=$X,pricerange=$Y) : "Sorry would you like something in the $X price range or in the $Y price range?";
+select(weightrange=$X,weightrange=$Y) : "Sorry would you like something in the $X weight range or in the $Y weight range?";
+select(driverange=$X,driverange=$Y) : "Sorry would you like something in the $X drive size range or in the $Y drive size range?";
+select(batteryrating=$X,batteryrating=$Y) : "Sorry would you like something with $X or $Y battery rating?";
+select(isforbusinesscomputing=1,isforbusinesscomputing=0) : "Sorry would you like a product for business computing or not?";
+select($X=$Y,$X=dontcare) : "Sorry would you like $Y for $X or you dont care";
+select($X=$Y,$X=$Z) : "Sorry would you like $Y or $Z for $X";

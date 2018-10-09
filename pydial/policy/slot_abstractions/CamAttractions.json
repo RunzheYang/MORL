@@ -1,0 +1,26 @@
+{
+    "real2abstract": {
+        "kind": "slot02", 
+        "name": "name", 
+        "area": "slot00", 
+        "price": "infoslot00", 
+        "phone": "infoslot04", 
+        "pricerange": "slot01", 
+        "postcode": "infoslot03", 
+        "openhours": "infoslot01", 
+        "type": "type", 
+        "addr": "infoslot02"
+    }, 
+    "abstract2real": {
+        "slot02": "kind", 
+        "slot00": "area", 
+        "slot01": "pricerange", 
+        "name": "name", 
+        "infoslot02": "addr", 
+        "infoslot03": "postcode", 
+        "infoslot00": "price", 
+        "infoslot01": "openhours", 
+        "infoslot04": "phone", 
+        "type": "type"
+    }
+}

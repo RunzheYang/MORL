@@ -1,0 +1,286 @@
+{
+    "possible_domains": [
+        "CamRestaurants", 
+        "CamHotels", 
+        "CamAttractions", 
+        "CamTransport", 
+        "CamShops", 
+        "SFHotels", 
+        "SFRestaurants", 
+        "Laptops11", 
+        "Laptops6", 
+        "TV"
+    ], 
+    "tasks": {
+        "10000": {
+            "Laptops11": {
+                "Cons": "batteryrating=standard, family=satellite, pricerange=moderate", 
+                "Ents": "satellite-w30dt-a-100, satellite-w30t-a-101, satellite-p50t-a-125", 
+                "Pati": 10, 
+                "Reqs": "display, name, processor", 
+                "Type": "laptop", 
+                "domain_text": null
+            }, 
+            "Laptops6": {
+                "Cons": "pricerange=expensive, batteryrating=standard, weightrange=dontcare", 
+                "Ents": "satellite-p70-a-11r, satellite-p875-31p", 
+                "Pati": 10, 
+                "Reqs": "name", 
+                "Type": "laptop", 
+                "domain_text": null
+            }, 
+            "SFRestaurants": {
+                "Cons": "near=dontcare, pricerange=moderate, food=mediterranean", 
+                "Ents": "fattoush restaurant, kokkari estiatorio, kokkari estiatorio", 
+                "Pati": 10, 
+                "Reqs": "phone, price, name", 
+                "Type": "restaurant", 
+                "domain_text": null
+            }, 
+            "text": null
+        }, 
+        "10001": {
+            "CamAttractions": {
+                "Cons": "kind=park, pricerange=free, area=south", 
+                "Ents": "sheep's green and lammas land park fen causeway, wandlebury country park, cherry hinton water play", 
+                "Pati": 10, 
+                "Reqs": "phone, name, addr", 
+                "Type": "attraction", 
+                "domain_text": null
+            }, 
+            "CamShops": {
+                "Cons": "shopkind=bank, area=centre", 
+                "Ents": "hsbc bank, barclays bank plc, h.f.c bank", 
+                "Pati": 10, 
+                "Reqs": "name, postcode", 
+                "Type": "shop", 
+                "domain_text": null
+            }, 
+            "Laptops11": {
+                "Cons": "warranty=1 year international, batteryrating=exceptional, utility=touchscreen", 
+                "Ents": "portege-z10t-a-11z, portege-z10t-a-12n", 
+                "Pati": 10, 
+                "Reqs": "name", 
+                "Type": "laptop", 
+                "domain_text": null
+            }, 
+            "text": null
+        }, 
+        "10002": {
+            "CamAttractions": {
+                "Cons": "kind=entertainment, area=south, pricerange=dontcare", 
+                "Ents": "nusha, tenpin, cherry hinton hall and grounds", 
+                "Pati": 10, 
+                "Reqs": "openhours, name, postcode", 
+                "Type": "attraction", 
+                "domain_text": null
+            }, 
+            "CamTransport": {
+                "Cons": "transtype=airport, area=dontcare", 
+                "Ents": "cambridge airport, london stansted airport, heathrow airport", 
+                "Pati": 10, 
+                "Reqs": "name, addr", 
+                "Type": "transport", 
+                "domain_text": null
+            }, 
+            "TV": {
+                "Cons": "pricerange=dontcare, series=l1, eco=b", 
+                "Ents": "48l1531dg, 48l1533dg", 
+                "Pati": 10, 
+                "Reqs": "name, accessories", 
+                "Type": "television", 
+                "domain_text": null
+            }, 
+            "text": null
+        }, 
+        "10003": {
+            "CamTransport": {
+                "Cons": "transtype=airport, area=dontcare", 
+                "Ents": "cambridge airport, london stansted airport, heathrow airport", 
+                "Pati": 10, 
+                "Reqs": "phone, name", 
+                "Type": "transport", 
+                "domain_text": null
+            }, 
+            "SFRestaurants": {
+                "Cons": "pricerange=cheap, food=vegetarian, goodformeal=dontcare", 
+                "Ents": "lucky creation restaurant, lucky creation restaurant, shangri la vegetarian restaurant", 
+                "Pati": 10, 
+                "Reqs": "price, name", 
+                "Type": "restaurant", 
+                "domain_text": null
+            }, 
+            "TV": {
+                "Cons": "eco=aplus, series=t5, screensizerange=medium", 
+                "Ents": "40t5445dg, 40t5435dg", 
+                "Pati": 10, 
+                "Reqs": "audio, name, screensize", 
+                "Type": "television", 
+                "domain_text": null
+            }, 
+            "text": null
+        }, 
+        "10004": {
+            "CamHotels": {
+                "Cons": "area=north, stars=3, pricerange=moderate", 
+                "Ents": "alpha-milton guest house, hamilton lodge", 
+                "Pati": 10, 
+                "Reqs": "name", 
+                "Type": "placetostay", 
+                "domain_text": null
+            }, 
+            "CamShops": {
+                "Cons": "shopkind=dontcare, area=south", 
+                "Ents": "saint john's post office, grand arcade, addenbrooke's hospital", 
+                "Pati": 10, 
+                "Reqs": "name", 
+                "Type": "shop", 
+                "domain_text": null
+            }, 
+            "CamTransport": {
+                "Cons": "transtype=airport, area=dontcare", 
+                "Ents": "cambridge airport, london stansted airport, heathrow airport", 
+                "Pati": 10, 
+                "Reqs": "name, postcode", 
+                "Type": "transport", 
+                "domain_text": null
+            }, 
+            "text": null
+        }, 
+        "10005": {
+            "CamAttractions": {
+                "Cons": "area=dontcare, pricerange=cheap, kind=college", 
+                "Ents": "corpus christi, trinity college", 
+                "Pati": 10, 
+                "Reqs": "phone, name", 
+                "Type": "attraction", 
+                "domain_text": null
+            }, 
+            "SFRestaurants": {
+                "Cons": "area=inner richmond, pricerange=cheap, goodformeal=dinner", 
+                "Ents": "thai time restaurant, tanuki restaurant, sushi bistro", 
+                "Pati": 10, 
+                "Reqs": "name", 
+                "Type": "restaurant", 
+                "domain_text": null
+            }, 
+            "TV": {
+                "Cons": "hdmi=dontcare, series=e2, usb=0", 
+                "Ents": "32e2533dg, 32e2543dg, 32e2533db", 
+                "Pati": 10, 
+                "Reqs": "name", 
+                "Type": "television", 
+                "domain_text": null
+            }, 
+            "text": null
+        }, 
+        "10006": {
+            "CamAttractions": {
+                "Cons": "kind=cinema, area=dontcare, pricerange=dontcare", 
+                "Ents": "cineworld cinema, vue cinema", 
+                "Pati": 10, 
+                "Reqs": "openhours, name", 
+                "Type": "attraction", 
+                "domain_text": null
+            }, 
+            "CamRestaurants": {
+                "Cons": "area=centre, food=european, pricerange=expensive", 
+                "Ents": "michaelhouse cafe, eraina", 
+                "Pati": 10, 
+                "Reqs": "name", 
+                "Type": "restaurant", 
+                "domain_text": null
+            }, 
+            "CamShops": {
+                "Cons": "area=dontcare, shopkind=postoffice", 
+                "Ents": "saint john's post office, trinity street post office, central post office", 
+                "Pati": 10, 
+                "Reqs": "phone, name, postcode", 
+                "Type": "shop", 
+                "domain_text": null
+            }, 
+            "text": null
+        }, 
+        "10007": {
+            "CamAttractions": {
+                "Cons": "pricerange=dontcare, area=north, kind=swimmingpool", 
+                "Ents": "kings hedges learner pool, jesus green outdoor pool", 
+                "Pati": 10, 
+                "Reqs": "name, postcode", 
+                "Type": "attraction", 
+                "domain_text": null
+            }, 
+            "SFHotels": {
+                "Cons": "dogsallowed=dontcare, hasinternet=1, acceptscreditcards=0", 
+                "Ents": "casa melissa, union hotel, balmoral hotel north no 2", 
+                "Pati": 10, 
+                "Reqs": "name, addr", 
+                "Type": "hotel", 
+                "domain_text": null
+            }, 
+            "SFRestaurants": {
+                "Cons": "pricerange=cheap, goodformeal=dinner, near=japantown", 
+                "Ents": "toraya japanese restaurant, jitlada thai cuisine", 
+                "Pati": 10, 
+                "Reqs": "price, name", 
+                "Type": "restaurant", 
+                "domain_text": null
+            }, 
+            "text": null
+        }, 
+        "10008": {
+            "CamHotels": {
+                "Cons": "hasparking=dontcare, stars=2, pricerange=dontcare", 
+                "Ents": "lovell lodge, ashley hotel, express by holiday inn cambridge", 
+                "Pati": 10, 
+                "Reqs": "name, postcode", 
+                "Type": "placetostay", 
+                "domain_text": null
+            }, 
+            "Laptops6": {
+                "Cons": "driverange=small, family=dontcare, weightrange=heavy", 
+                "Ents": "tecra-w50-a-102, tecra-a50-a-12m", 
+                "Pati": 10, 
+                "Reqs": "name", 
+                "Type": "laptop", 
+                "domain_text": null
+            }, 
+            "TV": {
+                "Cons": "usb=0, pricerange=cheap, eco=a", 
+                "Ents": "32w3454db, 32w3443dg, 32w3453db", 
+                "Pati": 10, 
+                "Reqs": "price, name", 
+                "Type": "television", 
+                "domain_text": null
+            }, 
+            "text": null
+        }, 
+        "10009": {
+            "Laptops11": {
+                "Cons": "platform=windows 8, utility=performance mobile, pricerange=budget", 
+                "Ents": "satellite-pro-l830-172, satellite-pro-l830-17t", 
+                "Pati": 10, 
+                "Reqs": "name", 
+                "Type": "laptop", 
+                "domain_text": null
+            }, 
+            "Laptops6": {
+                "Cons": "weightrange=mid weight, batteryrating=standard, isforbusinesscomputing=1", 
+                "Ents": "satellite-pro-c50-a-1e0, satellite-pro-c50-a-1e1", 
+                "Pati": 10, 
+                "Reqs": "name, drive", 
+                "Type": "laptop", 
+                "domain_text": null
+            }, 
+            "SFHotels": {
+                "Cons": "dogsallowed=0, acceptscreditcards=1, pricerange=inexpensive", 
+                "Ents": "the regency inn, grant hotel", 
+                "Pati": 10, 
+                "Reqs": "name, postcode", 
+                "Type": "hotel", 
+                "domain_text": null
+            }, 
+            "text": null
+        }
+    }
+}
