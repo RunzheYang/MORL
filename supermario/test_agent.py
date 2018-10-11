@@ -20,7 +20,7 @@ parser.add_argument('--gamma', type=float, default=0.99, metavar='GAMMA',
 # TRAINING
 parser.add_argument('--mem-size', type=int, default=4000, metavar='M',
                     help='max size of the replay memory')
-parser.add_argument('--batch-size', type=int, default=256, metavar='B',
+parser.add_argument('--batch-size', type=int, default=20, metavar='B',
                     help='batch size')
 parser.add_argument('--lr', type=float, default=1e-3, metavar='LR',
                     help='learning rate')
@@ -28,7 +28,7 @@ parser.add_argument('--epsilon', type=float, default=0.5, metavar='EPS',
                     help='epsilon greedy exploration')
 parser.add_argument('--epsilon-decay', default=False, action='store_true',
                     help='linear epsilon decay to zero')
-parser.add_argument('--weight-num', type=int, default=32, metavar='WN',
+parser.add_argument('--weight-num', type=int, default=4, metavar='WN',
                     help='number of sampled weights per iteration')
 parser.add_argument('--episode-num', type=int, default=2000, metavar='EN',
                     help='number of episodes for training')
@@ -74,27 +74,33 @@ def train(env, agent, args):
 
         while not terminal:
             print("frame", cnt)
-            action = agent.act(state)
-            print("action", action, "\n")
+            action = agent.act(state, preference=probe)
             next_state, score, terminal, info = env.step(action)
+
+            env.render()
+
             next_state = np.array(next_state)
-            reward = np.array(info[reward])
+            reward = np.array(info['rewards'])
+            print("action", action)
+            print("reward", reward, "\n")
 
             agent.memorize(state, action, next_state, reward, terminal)
-            loss += agent.learn()
-            if cnt > 100:
+            
+            if cnt % 200 == 0: loss += agent.learn()
+            
+            if cnt >500:
                 terminal = True
                 agent.reset()
             utility = utility + (probe.cpu().numpy().dot(reward)) * np.power(args.gamma, cnt)
             cnt = cnt + 1
-
-        _, q = agent.predict(probe)
     
         print("end of eps %d with utility %0.2f loss: %0.4f" % (
             num_eps,
             utility,
             loss / cnt))
-        
+    
+    env.close()
+
     # if num_eps+1 % 100 == 0:
     # 	agent.save(args.save, args.model+args.name+"_tmp_{}".format(number))
     agent.save(args.save, "m.{}_e.{}_n.{}".format(args.model, args.env_name, args.name))

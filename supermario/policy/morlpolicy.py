@@ -135,12 +135,12 @@ class MetaAgent(object):
                 hq, _ = self.model_(Variable(next_state.unsqueeze(0), requires_grad=False),
                                     Variable(preference.unsqueeze(0), requires_grad=False))
                 hq = hq.data[0]
-                p = abs(wr + self.gamma * hq - q)
+                p = abs(float(wr + self.gamma * hq - q))
             else:
                 self.w_kept = None
                 if self.epsilon_decay:
                     self.epsilon -= self.epsilon_delta
-                p = abs(wr - q)
+                p = abs(float(wr - q))
 
         elif self.method == "envelope":
             wq = preference.dot(q)
@@ -151,7 +151,7 @@ class MetaAgent(object):
                                     Variable(preference.unsqueeze(0), requires_grad=False))
                 hq = hq.data[0]
                 whq = preference.dot(hq)
-                p = abs(wr + self.gamma * whq - wq)
+                p = abs(float(wr + self.gamma * whq - wq))
 
             else:
                 print(self.beta)
@@ -161,7 +161,7 @@ class MetaAgent(object):
                 if self.homotopy:
                     self.beta += self.beta_delta
                     self.beta_delta = (self.beta-self.beta_init)*self.beta_expbase+self.beta_init-self.beta
-                p = abs(wr - wq)
+                p = abs(float(wr - wq))
 
         p += 1e-5
 
@@ -240,6 +240,7 @@ class MetaAgent(object):
 
                 # Compute Huber loss
                 loss = F.smooth_l1_loss(Q.gather(1, actions.unsqueeze(dim=1)), Tau_Q.unsqueeze(dim=1))
+            
             elif self.mehtod == "envelope":
                 __, Q = self.model_(Variable(torch.cat(state_batch, dim=0)),
                                     Variable(w_batch), w_num=self.weight_num)
@@ -308,8 +309,7 @@ class MetaAgent(object):
             self.beta_delta = (self.beta-self.beta_init)*self.beta_expbase+self.beta_init-self.beta
 
     def predict(self, probe):
-        return self.model(Variable(FloatTensor([0, 0]).unsqueeze(0), requires_grad=False),
-                          Variable(probe.unsqueeze(0), requires_grad=False))
+        pass
 
     def save(self, save_path, model_name):
         torch.save(self.model, "{}{}.pkl".format(save_path, model_name))

@@ -25,25 +25,25 @@ class NaiveTestCQN(torch.nn.Module):
         self.reward_size = reward_size
 
         in_channel = self.state_size[2]
-        wi = ((self.state_size[0] - 3) / 2 / 2 - 3) / 2 / 2
-        hi = ((self.state_size[1] - 3) / 2 / 2 - 2) / 2 / 2
-        feature_size = int(wi * hi * 4)
+        wi = int(((self.state_size[0] - 3) / 4 / 2 - 3) / 2 / 4)
+        hi = int(((self.state_size[1] - 3) / 4 / 2 - 2) / 2 / 4)
+        feature_size = int(wi * hi * 2)
 
         # S x A -> (W -> R). =>. S x W -> (A -> R)
-        self.conv1 = nn.Conv2d(in_channel, 4, kernel_size=5, stride=2)
+        self.conv1 = nn.Conv2d(in_channel, 2, kernel_size=5, stride=2)
         # self.bn1 = nn.BatchNorm2d(4)
-        self.pool1 = torch.nn.MaxPool2d(2, 2)
-        self.conv2 = nn.Conv2d(4, 4, kernel_size=5, stride=2)
-        self.pool2 = torch.nn.MaxPool2d(2, 2)
+        self.pool1 = torch.nn.MaxPool2d(4, 4)
+        self.conv2 = nn.Conv2d(2, 2, kernel_size=5, stride=2)
+        self.pool2 = torch.nn.MaxPool2d(4, 4)
         # self.bn2 = nn.BatchNorm2d(4)
         
         self.affine1 = nn.Linear(feature_size + reward_size,
-                                 (feature_size + reward_size) * 2)
-        self.affine2 = nn.Linear((feature_size + reward_size) * 2,
+                                 (feature_size + reward_size) * 1)
+        self.affine2 = nn.Linear((feature_size + reward_size) * 1,
                                  action_size)
 
     def forward(self, state, preference, execmask=None):
-        state = state.transpose(1, 3).transpose(2,3)
+        state = state.transpose(1, -1).transpose(-2,-1)
         feat = self.pool1(self.conv1(state))
         feat = self.pool2(self.conv2(feat))
         feat = feat.view(feat.size(0), -1)

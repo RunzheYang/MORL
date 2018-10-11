@@ -9,8 +9,6 @@ env = BinarySpaceToDiscreteSpaceEnv(env, SIMPLE_MOVEMENT)
 import torch
 
 a = torch.Tensor(env.observation_space.high)
-print(a.size())
-print(env.action_space.n)
 
 done = True
 for step in range(2):
