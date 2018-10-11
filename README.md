@@ -1,5 +1,6 @@
 # Deep Multi-Objective Reinforcement Learning
-My undergraduate thesis: [Deep Multi-Objective Reinforcement Learning and Its Application in Task-Oriented Dialogue Systems](http://sjcg.jwc.sjtu.edu.cn/326/2018/2018/Dissertation.html)
+[Deep Multi-Objective Reinforcement Learning and Its Application in Task-Oriented Dialogue Systems](http://sjcg.jwc.sjtu.edu.cn/326/2018/2018/Dissertation.html)
+_Runzhe Yang, Undergraduate Thesis, 2018_
 
 ## Previous Experiments
 - Benchmark in Synthetic Envrioments
