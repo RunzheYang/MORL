@@ -31,16 +31,27 @@ class EnvelopeCnnCQN(torch.nn.Module):
         self.action_size = action_size
         self.reward_size = reward_size
 
+        in_channel = self.state_size[2]
+        wi = int((((self.state_size[0] - 3) / 4 - 3) / 4 - 3) / 4)
+        hi = int((((self.state_size[1] - 3) / 4 - 3) / 4 - 3) / 4)
+        feature_size = int(wi * hi * 2)
+
         # S x A -> (W -> R^n). =>. S x W -> (A -> R^n)
-        self.affine1 = nn.Linear(state_size + reward_size,
-                                 (state_size + reward_size) * 16)
-        self.affine2 = nn.Linear((state_size + reward_size) * 16,
-                                 (state_size + reward_size) * 32)
-        self.affine3 = nn.Linear((state_size + reward_size) * 32,
-                                 (state_size + reward_size) * 32)
-        # self.affine4 = nn.Linear((state_size + reward_size) * 64,
-        #                          (state_size + reward_size) * 32)
-        self.affine5 = nn.Linear((state_size + reward_size) * 32,
+        self.conv1 = nn.Conv2d(in_channel, 16, kernel_size=5, stride=2)
+        self.bn1 = nn.BatchNorm2d(16)
+        self.pool1 = torch.nn.MaxPool2d(2, 2)
+        self.conv2 = nn.Conv2d(16, 32, kernel_size=5, stride=2)
+        self.bn2 = nn.BatchNorm2d(32)
+        self.pool2 = torch.nn.MaxPool2d(2, 2)
+        self.conv3 = nn.Conv2d(32, 32, kernel_size=5, stride=2)
+        self.bn3 = nn.BatchNorm2d(32)
+        self.pool3 = torch.nn.MaxPool2d(2, 2)
+
+        self.affine1 = nn.Linear(feature_size + reward_size,
+                                 (feature_size + reward_size) * 2)
+        self.affine2 = nn.Linear((feature_size + reward_size) * 2,
+                                 (feature_size + reward_size) * 4)
+        self.affine3 = nn.Linear((feature_size + reward_size) * 4,
                                  action_size * reward_size)
 
     def H(self, Q, w, s_num, w_num):
@@ -94,13 +105,18 @@ class EnvelopeCnnCQN(torch.nn.Module):
 
     def forward(self, state, preference, w_num=1, execmask=None):
         s_num = int(preference.size(0) / w_num)
-        x = torch.cat((state, preference), dim=1)
+
+        state = state.transpose(1, -1).transpose(-2,-1)
+        feat = self.pool1(self.bn1(self.conv1(state)))
+        feat = self.pool2(self.bn2(self.conv2(feat)))
+        feat = self.pool3(self.bn3(self.conv3(feat)))
+        feat = feat.view(feat.size(0), -1)
+
+        x = torch.cat((feat, preference), dim=1)
         x = x.view(x.size(0), -1)
         x = F.relu(self.affine1(x))
         x = F.relu(self.affine2(x))
-        x = F.relu(self.affine3(x))
-        # x = F.relu(self.affine4(x))
-        q = self.affine5(x)
+        q = self.affine3(x)
         q = q.view(q.size(0), self.action_size, self.reward_size)
         if execmask is not None:
             execmask = execmask.view(execmask.size(0), self.action_size, -1)
