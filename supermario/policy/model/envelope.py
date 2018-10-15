@@ -34,7 +34,7 @@ class EnvelopeCnnCQN(torch.nn.Module):
         in_channel = self.state_size[2]
         wi = int((((self.state_size[0] - 3) / 4 - 3) / 4 - 3) / 4)
         hi = int((((self.state_size[1] - 3) / 4 - 3) / 4 - 3) / 4)
-        feature_size = int(wi * hi * 2)
+        feature_size = int(wi * hi * 32)
 
         # S x A -> (W -> R^n). =>. S x W -> (A -> R^n)
         self.conv1 = nn.Conv2d(in_channel, 16, kernel_size=5, stride=2)

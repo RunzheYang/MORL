@@ -27,24 +27,24 @@ class NaiveCnnCQN(torch.nn.Module):
         in_channel = self.state_size[2]
         wi = int((((self.state_size[0] - 3) / 4 - 3) / 4 - 3) / 4)
         hi = int((((self.state_size[1] - 3) / 4 - 3) / 4 - 3) / 4)
-        feature_size = int(wi * hi * 2)
+        feature_size = int(wi * hi * 16)
 
         # S x A -> (W -> R). =>. S x W -> (A -> R)
-        self.conv1 = nn.Conv2d(in_channel, 16, kernel_size=5, stride=2)
-        self.bn1 = nn.BatchNorm2d(16)
+        self.conv1 = nn.Conv2d(in_channel, 8, kernel_size=5, stride=2)
+        self.bn1 = nn.BatchNorm2d(8)
         self.pool1 = torch.nn.MaxPool2d(2, 2)
-        self.conv2 = nn.Conv2d(16, 32, kernel_size=5, stride=2)
-        self.bn2 = nn.BatchNorm2d(32)
+        self.conv2 = nn.Conv2d(8, 16, kernel_size=5, stride=2)
+        self.bn2 = nn.BatchNorm2d(16)
         self.pool2 = torch.nn.MaxPool2d(2, 2)
-        self.conv3 = nn.Conv2d(32, 32, kernel_size=5, stride=2)
-        self.bn3 = nn.BatchNorm2d(32)
+        self.conv3 = nn.Conv2d(16, 16, kernel_size=5, stride=2)
+        self.bn3 = nn.BatchNorm2d(16)
         self.pool3 = torch.nn.MaxPool2d(2, 2)
 
         self.affine1 = nn.Linear(feature_size + reward_size,
-                                 (feature_size + reward_size) * 2)
-        self.affine2 = nn.Linear((feature_size + reward_size) * 2,
                                  (feature_size + reward_size) * 4)
-        self.affine3 = nn.Linear((feature_size + reward_size) * 4,
+        self.affine2 = nn.Linear((feature_size + reward_size) * 4,
+                                 (feature_size + reward_size) * 8)
+        self.affine3 = nn.Linear((feature_size + reward_size) * 8,
                                  action_size)
 
     def forward(self, state, preference, execmask=None):

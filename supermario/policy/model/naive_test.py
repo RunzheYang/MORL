@@ -43,7 +43,7 @@ class NaiveTestCQN(torch.nn.Module):
                                  action_size)
 
     def forward(self, state, preference, execmask=None):
-        state = state.transpose(1, -1).transpose(-2,-1)
+        state = state.transpose(1, -1).transpose(-2,-1) / 255.0
         feat = self.pool1(self.conv1(state))
         feat = self.pool2(self.conv2(feat))
         feat = feat.view(feat.size(0), -1)

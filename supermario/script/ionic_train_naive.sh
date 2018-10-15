@@ -1,1 +1,1 @@
-python train.py --env-name SuperMarioBros-v0 --method naive --model test --gamma 0.99 --mem-size 4000 --batch-size 64 --lr  1e-4 --epsilon 0.5 --epsilon-decay --weight-num 16 --episode-num 10000 --optimizer Adam --save saved/ --log logs/ --update-freq 100 --name naive_gpu
+python train.py --env-name SuperMarioBros-v1 --method naive --model cnn --gamma 0.99 --mem-size 4000 --batch-size 32 --lr  5e-4 --epsilon 0.5 --epsilon-decay --weight-num 8 --episode-num 10000 --optimizer Adam --save saved/ --log logs/ --update-freq 100 --name naive_gpu

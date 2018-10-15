@@ -21,7 +21,7 @@ import socket
 
 parser = argparse.ArgumentParser(description='MORL')
 # CONFIG
-parser.add_argument('--env-name', default='SuperMarioBros-v0', metavar='ENVNAME',
+parser.add_argument('--env-name', default='SuperMarioBros-v1', metavar='ENVNAME',
                     help='Super Mario Bros Game 1-2 (Skip Frame) v0-v3 ')
 parser.add_argument('--method', default='naive', metavar='METHODS',
                     help='methods: naive | envelope')
@@ -91,12 +91,17 @@ def train(env, agent, args):
 
         while not terminal:
             print("frame", num_eps, cnt)
+
+            state = state / 100.0
+
             action = agent.act(state, preference=probe)
             next_state, score, terminal, info = env.step(action)
 
             next_state = np.array(next_state)
             reward = np.array(info['rewards'])
             score = info['score']
+            if info['flag_get']: 
+                terminal = True
             print("action", action)
             print("reward", reward, "\n")
 
@@ -106,7 +111,7 @@ def train(env, agent, args):
             
             if cnt % 10 == 0: loss += agent.learn()
             
-            if cnt > 5000:
+            if cnt > 1000:
                 terminal = True
                 agent.reset()
             utility = utility + (probe.cpu().numpy().dot(reward)) * np.power(args.gamma, cnt)
@@ -129,7 +134,7 @@ def train(env, agent, args):
             utility,
             loss / (cnt / 10)))
 
-        if (num_eps + 1) % 2 == 0:
+        if (num_eps + 1) % 10 == 0:
             agent.save(args.save, "m.{}_{}_n.{}_tmp".format(
                 args.method, args.model, args.name))
     
@@ -141,7 +146,7 @@ def train(env, agent, args):
 if __name__ == '__main__':
     args = parser.parse_args()
 
-    env = gym_super_mario_bros.make('SuperMarioBros-v0')
+    env = gym_super_mario_bros.make(args.env_name)
     env = BinarySpaceToDiscreteSpaceEnv(env, SIMPLE_MOVEMENT)
     # reward type (X_POSITION, ENERMY, TIME, DEATH, COIN)
 

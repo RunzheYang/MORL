@@ -53,7 +53,7 @@ parser.add_argument('--beta', type=float, default=0.01, metavar='BETA',
 parser.add_argument('--homotopy', default=False, action='store_true',
                     help='use homotopy optimization method')
 # LOG & SAVING
-parser.add_argument('--serialize', default=True, action='store_true',
+parser.add_argument('--serialize', default=False, action='store_true',
                     help='serialize a model')
 parser.add_argument('--save', default='saved/', metavar='SAVE',
                     help='path for saving trained models')
@@ -91,6 +91,9 @@ def test(env, agent, args):
 
         while not terminal:
             print("frame", num_eps, cnt)
+
+            state = state / 100.0
+
             action = agent.act(state, preference=probe)
             next_state, score, terminal, info = env.step(action)
 
@@ -105,8 +108,6 @@ def test(env, agent, args):
             agent.memorize(state, action, next_state, reward, terminal)
 
             state = next_state
-            
-            if cnt % 10 == 0: loss += agent.learn()
             
             if cnt > 5000:
                 terminal = True
@@ -138,7 +139,7 @@ def test(env, agent, args):
 if __name__ == '__main__':
     args = parser.parse_args()
 
-    env = gym_super_mario_bros.make('SuperMarioBros-v0')
+    env = gym_super_mario_bros.make(args.env_name)
     env = BinarySpaceToDiscreteSpaceEnv(env, SIMPLE_MOVEMENT)
     # reward type (X_POSITION, ENERMY, TIME, DEATH, COIN)
 
