@@ -16,7 +16,8 @@ from policy.morlpolicy import MetaAgent
 from policy.model import get_new_model
 
 from tensorboardX import SummaryWriter
-import datetime
+from datetime import datetime
+import socket
 
 parser = argparse.ArgumentParser(description='MORL')
 # CONFIG
@@ -70,7 +71,10 @@ Tensor = FloatTensor
 
 
 def test(env, agent, args):
-    writer = SummaryWriter()
+    current_time = datetime.now().strftime('%b%d_%H-%M-%S')
+    log_dir = os.path.join(
+                args.log, current_time + '_' + socket.gethostname() + comment)
+    writer = SummaryWriter(log_dir)
     print("start testing...")        
     env.reset()
     for num_eps in range(args.episode_num):

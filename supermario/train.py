@@ -16,7 +16,8 @@ from policy.morlpolicy import MetaAgent
 from policy.model import get_new_model
 
 from tensorboardX import SummaryWriter
-import datetime
+from datetime import datetime
+import socket
 
 parser = argparse.ArgumentParser(description='MORL')
 # CONFIG
@@ -41,11 +42,11 @@ parser.add_argument('--epsilon-decay', default=False, action='store_true',
                     help='linear epsilon decay to zero')
 parser.add_argument('--weight-num', type=int, default=4, metavar='WN',
                     help='number of sampled weights per iteration')
-parser.add_argument('--episode-num', type=int, default=20, metavar='EN',
+parser.add_argument('--episode-num', type=int, default=100, metavar='EN',
                     help='number of episodes for training')
 parser.add_argument('--optimizer', default='Adam', metavar='OPT',
                     help='optimizer: Adam | RMSprop')
-parser.add_argument('--update-freq', type=int, default=50, metavar='OPT',
+parser.add_argument('--update-freq', type=int, default=100, metavar='OPT',
                     help='optimizer: Adam | RMSprop')
 parser.add_argument('--beta', type=float, default=0.01, metavar='BETA',
                     help='(initial) beta for evelope algorithm, default = 0.01')
@@ -70,7 +71,10 @@ Tensor = FloatTensor
 
 
 def train(env, agent, args):
-    writer = SummaryWriter()
+    current_time = datetime.now().strftime('%b%d_%H-%M-%S')
+    log_dir = os.path.join(
+                args.log, current_time + '_' + socket.gethostname() + comment)
+    writer = SummaryWriter(log_dir)
     print("start training...")        
     env.reset()
     for num_eps in range(args.episode_num):
