@@ -90,7 +90,7 @@ def train(env, agent, args):
         state = np.array(state)
 
         while not terminal:
-            print("frame", cnt)
+            print("frame", num_eps, cnt)
             action = agent.act(state, preference=probe)
             next_state, score, terminal, info = env.step(action)
 
@@ -101,10 +101,12 @@ def train(env, agent, args):
             print("reward", reward, "\n")
 
             agent.memorize(state, action, next_state, reward, terminal)
+
+            state = next_state
             
             if cnt % 10 == 0: loss += agent.learn()
             
-            if cnt > 1000:
+            if cnt > 5000:
                 terminal = True
                 agent.reset()
             utility = utility + (probe.cpu().numpy().dot(reward)) * np.power(args.gamma, cnt)
@@ -128,8 +130,8 @@ def train(env, agent, args):
             loss / (cnt / 10)))
 
         if (num_eps + 1) % 2 == 0:
-            agent.save(args.save, "m.{}_{}_n.{}_tmp_{}".format(
-                args.method, args.model, args.name, num_eps + 1))
+            agent.save(args.save, "m.{}_{}_n.{}_tmp".format(
+                args.method, args.model, args.name))
     
     env.close()
     writer.close()

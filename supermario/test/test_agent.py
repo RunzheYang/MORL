@@ -90,7 +90,7 @@ def test(env, agent, args):
         state = np.array(state)
 
         while not terminal:
-            print("frame", cnt)
+            print("frame", num_eps, cnt)
             action = agent.act(state, preference=probe)
             next_state, score, terminal, info = env.step(action)
 
@@ -103,10 +103,12 @@ def test(env, agent, args):
             print("reward", reward, "\n")
 
             agent.memorize(state, action, next_state, reward, terminal)
+
+            state = next_state
             
-            # if cnt % 10 == 0: loss += agent.learn()
+            if cnt % 10 == 0: loss += agent.learn()
             
-            if cnt > 1000:
+            if cnt > 5000:
                 terminal = True
                 agent.reset()
             utility = utility + (probe.cpu().numpy().dot(reward)) * np.power(args.gamma, cnt)
