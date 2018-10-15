@@ -73,7 +73,7 @@ Tensor = FloatTensor
 def test(env, agent, args):
     current_time = datetime.now().strftime('%b%d_%H-%M-%S')
     log_dir = os.path.join(
-                args.log, current_time + '_' + socket.gethostname() + comment)
+                args.log, current_time + '_' + socket.gethostname())
     writer = SummaryWriter(log_dir)
     print("start testing...")        
     env.reset()
