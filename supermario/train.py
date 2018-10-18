@@ -91,14 +91,14 @@ def train(env, agent, args):
 
         while not terminal:
             print("frame", num_eps, cnt)
-
-            state = state / 100.0
-
-            action = agent.act(state, preference=probe)
+            # action = agent.act(state, preference=probe)
+            action = agent.act(state)
             next_state, score, terminal, info = env.step(action)
 
             next_state = np.array(next_state)
-            reward = np.array(info['rewards'])
+            _reward =info['rewards']
+            div = [10.0, 0.1, 10.0, 1.0, 0.1]
+            reward = np.array([_reward[i] / div[i] for i in range(5)])
             score = info['score']
             if info['flag_get']: 
                 terminal = True

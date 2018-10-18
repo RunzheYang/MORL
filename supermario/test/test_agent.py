@@ -53,7 +53,7 @@ parser.add_argument('--beta', type=float, default=0.01, metavar='BETA',
 parser.add_argument('--homotopy', default=False, action='store_true',
                     help='use homotopy optimization method')
 # LOG & SAVING
-parser.add_argument('--serialize', default=False, action='store_true',
+parser.add_argument('--serialize', default=True, action='store_true',
                     help='serialize a model')
 parser.add_argument('--save', default='saved/', metavar='SAVE',
                     help='path for saving trained models')
@@ -85,14 +85,12 @@ def test(env, agent, args):
         score = 0
         acc_reward = np.zeros(5)
 
-        probe = FloatTensor([1.0, 0.0, 0.0, 0.0, 0.0])
+        probe = FloatTensor([0.6, 0.1, 0.1, 0.1, 0.1])
         state = env.reset()
         state = np.array(state)
 
         while not terminal:
             print("frame", num_eps, cnt)
-
-            state = state / 100.0
 
             action = agent.act(state, preference=probe)
             next_state, score, terminal, info = env.step(action)
@@ -100,7 +98,9 @@ def test(env, agent, args):
             env.render()
 
             next_state = np.array(next_state)
-            reward = np.array(info['rewards'])
+            _reward =info['rewards']
+            div = [10.0, 0.1, 10.0, 1.0, 0.1]
+            reward = np.array([_reward[i] / div[i] for i in range(5)])
             score = info['score']
             print("action", action)
             print("reward", reward, "\n")
