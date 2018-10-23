@@ -54,6 +54,7 @@ class MetaAgent(object):
 
         self.trans_mem = deque()
         self.trans = namedtuple('trans', ['s', 'a', 's_', 'r', 'd'])
+        self.use_priority = args.priority
         self.priority_mem = deque()
 
         if args.optimizer == 'Adam':
@@ -165,9 +166,13 @@ class MetaAgent(object):
 
         p += 1e-5
 
+        if not self.use_priority:
+            p = 1.0
+
         self.priority_mem.append(
             p
         )
+        
         if len(self.trans_mem) > self.mem_size:
             self.trans_mem.popleft()
             self.priority_mem.popleft()
@@ -192,7 +197,7 @@ class MetaAgent(object):
         inds = inds[mask.eq(0)]
         return inds
 
-    def learn(self):
+    def learn(self, preferences=None):
         if len(self.trans_mem) > self.batch_size:
 
             self.update_count += 1
@@ -210,9 +215,15 @@ class MetaAgent(object):
             terminal_batch = batchify(map(lambda x: x.d, minibatch))
 
             w_batch = np.random.randn(self.weight_num, reward_size)
-            w_batch = np.abs(w_batch) / \
+            
+            if preferences is not None:
+                w_batch = preferences.cpu().numpy().repeat(self.batch_size, axis=0)
+                w_batch = torch.from_numpy(w_batch).type(FloatTensor)
+            else:
+                w_batch = np.abs(w_batch) / \
                       np.linalg.norm(w_batch, ord=1, axis=1, keepdims=True)
-            w_batch = torch.from_numpy(w_batch.repeat(self.batch_size, axis=0)).type(FloatTensor)
+                w_batch = torch.from_numpy(w_batch.repeat(self.batch_size, axis=0)).type(FloatTensor)
+
 
             if self.method == "naive":
                 __, Q = self.model_(Variable(torch.cat(state_batch, dim=0)),

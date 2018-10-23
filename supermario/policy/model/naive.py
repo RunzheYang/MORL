@@ -25,12 +25,12 @@ class NaiveCnnCQN(torch.nn.Module):
         self.reward_size = reward_size
 
         in_channel = self.state_size[2]
-        wi = int((((self.state_size[0] - 4) / 4 - 2) / 2 - 2) / 4)
-        hi = int((((self.state_size[1] - 4) / 4 - 2) / 2 - 2) / 4)
+        wi = int((((self.state_size[0] - 6) / 2 - 2) / 2 - 2) / 4)
+        hi = int((((self.state_size[1] - 6) / 2 - 2) / 2 - 2) / 4)
         feature_size = int(wi * hi * 64)
 
         # S x A -> (W -> R). =>. S x W -> (A -> R)
-        self.conv1 = nn.Conv2d(in_channel, 32, kernel_size=8, stride=4)
+        self.conv1 = nn.Conv2d(in_channel, 32, kernel_size=8, stride=2)
         # self.bn1 = nn.BatchNorm2d(8)
         # self.pool1 = torch.nn.MaxPool2d(2, 2)
         self.conv2 = nn.Conv2d(32, 64, kernel_size=4, stride=2)

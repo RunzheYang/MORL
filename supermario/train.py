@@ -21,14 +21,17 @@ import socket
 
 parser = argparse.ArgumentParser(description='MORL')
 # CONFIG
-parser.add_argument('--env-name', default='SuperMarioBros-v1', metavar='ENVNAME',
+parser.add_argument('--env-name', default='SuperMarioBros-v2', metavar='ENVNAME',
                     help='Super Mario Bros Game 1-2 (Skip Frame) v0-v3 ')
 parser.add_argument('--method', default='naive', metavar='METHODS',
                     help='methods: naive | envelope')
 parser.add_argument('--model', default='test', metavar='MODELS',
-                    help='linear | cnn | cnn + lstm')
+                    help='linear | cnn | lstmcnn')
 parser.add_argument('--gamma', type=float, default=0.99, metavar='GAMMA',
                     help='gamma for infinite horizonal MDPs')
+parser.add_argument('--nframe', type=int, default=4, metavar='NFRAME',
+                    help='number of frames in one state')
+
 # TRAINING
 parser.add_argument('--mem-size', type=int, default=4000, metavar='M',
                     help='max size of the replay memory')
@@ -46,12 +49,19 @@ parser.add_argument('--episode-num', type=int, default=100, metavar='EN',
                     help='number of episodes for training')
 parser.add_argument('--optimizer', default='Adam', metavar='OPT',
                     help='optimizer: Adam | RMSprop')
+parser.add_argument('--priority', default=False, metavar='store_true',
+                    help='using prioritized experience replay')
 parser.add_argument('--update-freq', type=int, default=100, metavar='OPT',
-                    help='optimizer: Adam | RMSprop')
-parser.add_argument('--beta', type=float, default=0.01, metavar='BETA',
-                    help='(initial) beta for evelope algorithm, default = 0.01')
+                    help='update frequency for double Q learning')
 parser.add_argument('--homotopy', default=False, action='store_true',
                     help='use homotopy optimization method')
+parser.add_argument('--beta', type=float, default=0.01, metavar='BETA',
+                    help='(initial) beta for evelope algorithm using homotopy, default = 0.01')
+
+# Special
+parser.add_argument('--single', default=False, action='store_true',
+                    help='single objective reinforcement learning, remember to set weight-num as 1')
+
 # LOG & SAVING
 parser.add_argument('--serialize', default=False, action='store_true',
                     help='serialize a model')
@@ -73,11 +83,11 @@ Tensor = FloatTensor
 def train(env, agent, args):
     current_time = datetime.now().strftime('%b%d_%H-%M-%S')
     log_dir = os.path.join(
-                args.log, current_time + '_' + socket.gethostname())
+                args.log, current_time + '_' + args.name)
     writer = SummaryWriter(log_dir)
     print("start training...")        
     env.reset()
-    for num_eps in range(args.episode_num):
+    for num_eps in range(2):#args.episode_num):
         terminal = False
         loss = 0
         cnt = 0
@@ -85,19 +95,29 @@ def train(env, agent, args):
         score = 0
         acc_reward = np.zeros(5)
 
-        probe = FloatTensor([1.0, 0.0, 0.0, 0.0, 0.0])
+        probe = FloatTensor([0.6, 0.1, 0.1, 0.1, 0.1])
         state = env.reset()
         state = np.array(state)
 
+        history_f = np.array([state] * args.nframe)
+        state = history_f.reshape(-1, history_f.shape[2], history_f.shape[3])
+
         while not terminal:
             print("frame", num_eps, cnt)
-            # action = agent.act(state, preference=probe)
-            action = agent.act(state)
+
+            if args.single:
+                action = agent.act(state, preference=probe)
+            else:
+                action = agent.act(state)
+
             next_state, score, terminal, info = env.step(action)
 
             next_state = np.array(next_state)
+            history_f = np.concatenate((history_f, [next_state]), axis=0)[1:]
+            next_state = history_f.reshape(-1, history_f.shape[2], history_f.shape[3])
+
             _reward =info['rewards']
-            div = [10.0, 0.1, 10.0, 1.0, 0.1]
+            div = [10.0, 0.1, 10.0, 10.0, 0.1]
             reward = np.array([_reward[i] / div[i] for i in range(5)])
             score = info['score']
             if info['flag_get']: 
@@ -109,16 +129,21 @@ def train(env, agent, args):
 
             state = next_state
             
-            if cnt % 10 == 0: loss += agent.learn()
-            
-            if cnt > 1000:
+            if args.single:
+                # single objective learning
+                loss += agent.learn(probe) 
+            else:
+                # multi-objective learning
+                loss += agent.learn()
+
+            if cnt > 2000:
                 terminal = True
                 agent.reset()
+
             utility = utility + (probe.cpu().numpy().dot(reward)) * np.power(args.gamma, cnt)
             acc_reward = acc_reward + reward
             cnt = cnt + 1
         
-
         writer.add_scalar('train/loss', loss / (cnt / 10), num_eps)
         writer.add_scalars('train/rewards', {
             "x_pos": acc_reward[0],
@@ -151,7 +176,11 @@ if __name__ == '__main__':
     # reward type (X_POSITION, ENERMY, TIME, DEATH, COIN)
 
     # get state / action / reward sizes
-    state_size = torch.Tensor(env.observation_space.high).size()
+    state_size = torch.Tensor(env.observation_space.high).size() 
+    state_size = torch.Size(
+                    [state_size[0] * args.nframe, 
+                     state_size[1], 
+                     state_size[2]])
     action_size = env.action_space.n
     reward_size = 5
 

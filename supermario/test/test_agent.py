@@ -21,14 +21,17 @@ import socket
 
 parser = argparse.ArgumentParser(description='MORL')
 # CONFIG
-parser.add_argument('--env-name', default='SuperMarioBros-v0', metavar='ENVNAME',
+parser.add_argument('--env-name', default='SuperMarioBros-v2', metavar='ENVNAME',
                     help='Super Mario Bros Game 1-2 (Skip Frame) v0-v3 ')
 parser.add_argument('--method', default='naive', metavar='METHODS',
                     help='methods: naive | envelope')
 parser.add_argument('--model', default='test', metavar='MODELS',
-                    help='linear | cnn | cnn + lstm')
+                    help='linear | cnn | lstmcnn')
 parser.add_argument('--gamma', type=float, default=0.99, metavar='GAMMA',
                     help='gamma for infinite horizonal MDPs')
+parser.add_argument('--nframe', type=int, default=4, metavar='NFRAME',
+                    help='number of frames in one state')
+
 # TRAINING
 parser.add_argument('--mem-size', type=int, default=4000, metavar='M',
                     help='max size of the replay memory')
@@ -42,18 +45,25 @@ parser.add_argument('--epsilon-decay', default=False, action='store_true',
                     help='linear epsilon decay to zero')
 parser.add_argument('--weight-num', type=int, default=4, metavar='WN',
                     help='number of sampled weights per iteration')
-parser.add_argument('--episode-num', type=int, default=5, metavar='EN',
+parser.add_argument('--episode-num', type=int, default=100, metavar='EN',
                     help='number of episodes for training')
 parser.add_argument('--optimizer', default='Adam', metavar='OPT',
                     help='optimizer: Adam | RMSprop')
-parser.add_argument('--update-freq', type=int, default=10, metavar='OPT',
-                    help='optimizer: Adam | RMSprop')
-parser.add_argument('--beta', type=float, default=0.01, metavar='BETA',
-                    help='(initial) beta for evelope algorithm, default = 0.01')
+parser.add_argument('--priority', default=False, metavar='store_true',
+                    help='using prioritized experience replay')
+parser.add_argument('--update-freq', type=int, default=100, metavar='OPT',
+                    help='update frequency for double Q learning')
 parser.add_argument('--homotopy', default=False, action='store_true',
                     help='use homotopy optimization method')
+parser.add_argument('--beta', type=float, default=0.01, metavar='BETA',
+                    help='(initial) beta for evelope algorithm using homotopy, default = 0.01')
+
+# Special
+parser.add_argument('--single', default=False, action='store_true',
+                    help='single objective reinforcement learning, remember to set weight-num as 1')
+
 # LOG & SAVING
-parser.add_argument('--serialize', default=True, action='store_true',
+parser.add_argument('--serialize', default=False, action='store_true',
                     help='serialize a model')
 parser.add_argument('--save', default='saved/', metavar='SAVE',
                     help='path for saving trained models')
@@ -70,14 +80,14 @@ ByteTensor = torch.cuda.ByteTensor if use_cuda else torch.ByteTensor
 Tensor = FloatTensor
 
 
-def test(env, agent, args):
+def train(env, agent, args):
     current_time = datetime.now().strftime('%b%d_%H-%M-%S')
     log_dir = os.path.join(
-                args.log, current_time + '_' + socket.gethostname())
+                args.log, current_time + '_' + args.name)
     writer = SummaryWriter(log_dir)
-    print("start testing...")        
+    print("start training...")        
     env.reset()
-    for num_eps in range(args.episode_num):
+    for num_eps in range(2):#args.episode_num):
         terminal = False
         loss = 0
         cnt = 0
@@ -89,35 +99,46 @@ def test(env, agent, args):
         state = env.reset()
         state = np.array(state)
 
+        history_f = np.array([state] * args.nframe)
+        state = history_f.reshape(-1, history_f.shape[2], history_f.shape[3])
+
         while not terminal:
             print("frame", num_eps, cnt)
 
-            action = agent.act(state, preference=probe)
+            if args.single:
+                action = agent.act(state, preference=probe)
+            else:
+                action = agent.act(state)
+
             next_state, score, terminal, info = env.step(action)
 
             env.render()
 
             next_state = np.array(next_state)
+            history_f = np.concatenate((history_f, [next_state]), axis=0)[1:]
+            next_state = history_f.reshape(-1, history_f.shape[2], history_f.shape[3])
+
             _reward =info['rewards']
-            div = [10.0, 0.1, 10.0, 1.0, 0.1]
+            div = [10.0, 0.1, 10.0, 10.0, 0.1]
             reward = np.array([_reward[i] / div[i] for i in range(5)])
             score = info['score']
+            if info['flag_get']: 
+                terminal = True
             print("action", action)
             print("reward", reward, "\n")
 
             agent.memorize(state, action, next_state, reward, terminal)
 
             state = next_state
-            
-            if cnt > 5000:
+
+            if cnt > 2000:
                 terminal = True
                 agent.reset()
+
             utility = utility + (probe.cpu().numpy().dot(reward)) * np.power(args.gamma, cnt)
             acc_reward = acc_reward + reward
             cnt = cnt + 1
         
-
-        writer.add_scalar('test/loss', loss / (cnt / 10), num_eps)
         writer.add_scalars('test/rewards', {
             "x_pos": acc_reward[0],
             "enermy": acc_reward[1],
@@ -127,13 +148,13 @@ def test(env, agent, args):
             }, num_eps)
         writer.add_scalar('test/score', score, num_eps)
 
-        print("end of eps %d with utility %0.2f loss: %0.4f" % (
+        print("end of eps %d with utility %0.2f" % (
             num_eps,
-            utility,
-            loss / (cnt / 10)))
+            utility))
     
     env.close()
     writer.close()
+    agent.save(args.save, "m.{}_{}_n.{}".format(args.method, args.model, args.name))
 
 
 if __name__ == '__main__':
