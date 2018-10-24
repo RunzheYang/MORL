@@ -49,7 +49,7 @@ parser.add_argument('--episode-num', type=int, default=100, metavar='EN',
                     help='number of episodes for training')
 parser.add_argument('--optimizer', default='Adam', metavar='OPT',
                     help='optimizer: Adam | RMSprop')
-parser.add_argument('--priority', default=False, metavar='store_true',
+parser.add_argument('--priority', default=False, action='store_true',
                     help='using prioritized experience replay')
 parser.add_argument('--update-freq', type=int, default=100, metavar='OPT',
                     help='update frequency for double Q learning')
@@ -87,7 +87,7 @@ def train(env, agent, args):
     writer = SummaryWriter(log_dir)
     print("start training...")        
     env.reset()
-    for num_eps in range(2):#args.episode_num):
+    for num_eps in range(args.episode_num):
         terminal = False
         loss = 0
         cnt = 0
@@ -97,10 +97,9 @@ def train(env, agent, args):
 
         probe = FloatTensor([0.6, 0.1, 0.1, 0.1, 0.1])
         state = env.reset()
-        state = np.array(state)
-
-        history_f = np.array([state] * args.nframe)
-        state = history_f.reshape(-1, history_f.shape[2], history_f.shape[3])
+    
+        history_f = [state] * args.nframe
+        state = np.array(history_f).reshape(-1, state.shape[1], state.shape[2])
 
         while not terminal:
             print("frame", num_eps, cnt)
@@ -112,9 +111,11 @@ def train(env, agent, args):
 
             next_state, score, terminal, info = env.step(action)
 
-            next_state = np.array(next_state)
-            history_f = np.concatenate((history_f, [next_state]), axis=0)[1:]
-            next_state = history_f.reshape(-1, history_f.shape[2], history_f.shape[3])
+            history_f[0] = 0
+            for i in range(args.nframe-1):
+                history_f[i] = history_f[i+1]
+            history_f[args.nframe-1] = next_state
+            next_state = np.array(history_f).reshape(-1, next_state.shape[1], next_state.shape[2])
 
             _reward =info['rewards']
             div = [10.0, 0.1, 10.0, 10.0, 0.1]

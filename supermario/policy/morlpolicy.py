@@ -217,7 +217,7 @@ class MetaAgent(object):
             w_batch = np.random.randn(self.weight_num, reward_size)
             
             if preferences is not None:
-                w_batch = preferences.cpu().numpy().repeat(self.batch_size, axis=0)
+                w_batch = preferences.unsqueeze(0).cpu().numpy().repeat(self.batch_size, axis=0)
                 w_batch = torch.from_numpy(w_batch).type(FloatTensor)
             else:
                 w_batch = np.abs(w_batch) / \
