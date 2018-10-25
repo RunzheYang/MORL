@@ -10,9 +10,8 @@ python train.py --env-name SuperMarioBros-v2 \
 --weight-num 1 \
 --episode-num 10000 \
 --update-freq 100 \
---priority \
 --optimizer Adam \
 --save saved/ \
 --log logs/ \
 --single \
---name naive_v2_cnn_200_16_5e-4_1_pri_100_single
+--name naive_v2_cnn_200_16_5e-4_1_100_single

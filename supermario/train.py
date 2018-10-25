@@ -14,6 +14,7 @@ SCRIPT_DIR = os.path.dirname(os.path.realpath(os.path.join(os.getcwd(), os.path.
 sys.path.append(os.path.normpath(os.path.join(SCRIPT_DIR, PACKAGE_PARENT)))
 from policy.morlpolicy import MetaAgent
 from policy.model import get_new_model
+from test.validate_agent import validate
 
 from tensorboardX import SummaryWriter
 from datetime import datetime
@@ -95,14 +96,13 @@ def train(env, agent, args):
         score = 0
         acc_reward = np.zeros(5)
 
-        probe = FloatTensor([0.6, 0.1, 0.1, 0.1, 0.1])
+        probe = FloatTensor([0.84, 0.01, 0.05, 0.05, 0.05])
         state = env.reset()
     
         history_f = [state] * args.nframe
         state = np.array(history_f).reshape(-1, state.shape[1], state.shape[2])
 
         while not terminal:
-            print("frame", num_eps, cnt)
 
             if args.single:
                 action = agent.act(state, preference=probe)
@@ -123,8 +123,6 @@ def train(env, agent, args):
             score = info['score']
             if info['flag_get']: 
                 terminal = True
-            print("action", action)
-            print("reward", reward, "\n")
 
             agent.memorize(state, action, next_state, reward, terminal)
 
@@ -146,23 +144,24 @@ def train(env, agent, args):
             cnt = cnt + 1
         
         writer.add_scalar('train/loss', loss / (cnt / 10), num_eps)
-        writer.add_scalars('train/rewards', {
-            "x_pos": acc_reward[0],
-            "enermy": acc_reward[1],
-            "time": acc_reward[2],
-            "death": acc_reward[3],
-            "coin": acc_reward[4],
-            }, num_eps)
-        writer.add_scalar('train/score', score, num_eps)
+        # writer.add_scalars('train/rewards', {
+        #     "x_pos": acc_reward[0],
+        #     "enermy": acc_reward[1],
+        #     "time": acc_reward[2],
+        #     "death": acc_reward[3],
+        #     "coin": acc_reward[4],
+        #     }, num_eps)
+        # writer.add_scalar('train/score', score, num_eps)
 
         print("end of eps %d with utility %0.2f loss: %0.4f" % (
             num_eps,
             utility,
             loss / (cnt / 10)))
 
-        if (num_eps + 1) % 10 == 0:
+        if num_eps % 10 == 0:
             agent.save(args.save, "m.{}_{}_n.{}_tmp".format(
                 args.method, args.model, args.name))
+            validate(env, args, writer, num_eps)
     
     env.close()
     writer.close()

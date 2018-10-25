@@ -15,5 +15,5 @@ python /test/test.py \
 --optimizer Adam \
 --save saved/ \
 --log logs/ \
---serialize \
+--serialize
 --name naive_v2_cnn_4000_32_5e-4_8_pri_100_tmp

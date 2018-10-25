@@ -1,4 +1,5 @@
-python train.py --env-name SuperMarioBros-v2 \
+python train.py \
+--env-name SuperMarioBros-v2 \
 --method naive \
 --model cnn \
 --gamma 0.99 \
@@ -7,12 +8,10 @@ python train.py --env-name SuperMarioBros-v2 \
 --lr  5e-4 \
 --epsilon 0.5 \
 --epsilon-decay \
---weight-num 1 \
+--weight-num 4 \
 --episode-num 10000 \
 --update-freq 100 \
---priority \
 --optimizer Adam \
 --save saved/ \
 --log logs/ \
---single \
---name naive_v2_cnn_200_16_5e-4_1_pri_100_single
+--name naive_v2_cnn_200_16_5e-4_4_100
