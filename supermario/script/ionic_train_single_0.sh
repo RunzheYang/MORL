@@ -2,17 +2,17 @@ python train.py --env-name SuperMarioBros-v2 \
 --method naive \
 --model cnn \
 --gamma 0.99 \
---mem-size 200 \
+--mem-size 400 \
 --batch-size 16 \
---lr  5e-4 \
+--lr  1e-3 \
 --epsilon 0.5 \
 --epsilon-decay \
 --weight-num 1 \
 --episode-num 10000 \
---update-freq 100 \
+--update-freq 500 \
 --priority \
 --optimizer Adam \
 --save saved/ \
 --log logs/ \
 --single \
---name naive_v2_cnn_200_16_5e-4_1_pri_100_single
+--name naive_v2_cnn_400_16_1e-3_1_pri_100_single

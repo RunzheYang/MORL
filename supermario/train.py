@@ -96,7 +96,7 @@ def train(env, agent, args):
         score = 0
         acc_reward = np.zeros(5)
 
-        probe = FloatTensor([0.84, 0.01, 0.05, 0.05, 0.05])
+        probe = FloatTensor([0.4, 0.2, 0.1, 0.1, 0.2])
         state = env.reset()
     
         history_f = [state] * args.nframe
@@ -161,7 +161,7 @@ def train(env, agent, args):
         if num_eps % 10 == 0:
             agent.save(args.save, "m.{}_{}_n.{}_tmp".format(
                 args.method, args.model, args.name))
-            validate(env, args, writer, num_eps)
+            validate(env, args, writer, probe, num_eps)
     
     env.close()
     writer.close()

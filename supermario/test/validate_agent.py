@@ -25,7 +25,7 @@ LongTensor = torch.cuda.LongTensor if use_cuda else torch.LongTensor
 ByteTensor = torch.cuda.ByteTensor if use_cuda else torch.ByteTensor
 Tensor = FloatTensor
 
-def validate(env, args, writer, num_eps):
+def validate(env, args, writer, probe, num_eps):
 
     REPEAT = 5
 
@@ -34,7 +34,7 @@ def validate(env, args, writer, num_eps):
     args_new = args
     args_new.eps = 0.05
     
-    agent = MetaAgent(model, args_new, is_train=False)
+    agent = MetaAgent(model, args_new, is_train=True) # is_train is true for adding epsilon noise
     print("start validating...")        
     env.reset()
     acc_acc_reward = np.zeros(5)
@@ -47,8 +47,6 @@ def validate(env, args, writer, num_eps):
         utility = 0
         score = 0
         acc_reward = np.zeros(REPEAT)
-
-        probe = FloatTensor([0.84, 0.01, 0.05, 0.05, 0.05])
         state = env.reset()
     
         history_f = [state] * args.nframe
