@@ -15,6 +15,7 @@ sys.path.append(os.path.normpath(os.path.join(SCRIPT_DIR, PACKAGE_PARENT)))
 from policy.morlpolicy import MetaAgent
 from policy.model import get_new_model
 from test.validate_agent import validate
+from utils.rescale import rescale
 
 from tensorboardX import SummaryWriter
 from datetime import datetime
@@ -80,7 +81,6 @@ LongTensor = torch.cuda.LongTensor if use_cuda else torch.LongTensor
 ByteTensor = torch.cuda.ByteTensor if use_cuda else torch.ByteTensor
 Tensor = FloatTensor
 
-
 def train(env, agent, args):
     current_time = datetime.now().strftime('%b%d_%H-%M-%S')
     log_dir = os.path.join(
@@ -97,7 +97,7 @@ def train(env, agent, args):
         acc_reward = np.zeros(5)
 
         probe = FloatTensor([0.4, 0.2, 0.1, 0.1, 0.2])
-        state = env.reset()
+        state = rescale(env.reset())
     
         history_f = [state] * args.nframe
         state = np.array(history_f).reshape(-1, state.shape[1], state.shape[2])
@@ -110,6 +110,7 @@ def train(env, agent, args):
                 action = agent.act(state)
 
             next_state, score, terminal, info = env.step(action)
+            next_state = rescale(next_state)
 
             history_f[0] = 0
             for i in range(args.nframe-1):
@@ -118,9 +119,9 @@ def train(env, agent, args):
             next_state = np.array(history_f).reshape(-1, next_state.shape[1], next_state.shape[2])
 
             _reward =info['rewards']
-            div = [10.0, 0.1, 10.0, 10.0, 0.1]
-            reward = np.array([_reward[i] / div[i] for i in range(5)])
-            score = info['score']
+            div = [10.0, 0.1, 160.0, 10.0, 0.1]
+            reward = np.array([64])
+            score = info['score1']
             if info['flag_get']: 
                 terminal = True
 
@@ -178,9 +179,9 @@ if __name__ == '__main__':
     # get state / action / reward sizes
     state_size = torch.Tensor(env.observation_space.high).size() 
     state_size = torch.Size(
-                    [state_size[0] * args.nframe, 
-                     state_size[1], 
-                     state_size[2]])
+                    [60 * args.nframe, 
+                     64, 
+                     1])
     action_size = env.action_space.n
     reward_size = 5
 

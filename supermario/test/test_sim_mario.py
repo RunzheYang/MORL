@@ -14,7 +14,7 @@ done = True
 for step in range(2000):
     if done:
         state = env.reset()
-    print("state", state)
+    print("state", state.shape)
     act = env.action_space.sample()
     state, reward, done, info = env.step(act)
     print(info['rewards'])
