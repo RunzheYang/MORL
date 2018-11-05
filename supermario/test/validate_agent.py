@@ -90,7 +90,7 @@ def validate(env, args, writer, probe, num_eps):
         acc_acc_reward = acc_acc_reward + acc_reward
         acc_score = acc_score + score
         acc_utility = acc_utility + utility
-        acc_pred_q = acc_pred_q + pred_q
+        acc_pred_q = acc_pred_q + float(pred_q[0])
 
     acc_acc_reward = acc_acc_reward * 1.0 / REPEAT
     acc_score = acc_score * 1.0 / REPEAT
