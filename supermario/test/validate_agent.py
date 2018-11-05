@@ -106,8 +106,8 @@ def validate(env, args, writer, probe, num_eps):
         }, num_eps)
 
     writer.add_scalars('train/utility', {
-        "real utility", acc_utility
-        "predctied utility", acc_pred_q
+        "real utility", acc_utility,
+        "predctied utility", acc_pred_q,
         }, num_eps)
 
     writer.add_scalar('train/score', acc_score, num_eps)
