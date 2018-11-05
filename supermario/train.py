@@ -121,7 +121,7 @@ def train(env, agent, args):
             _reward =info['rewards']
             div = [10.0, 0.1, 160.0, 10.0, 0.1]
             reward = np.array([64])
-            score = info['score1']
+            score = info['score']
             if info['flag_get']: 
                 terminal = True
 
