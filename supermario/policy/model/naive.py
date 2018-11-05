@@ -25,8 +25,10 @@ class NaiveCnnCQN(torch.nn.Module):
         self.reward_size = reward_size
 
         in_channel = self.state_size[2]
-        wi = int((((self.state_size[0] - 4) / 4 - 2) / 2 - 2) / 4)
-        hi = int((((self.state_size[1] - 4) / 4 - 2) / 2 - 2) / 4)
+        # wi = int((((self.state_size[0] - 4) / 4 - 2) / 2 - 2) / 4)
+        # hi = int((((self.state_size[1] - 4) / 4 - 2) / 2 - 2) / 4)
+        wi = int(((self.state_size[0] - 4) / 4 - 2) / 4)
+        hi = int(((self.state_size[1] - 4) / 4 - 2) / 4)
         feature_size = int(wi * hi * 32)
 
         # S x A -> (W -> R). =>. S x W -> (A -> R)
@@ -36,7 +38,7 @@ class NaiveCnnCQN(torch.nn.Module):
         self.conv2 = nn.Conv2d(16, 32, kernel_size=4, stride=2)
         # self.bn2 = nn.BatchNorm2d(16)
         # self.pool2 = torch.nn.MaxPool2d(2, 2)
-        self.conv3 = nn.Conv2d(32, 32, kernel_size=4, stride=2)
+        # self.conv3 = nn.Conv2d(32, 32, kernel_size=4, stride=2)
         # self.bn3 = nn.BatchNorm2d(16)
         self.pool3 = torch.nn.MaxPool2d(2, 2)
 
@@ -50,8 +52,9 @@ class NaiveCnnCQN(torch.nn.Module):
     def forward(self, state, preference, execmask=None):
         state = state.transpose(1, -1).transpose(-2,-1)
         feat = F.tanh(self.conv1(state))
-        feat = F.tanh(self.conv2(feat))
-        feat = self.pool3(F.tanh(self.conv3(feat)))
+        # feat = F.tanh(self.conv2(feat))
+        # feat = self.pool3(F.tanh(self.conv3(feat)))
+        feat = self.pool3(F.tanh(self.conv2(feat)))
         feat = feat.view(feat.size(0), -1)
         x = torch.cat((feat, preference), dim=1)
         x = x.view(x.size(0), -1)

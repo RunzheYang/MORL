@@ -2,7 +2,7 @@ python train.py --env-name SuperMarioBros-v2 \
 --method naive \
 --model cnn \
 --gamma 0.99 \
---mem-size 500 \
+--mem-size 400 \
 --batch-size 16 \
 --lr  1e-3 \
 --epsilon 0.5 \
