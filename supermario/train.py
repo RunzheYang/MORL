@@ -143,7 +143,7 @@ def train(env, agent, args):
             acc_reward = acc_reward + reward
             cnt = cnt + 1
         
-        writer.add_scalar('train/loss', loss / (cnt / 10), num_eps)
+        writer.add_scalar('train/loss', loss / cnt, num_eps)
         # writer.add_scalars('train/rewards', {
         #     "x_pos": acc_reward[0],
         #     "enermy": acc_reward[1],

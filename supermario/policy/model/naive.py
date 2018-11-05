@@ -41,22 +41,22 @@ class NaiveCnnCQN(torch.nn.Module):
         self.pool3 = torch.nn.MaxPool2d(2, 2)
 
         self.affine1 = nn.Linear(feature_size + reward_size,
-                                 (feature_size + reward_size) * 2)
-        self.affine2 = nn.Linear((feature_size + reward_size) * 2,
+                                 (feature_size + reward_size) * 4)
+        self.affine2 = nn.Linear((feature_size + reward_size) * 4,
                                  256)
         self.affine3 = nn.Linear(256,
                                  action_size)
 
     def forward(self, state, preference, execmask=None):
         state = state.transpose(1, -1).transpose(-2,-1)
-        feat = F.relu(self.conv1(state))
-        feat = F.relu(self.conv2(feat))
-        feat = F.relu(self.pool3(self.conv3(feat)))
+        feat = F.tanh(self.conv1(state))
+        feat = F.tanh(self.conv2(feat))
+        feat = self.pool3(F.tanh(self.conv3(feat)))
         feat = feat.view(feat.size(0), -1)
         x = torch.cat((feat, preference), dim=1)
         x = x.view(x.size(0), -1)
-        x = F.relu(self.affine1(x))
-        x = F.relu(self.affine2(x))
+        x = F.tanh(self.affine1(x))
+        x = F.tanh(self.affine2(x))
         q = self.affine3(x)
         if execmask is not None:
             q = torch.add(q, execmask)

@@ -320,8 +320,37 @@ class MetaAgent(object):
             self.beta += self.beta_delta
             self.beta_delta = (self.beta-self.beta_init)*self.beta_expbase+self.beta_init-self.beta
 
-    def predict(self, probe):
-        pass
+    def predict(self, state, probe):
+        # random pick a preference if it is not specified
+        if probe is None:
+            if self.w_kept is None:
+                self.w_kept = torch.randn(self.model_.reward_size)
+                self.w_kept = (torch.abs(self.w_kept) / \
+                               torch.norm(self.w_kept, p=1)).type(FloatTensor)
+            probe = self.w_kept
+
+        state = torch.from_numpy(state).type(FloatTensor)
+
+        if self.method == "envelope":
+            _, Q = self.model_(
+                Variable(state.unsqueeze(0), requires_grad=False),
+                Variable(probe.unsqueeze(0), requires_grad=False))
+
+            Q = Q.view(-1, self.model_.reward_size)
+
+            Q = torch.mv(Q.data, probe)
+
+            pred_q = Q.max(0)[0].cpu().numpy()
+
+        elif self.method == "naive":
+            _, Q = self.model_(
+                Variable(state.unsqueeze(0), requires_grad=False),
+                Variable(probe.unsqueeze(0), requires_grad=False))
+
+            pred_q = Q.max(1)[0].data.cpu().numpy()
+
+        return pred_q
 
     def save(self, save_path, model_name):
         torch.save(self.model, "{}{}.pkl".format(save_path, model_name))
+

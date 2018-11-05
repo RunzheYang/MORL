@@ -46,11 +46,14 @@ def validate(env, args, writer, probe, num_eps):
         cnt = 0
         utility = 0
         score = 0
+        acc_pred_q = 0
         acc_reward = np.zeros(REPEAT)
         state = env.reset()
     
         history_f = [state] * args.nframe
         state = np.array(history_f).reshape(-1, state.shape[1], state.shape[2])
+
+        pred_q = agent.predict(state, probe)
 
         while not terminal:
 
@@ -87,10 +90,12 @@ def validate(env, args, writer, probe, num_eps):
         acc_acc_reward = acc_acc_reward + acc_reward
         acc_score = acc_score + score
         acc_utility = acc_utility + utility
+        acc_pred_q = acc_pred_q + pred_q
 
     acc_acc_reward = acc_acc_reward * 1.0 / REPEAT
     acc_score = acc_score * 1.0 / REPEAT
     acc_utility = acc_utility * 1.0 / REPEAT
+    acc_pred_q = acc_pred_q * 1.0 / REPEAT
 
     writer.add_scalars('train/rewards', {
         "x_pos": acc_acc_reward[0],
@@ -100,6 +105,9 @@ def validate(env, args, writer, probe, num_eps):
         "coin": acc_acc_reward[4],
         }, num_eps)
 
-    writer.add_scalar('train/utility', acc_utility, num_eps)
+    writer.add_scalars('train/utility', {
+        "real utility", acc_utility
+        "predctied utility", acc_pred_q
+        }, num_eps)
 
     writer.add_scalar('train/score', acc_score, num_eps)
