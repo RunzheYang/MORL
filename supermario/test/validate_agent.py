@@ -14,6 +14,7 @@ SCRIPT_DIR = os.path.dirname(os.path.realpath(os.path.join(os.getcwd(), os.path.
 sys.path.append(os.path.normpath(os.path.join(SCRIPT_DIR, PACKAGE_PARENT)))
 from policy.morlpolicy import MetaAgent
 from policy.model import get_new_model
+from utils.rescale import rescale
 
 from tensorboardX import SummaryWriter
 from datetime import datetime
@@ -48,7 +49,7 @@ def validate(env, args, writer, probe, num_eps):
         score = 0
         acc_pred_q = 0
         acc_reward = np.zeros(REPEAT)
-        state = env.reset()
+        state = rescale(env.reset())
     
         history_f = [state] * args.nframe
         state = np.array(history_f).reshape(-1, state.shape[1], state.shape[2])
@@ -63,6 +64,7 @@ def validate(env, args, writer, probe, num_eps):
                 action = agent.act(state)
 
             next_state, score, terminal, info = env.step(action)
+            next_state = rescale(next_state)
 
             history_f[0] = 0
             for i in range(args.nframe-1):

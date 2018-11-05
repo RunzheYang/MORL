@@ -7,5 +7,4 @@ from skimage.transform import resize
 def rescale(state):
 	state = color.rgb2gray(state)
 	state = resize(state, (60,64,1), anti_aliasing=True)
-	print(state.shape)
 	return state
