@@ -41,10 +41,10 @@ class NaiveCnnCQN(torch.nn.Module):
         self.pool3 = torch.nn.MaxPool2d(2, 2)
 
         self.affine1 = nn.Linear(feature_size + reward_size,
-                                 (feature_size + reward_size) * 4)
-        self.affine2 = nn.Linear((feature_size + reward_size) * 4,
-                                 256)
-        self.affine3 = nn.Linear(256,
+                                 (feature_size + reward_size) * 2)
+        self.affine2 = nn.Linear((feature_size + reward_size) * 2,
+                                 128)
+        self.affine3 = nn.Linear(128,
                                  action_size)
 
     def forward(self, state, preference, execmask=None):
