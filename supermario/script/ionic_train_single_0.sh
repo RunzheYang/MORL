@@ -3,7 +3,7 @@ python train.py --env-name SuperMarioBros-v2 \
 --model cnn \
 --gamma 0.99 \
 --mem-size 400 \
---batch-size 16 \
+--batch-size 4 \
 --lr  1e-3 \
 --epsilon 0.5 \
 --epsilon-decay \
@@ -15,4 +15,4 @@ python train.py --env-name SuperMarioBros-v2 \
 --save saved/ \
 --log logs/ \
 --single \
---name naive_v2_cnn_400_16_1e-3_1_pri_100_single
+--name naive_v2_cnn_400_4_1e-3_1_pri_100_single

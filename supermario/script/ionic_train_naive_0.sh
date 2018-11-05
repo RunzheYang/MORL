@@ -4,7 +4,7 @@ python train.py \
 --model cnn \
 --gamma 0.99 \
 --mem-size 400 \
---batch-size 16 \
+--batch-size 4 \
 --lr  1e-3 \
 --epsilon 0.5 \
 --epsilon-decay \
@@ -15,4 +15,4 @@ python train.py \
 --optimizer Adam \
 --save saved/ \
 --log logs/ \
---name naive_v2_cnn_400_16_1e-3_4_pri_100
+--name naive_v2_cnn_400_4_1e-3_4_pri_100
