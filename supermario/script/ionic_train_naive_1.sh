@@ -14,4 +14,6 @@ python train.py \
 --optimizer Adam \
 --save saved/ \
 --log logs/ \
+--serialize \
 --name naive_v2_cnn_100000_16_1e-4_4_100
+

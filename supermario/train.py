@@ -189,7 +189,7 @@ if __name__ == '__main__':
     # generate an agent for training
     if args.serialize:
         model = torch.load("{}{}.pkl".format(args.save,
-                                             "m.{}_{}_n.{}".format(args.method, args.model, args.name)))
+                                             "m.{}_{}_n.{}_tmp".format(args.method, args.model, args.name)))
     else:
         model = get_new_model(args.method, args.model, state_size, action_size, reward_size)
     
