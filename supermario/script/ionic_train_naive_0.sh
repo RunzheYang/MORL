@@ -3,7 +3,7 @@ python train.py \
 --method naive \
 --model cnn \
 --gamma 0.99 \
---mem-size 10000 \
+--mem-size 100000 \
 --batch-size 16 \
 --lr  1e-3 \
 --epsilon 0.5 \
@@ -15,4 +15,4 @@ python train.py \
 --optimizer Adam \
 --save saved/ \
 --log logs/ \
---name naive_v2_cnn_10000_16_1e-3_4_pri_100
+--name naive_v2_cnn_100000_16_1e-3_4_pri_100

@@ -101,7 +101,7 @@ def validate(env, args, writer, probe, num_eps):
 
     writer.add_scalars('train/rewards', {
         "x_pos": acc_acc_reward[0],
-        "enermy": acc_acc_reward[1],
+        "enemy": acc_acc_reward[1],
         "time": acc_acc_reward[2],
         "death": acc_acc_reward[3],
         "coin": acc_acc_reward[4],
@@ -109,7 +109,7 @@ def validate(env, args, writer, probe, num_eps):
 
     writer.add_scalars('train/utility', {
         "real utility": acc_utility,
-        "predctied utility": acc_pred_q,
+        "predicted utility": acc_pred_q,
         }, num_eps)
 
     writer.add_scalar('train/score', acc_score, num_eps)
