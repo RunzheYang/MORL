@@ -2,10 +2,10 @@ python /test/test.py \
 --env-name SuperMarioBros-v2 \
 --method naive \
 --model cnn \
---gamma 0.99 \
---mem-size 4000 \
+--gamma 0.8 \
+--mem-size 100000 \
 --batch-size 32 \
---lr  5e-4 \
+--lr  1e-4 \
 --epsilon 0.5 \
 --epsilon-decay \
 --weight-num 8 \
@@ -16,4 +16,4 @@ python /test/test.py \
 --save saved/ \
 --log logs/ \
 --serialize
---name naive_v2_cnn_4000_32_5e-4_8_pri_100_tmp
+--name naive_v2_cnn_100000_32_1e-4_8_pri_100_tmp

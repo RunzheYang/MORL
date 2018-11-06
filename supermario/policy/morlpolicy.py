@@ -38,7 +38,8 @@ class MetaAgent(object):
         self.gamma = args.gamma
         self.epsilon = args.epsilon
         self.epsilon_decay = args.epsilon_decay
-        self.epsilon_delta = (args.epsilon - 0.05) / args.episode_num
+        # decay to 0.05 for first 20% episode then keep steady 
+        self.epsilon_delta = (args.epsilon - 0.05) / args.episode_num * 5.0
 
         self.mem_size = args.mem_size
         self.batch_size = args.batch_size
@@ -112,12 +113,20 @@ class MetaAgent(object):
         return action
 
     def memorize(self, state, action, next_state, reward, terminal):
+        # self.trans_mem.append(self.trans(
+        #     torch.from_numpy(state).type(FloatTensor),  # state
+        #     action,  # action
+        #     torch.from_numpy(next_state).type(FloatTensor),  # next state
+        #     torch.from_numpy(reward).type(FloatTensor),  # reward
+        #     terminal))  # terminal
+
+        # save trasitions in RAM
         self.trans_mem.append(self.trans(
-            torch.from_numpy(state).type(FloatTensor),  # state
+            torch.from_numpy(state).type(torch.FloatTensor),  # state
             action,  # action
-            torch.from_numpy(next_state).type(FloatTensor),  # next state
-            torch.from_numpy(reward).type(FloatTensor),  # reward
-            terminal))  # terminal
+            torch.from_numpy(next_state).type(torch.FloatTensor),  # next state
+            torch.from_numpy(reward).type(torch.FloatTensor),  # reward
+            terminal))  # terminal        
 
         # randomly produce a preference for calculating priority
         # preference = self.w_kept
@@ -209,10 +218,10 @@ class MetaAgent(object):
             minibatch = self.sample(self.trans_mem, self.priority_mem, self.batch_size)
             # minibatch = random.sample(self.trans_mem, self.batch_size)
             batchify = lambda x: list(x) * self.weight_num
-            state_batch = batchify(map(lambda x: x.s.unsqueeze(0), minibatch))
+            state_batch = batchify(map(lambda x: x.s.type(FloatTensor).unsqueeze(0), minibatch))
             action_batch = batchify(map(lambda x: LongTensor([x.a]), minibatch))
-            reward_batch = batchify(map(lambda x: x.r.unsqueeze(0), minibatch))
-            next_state_batch = batchify(map(lambda x: x.s_.unsqueeze(0), minibatch))
+            reward_batch = batchify(map(lambda x: x.r.type(FloatTensor).unsqueeze(0), minibatch))
+            next_state_batch = batchify(map(lambda x: x.s_.type(FloatTensor).unsqueeze(0), minibatch))
             terminal_batch = batchify(map(lambda x: x.d, minibatch))
 
             w_batch = np.random.randn(self.weight_num, reward_size)
@@ -316,6 +325,8 @@ class MetaAgent(object):
         self.w_kept = None
         if self.epsilon_decay:
             self.epsilon -= self.epsilon_delta
+            if self.epsilon < 0.05:
+                self.epsilon = 0.05
         if self.homotopy:
             self.beta += self.beta_delta
             self.beta_delta = (self.beta-self.beta_init)*self.beta_expbase+self.beta_init-self.beta

@@ -122,22 +122,22 @@ def train(env, agent, args):
             div = [10.0, 0.1, 160.0, 10.0, 0.1]
             reward = np.array([_reward[i] / div[i] for i in range(5)])
             score = info['score']
-            if info['flag_get']: 
+            if info['flag_get'] or cnt > 2000:
                 terminal = True
 
             agent.memorize(state, action, next_state, reward, terminal)
 
             state = next_state
             
-            if args.single:
-                # single objective learning
-                loss += agent.learn(probe) 
-            else:
-                # multi-objective learning
-                loss += agent.learn()
-
-            if cnt > 2000:
-                terminal = True
+            if cnt % 4 == 0:
+                if args.single:
+                    # single objective learning
+                    loss += agent.learn(probe) 
+                else:
+                    # multi-objective learning
+                    loss += agent.learn()
+            
+            if terminal:    
                 agent.reset()
 
             utility = utility + (probe.cpu().numpy().dot(reward)) * np.power(args.gamma, cnt)
@@ -157,7 +157,7 @@ def train(env, agent, args):
         print("end of eps %d with utility %0.2f loss: %0.4f" % (
             num_eps,
             utility,
-            loss / (cnt / 10)))
+            loss / cnt)
 
         if num_eps % 10 == 0:
             agent.save(args.save, "m.{}_{}_n.{}_tmp".format(
