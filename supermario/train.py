@@ -157,7 +157,7 @@ def train(env, agent, args):
         print("end of eps %d with utility %0.2f loss: %0.4f" % (
             num_eps,
             utility,
-            loss / cnt)
+            loss / cnt))
 
         if num_eps % 10 == 0:
             agent.save(args.save, "m.{}_{}_n.{}_tmp".format(
