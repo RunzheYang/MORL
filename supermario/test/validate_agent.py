@@ -48,7 +48,7 @@ def validate(env, args, writer, probe, num_eps):
         utility = 0
         score = 0
         acc_pred_q = 0
-        acc_reward = np.zeros(REPEAT)
+        acc_reward = np.zeros(5)
         state = rescale(env.reset())
     
         history_f = [state] * args.nframe
