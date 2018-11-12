@@ -14,5 +14,4 @@ python train.py --env-name SuperMarioBros-v2 \
 --save saved/ \
 --log logs/ \
 --single \
---serialize \
 --name naive_v2_cnn_100000_16_1e-3_1_100_single
