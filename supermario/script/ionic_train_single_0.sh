@@ -4,8 +4,8 @@ python train.py --env-name SuperMarioBros-v2 \
 --gamma 0.8 \
 --mem-size 100000 \
 --batch-size 16 \
---lr  1e-4 \
---epsilon 0.5 \
+--lr  1e-3 \
+--epsilon 0.8 \
 --epsilon-decay \
 --weight-num 1 \
 --episode-num 10000 \
@@ -15,4 +15,4 @@ python train.py --env-name SuperMarioBros-v2 \
 --save saved/ \
 --log logs/ \
 --single \
---name naive_v2_cnn_100000_16_1e-4_1_pri_100_single
+--name naive_v2_cnn_100000_16_1e-3_1_pri_100_single

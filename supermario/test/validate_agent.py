@@ -28,7 +28,7 @@ Tensor = FloatTensor
 
 def validate(env, args, writer, probe, num_eps):
 
-    REPEAT = 10
+    REPEAT = 50
 
     model = torch.load("{}{}.pkl".format(args.save,
                             "m.{}_{}_n.{}_tmp".format(args.method, args.model, args.name)))
