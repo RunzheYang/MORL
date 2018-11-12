@@ -41,7 +41,7 @@ def validate(env, args, writer, probe, num_eps):
     acc_acc_reward = np.zeros(5)
     acc_utility = 0
     acc_score = 0
-    for num_eps_sub in range(5):
+    for num_eps_sub in range(REPEAT):
         terminal = False
         loss = 0
         cnt = 0
