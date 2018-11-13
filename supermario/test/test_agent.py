@@ -21,7 +21,7 @@ import socket
 
 parser = argparse.ArgumentParser(description='MORL')
 # CONFIG
-parser.add_argument('--env-name', default='SuperMarioBros-v2', metavar='ENVNAME',
+parser.add_argument('--env-name', default='SuperMarioBros2-v1', metavar='ENVNAME',
                     help='Super Mario Bros Game 1-2 (Skip Frame) v0-v3 ')
 parser.add_argument('--method', default='naive', metavar='METHODS',
                     help='methods: naive | envelope')

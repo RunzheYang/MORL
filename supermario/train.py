@@ -23,7 +23,7 @@ import socket
 
 parser = argparse.ArgumentParser(description='MORL')
 # CONFIG
-parser.add_argument('--env-name', default='SuperMarioBros-v2', metavar='ENVNAME',
+parser.add_argument('--env-name', default='SuperMarioBros2-v1', metavar='ENVNAME',
                     help='Super Mario Bros Game 1-2 (Skip Frame) v0-v3 ')
 parser.add_argument('--method', default='naive', metavar='METHODS',
                     help='methods: naive | envelope')
@@ -175,6 +175,7 @@ if __name__ == '__main__':
     env = gym_super_mario_bros.make(args.env_name)
     env = BinarySpaceToDiscreteSpaceEnv(env, SIMPLE_MOVEMENT)
     # reward type (X_POSITION, ENERMY, TIME, DEATH, COIN)
+    # [10.0, 0.1, 160.0, 10.0, 0.1]
 
     # get state / action / reward sizes
     state_size = torch.Tensor(env.observation_space.high).size() 

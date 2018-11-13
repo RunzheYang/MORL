@@ -1,5 +1,5 @@
 python /test/test.py \
---env-name SuperMarioBros-v2 \
+--env-name SuperMarioBros2-v1 \
 --method naive \
 --model cnn \
 --gamma 0.8 \
