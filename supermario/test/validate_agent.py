@@ -120,7 +120,7 @@ def validate(args, writer, probe, num_eps):
     for num_eps_sub in range(REPEAT):
         random.seed()
         exp_recv, exp_send = mp.Pipe()
-        p = mp.Process(target=gain_exp, args=(args, probe, exp_send,))
+        p = mp.Process(target=run_one_episode, args=(args, probe, exp_send,))
         p.start()
         acc_reward, score, utility, pred_q = exp_recv.recv()
         p.join()
