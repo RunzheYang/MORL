@@ -1,7 +1,7 @@
 python train.py --env-name SuperMarioBros-v0 \
 --method naive \
 --model cnn \
---gamma 0.5 \
+--gamma 0.99 \
 --mem-size 100000 \
 --batch-size 16 \
 --lr  1e-4 \
