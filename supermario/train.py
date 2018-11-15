@@ -184,7 +184,7 @@ def train(agent, args):
         experience = exp_recv.recv()
         p.join()
 
-        for tr in experience.trajectory:
+        for tr in experience["trajectory"]:
             s, a, s_, r, t = tr
             agent.memorize(s, a, s_, r, t)
 
@@ -200,7 +200,7 @@ def train(agent, args):
 
         print("end of eps %d with utility %0.2f loss: %0.4f" % (
             num_eps,
-            experience.utility,
+            experience["utility"],
             loss/100))
         
         agent.reset()

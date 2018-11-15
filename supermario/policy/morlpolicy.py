@@ -226,11 +226,11 @@ class MetaAgent(object):
             minibatch = self.sample(self.trans_mem, self.priority_mem, self.batch_size)
             # minibatch = random.sample(self.trans_mem, self.batch_size)
             batchify = lambda x: list(x) * self.weight_num
-            state_batch = batchify(map(lambda x: x.s.type(FloatTensor).unsqueeze(0), minibatch))
-            action_batch = batchify(map(lambda x: LongTensor([x.a]), minibatch))
-            reward_batch = batchify(map(lambda x: x.r.type(FloatTensor).unsqueeze(0), minibatch))
-            next_state_batch = batchify(map(lambda x: x.s_.type(FloatTensor).unsqueeze(0), minibatch))
-            terminal_batch = batchify(map(lambda x: x.d, minibatch))
+            state_batch = batchify(map(lambda x: x['s'].type(FloatTensor).unsqueeze(0), minibatch))
+            action_batch = batchify(map(lambda x: LongTensor([x['a']]), minibatch))
+            reward_batch = batchify(map(lambda x: x['r'].type(FloatTensor).unsqueeze(0), minibatch))
+            next_state_batch = batchify(map(lambda x: x['s_'].type(FloatTensor).unsqueeze(0), minibatch))
+            terminal_batch = batchify(map(lambda x: x['d'], minibatch))
 
             w_batch = np.random.randn(self.weight_num, reward_size)
             
