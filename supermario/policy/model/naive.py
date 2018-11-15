@@ -43,10 +43,9 @@ class NaiveCnnCQN(torch.nn.Module):
 
     def forward(self, state, preference, execmask=None):
         state = state.transpose(1, -1).transpose(-2,-1)
-        feat = F.tanh(self.conv1(state))
-        feat = F.tanh(self.conv2(feat))
-        feat = F.tanh(self.conv3(feat))
-        # feat = self.pool3(F.tanh(self.conv2(feat)))
+        feat = torch.tanh(self.conv1(state))
+        feat = torch.tanh(self.conv2(feat))
+        feat = torch.tanh(self.conv3(feat))
         feat = feat.view(feat.size(0), -1)
         x = torch.cat((feat, preference), dim=1)
         x = x.view(x.size(0), -1)
