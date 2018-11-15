@@ -29,12 +29,32 @@ LongTensor = torch.cuda.LongTensor if use_cuda else torch.LongTensor
 ByteTensor = torch.cuda.ByteTensor if use_cuda else torch.ByteTensor
 Tensor = FloatTensor
 
-def run_one_episode(agent, args, probe, exp):
+def run_one_episode(args, probe, exp):
     from nes_py.wrappers import BinarySpaceToDiscreteSpaceEnv
     from gym_super_mario_bros.actions import SIMPLE_MOVEMENT
     import gym_super_mario_bros
     env = gym_super_mario_bros.make(args.env_name)
     env = BinarySpaceToDiscreteSpaceEnv(env, SIMPLE_MOVEMENT)
+
+    # get state / action / reward sizes
+    state_size = torch.Tensor(env.observation_space.high).size() 
+    state_size = torch.Size(
+                    [60 * args.nframe, 
+                     64, 
+                     1])
+    action_size = env.action_space.n
+    reward_size = 5
+
+    # generate an agent for validating
+    model = torch.load("{}{}.pkl".format(args.save,
+                                             "m.{}_{}_n.{}_tmp".format(args.method, args.model, args.name)))
+    optimizer = torch.load("{}{}_opt.pkl".format(args.save,
+                                         "m.{}_{}_n.{}_tmp".format(args.method, args.model, args.name)))
+
+    args_new = args
+    args_new.eps = 0.05
+    
+    agent = MetaAgent(model, args_new, is_train=True) # is_train is true for adding epsilon noise
     
     terminal = False
     loss = 0
@@ -78,28 +98,18 @@ def run_one_episode(agent, args, probe, exp):
         utility = utility + (probe.cpu().numpy().dot(reward)) * np.power(args.gamma, cnt)
         acc_reward = acc_reward + reward
         cnt = cnt + 1
-
-    acc_acc_reward = acc_acc_reward + acc_reward
-    acc_score = acc_score + score
-    acc_utility = acc_utility + utility
-    acc_pred_q = acc_pred_q + float(pred_q[0])
     
-    exp.send((acc_acc_reward, acc_score, acc_utility, acc_pred_q))
+    exp.send((acc_reward, score, utility, float(pred_q[0])))
     env.close()
     del gym_super_mario_bros
     del env
     exp.close()
 
+
 def validate(args, writer, probe, num_eps):
 
     REPEAT = 8
 
-    model = torch.load("{}{}.pkl".format(args.save,
-                            "m.{}_{}_n.{}_tmp".format(args.method, args.model, args.name)))
-    args_new = args
-    args_new.eps = 0.05
-    
-    agent = MetaAgent(model, args_new, is_train=True) # is_train is true for adding epsilon noise
     print("start validating...")        
     
     acc_acc_reward = np.zeros(5)
@@ -112,9 +122,15 @@ def validate(args, writer, probe, num_eps):
     for num_eps_sub in range(REPEAT):
         random.seed()
         exp_recv, exp_send = mp.Pipe()
-        p = mp.Process(target=gain_exp, args=(agent, args, probe, exp_send,))
-        acc_acc_reward, acc_score, acc_utility, acc_pred_q = exp_recv.recv()
-        agent.reset()
+        p = mp.Process(target=gain_exp, args=(args, probe, exp_send,))
+        p.start()
+        acc_reward, score, utility, pred_q = exp_recv.recv()
+        p.join()
+
+        acc_acc_reward = acc_acc_reward + acc_reward
+        acc_score = acc_score + score
+        acc_utility = acc_utility + utility
+        acc_pred_q = acc_pred_q + pred_q
 
     acc_acc_reward = acc_acc_reward * 1.0 / REPEAT
     acc_score = acc_score * 1.0 / REPEAT

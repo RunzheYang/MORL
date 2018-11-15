@@ -174,6 +174,8 @@ def train(agent, args):
     mp.set_start_method('spawn')
     
     for num_eps in range(args.episode_num):
+        loss = 0.0
+        
         random.seed()
         exp_recv, exp_send = mp.Pipe()
         
