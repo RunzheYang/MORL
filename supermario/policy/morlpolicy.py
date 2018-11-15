@@ -33,6 +33,9 @@ class MetaAgent(object):
         self.model = copy.deepcopy(model)
         self.is_train = is_train
 
+        self.model_.share_memory()
+        self.model.share_memory()
+
         self.method = args.method
 
         self.gamma = args.gamma

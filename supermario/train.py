@@ -213,6 +213,8 @@ if __name__ == '__main__':
                                              "m.{}_{}_n.{}_tmp".format(args.method, args.model, args.name)))
     else:
         model = get_new_model(args.method, args.model, state_size, action_size, reward_size)
+
+    model.share_memory()
     
     agent = MetaAgent(model, args, is_train=True)
 
