@@ -210,7 +210,7 @@ def train(agent, args):
         agent.save(args.save, "m.{}_{}_n.{}_tmp".format(
                 args.method, args.model, args.name))
 
-        if num_eps % 10 == 0:
+        if num_eps % 50 == 0:
             validate(args, writer, probe, num_eps)
             
     env.close()
