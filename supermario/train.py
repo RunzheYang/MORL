@@ -8,7 +8,7 @@ import gym_super_mario_bros
 from gym_super_mario_bros.actions import SIMPLE_MOVEMENT
 
 import random
-from multiprocessing import Process, Pipe
+import multiprocessing as mp
 
 import sys
 import os
@@ -149,11 +149,13 @@ def train(agent, args):
     print("start training...")        
     
     probe = FloatTensor([0.4, 0.2, 0.1, 0.1, 0.2])
-
+    
+    mp.set_start_method('spawn')
+    
     for num_eps in range(args.episode_num):
         random.seed()
-        exp_recv, exp_send = Pipe()
-        p = Process(target=gain_exp, args=(agent, args, probe, exp_send,))
+        exp_recv, exp_send = mp.Pipe()
+        p = mp.Process(target=gain_exp, args=(agent, args, probe, exp_send,))
         p.start()
         experience = exp_recv.recv()
         p.join()
@@ -191,7 +193,6 @@ def train(agent, args):
 
 if __name__ == '__main__':
     args = parser.parse_args()
-
     env = gym_super_mario_bros.make(args.env_name)
     env = BinarySpaceToDiscreteSpaceEnv(env, SIMPLE_MOVEMENT)
     # reward type (X_POSITION, ENERMY, TIME, DEATH, COIN)

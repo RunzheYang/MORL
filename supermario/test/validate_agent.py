@@ -21,7 +21,7 @@ from datetime import datetime
 import socket
 
 import random
-from multiprocessing import Process, Pipe
+import multiprocessing as mp
 
 use_cuda = torch.cuda.is_available()
 FloatTensor = torch.cuda.FloatTensor if use_cuda else torch.FloatTensor
@@ -107,10 +107,12 @@ def validate(args, writer, probe, num_eps):
     acc_score = 0
     acc_pred_q = 0
     
+    mp.set_start_method('spawn')
+
     for num_eps_sub in range(REPEAT):
         random.seed()
-        exp_recv, exp_send = Pipe()
-        p = Process(target=gain_exp, args=(agent, args, probe, exp_send,))
+        exp_recv, exp_send = mp.Pipe()
+        p = mp.Process(target=gain_exp, args=(agent, args, probe, exp_send,))
         acc_acc_reward, acc_score, acc_utility, acc_pred_q = exp_recv.recv()
         agent.reset()
 
