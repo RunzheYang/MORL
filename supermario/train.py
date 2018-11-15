@@ -150,7 +150,6 @@ def train(agent, args):
     
     probe = FloatTensor([0.4, 0.2, 0.1, 0.1, 0.2])
 
-    env.reset()
     for num_eps in range(args.episode_num):
         random.seed()
         exp_recv, exp_send = Pipe()
