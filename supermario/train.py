@@ -146,7 +146,7 @@ def gain_exp(args, probe, exp, num_eps):
         if info['flag_get'] or cnt > 2000:
             terminal = True
 
-        trajectory.append[(state, action, next_state, reward, terminal)]
+        trajectory.append((state, action, next_state, reward, terminal))
 
         state = next_state
 
