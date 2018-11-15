@@ -184,7 +184,7 @@ def train(agent, args):
         experience = exp_recv.recv()
         p.join()
 
-        for tr in experiece.trajectory:
+        for tr in experience.trajectory:
             s, a, s_, r, t = tr
             agent.memorize(s, a, s_, r, t)
 
