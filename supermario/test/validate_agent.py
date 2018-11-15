@@ -21,7 +21,7 @@ from datetime import datetime
 import socket
 
 import random
-import multiprocessing as mp
+import torch.multiprocessing as mp
 
 use_cuda = torch.cuda.is_available()
 FloatTensor = torch.cuda.FloatTensor if use_cuda else torch.FloatTensor

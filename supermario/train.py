@@ -8,7 +8,7 @@ import gym_super_mario_bros
 from gym_super_mario_bros.actions import SIMPLE_MOVEMENT
 
 import random
-import multiprocessing as mp
+import torch.multiprocessing as mp
 
 import sys
 import os
