@@ -190,7 +190,7 @@ def train(agent, args):
             s, a, s_, r, t = tr
             agent.memorize(s, a, s_, r, t)
 
-        for study_strength in range(100):
+        for study_strength in range(200):
             if args.single:
                 # single objective learning
                 loss += agent.learn(probe) 
@@ -198,12 +198,12 @@ def train(agent, args):
                 # multi-objective learning
                 loss += agent.learn()
 
-        writer.add_scalar('train/loss', loss/100, num_eps)
+        writer.add_scalar('train/loss', loss/200, num_eps)
 
         print("end of eps %d with utility %0.2f loss: %0.4f" % (
             num_eps,
             experience["utility"],
-            loss/100))
+            loss/200))
         
         agent.reset()
 

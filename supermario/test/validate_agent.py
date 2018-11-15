@@ -116,8 +116,6 @@ def validate(args, writer, probe, num_eps):
     acc_utility = 0
     acc_score = 0
     acc_pred_q = 0
-    
-    mp.set_start_method('spawn')
 
     for num_eps_sub in range(REPEAT):
         random.seed()
