@@ -153,7 +153,7 @@ def gain_exp(args, probe, exp, num_eps):
         utility = utility + (probe.cpu().numpy().dot(reward)) * np.power(args.gamma, cnt)
         cnt = cnt + 1
     
-    print("end of the epsiode {}".format(eps))
+    print("end of the epsiode {}".format(num_eps))
     
     exp.send(dict(trajectory=trajectory, utility=utility))
     env.close()
