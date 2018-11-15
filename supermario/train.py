@@ -84,12 +84,33 @@ LongTensor = torch.cuda.LongTensor if use_cuda else torch.LongTensor
 ByteTensor = torch.cuda.ByteTensor if use_cuda else torch.ByteTensor
 Tensor = FloatTensor
 
-def gain_exp(agent, args, probe, exp):
+def gain_exp(args, probe, exp, num_eps):
     from nes_py.wrappers import BinarySpaceToDiscreteSpaceEnv
     from gym_super_mario_bros.actions import SIMPLE_MOVEMENT
     import gym_super_mario_bros
     env = gym_super_mario_bros.make(args.env_name)
     env = BinarySpaceToDiscreteSpaceEnv(env, SIMPLE_MOVEMENT)
+
+    # get state / action / reward sizes
+    state_size = torch.Tensor(env.observation_space.high).size() 
+    state_size = torch.Size(
+                    [60 * args.nframe, 
+                     64, 
+                     1])
+    action_size = env.action_space.n
+    reward_size = 5
+
+    # generate an agent for training
+    if num_eps > 0:
+        model = torch.load("{}{}.pkl".format(args.save,
+                                             "m.{}_{}_n.{}_tmp".format(args.method, args.model, args.name)))
+        optimizer = torch.load("{}{}_opt.pkl".format(args.save,
+                                             "m.{}_{}_n.{}_tmp".format(args.method, args.model, args.name)))
+    else:
+        model = get_new_model(args.method, args.model, state_size, action_size, reward_size)
+        optimizer = None
+    
+    agent = MetaAgent(model, args, optimizer=optimizer, is_train=True)
     
     terminal = False
     loss = 0
@@ -155,7 +176,10 @@ def train(agent, args):
     for num_eps in range(args.episode_num):
         random.seed()
         exp_recv, exp_send = mp.Pipe()
-        p = mp.Process(target=gain_exp, args=(agent, args, probe, exp_send,))
+        
+        args.epsilon = agent.epsilon
+
+        p = mp.Process(target=gain_exp, args=(args, probe, exp_send, num_eps))
         p.start()
         experience = exp_recv.recv()
         p.join()
@@ -181,9 +205,10 @@ def train(agent, args):
         
         agent.reset()
 
-        if num_eps % 10 == 0:
-            agent.save(args.save, "m.{}_{}_n.{}_tmp".format(
+        agent.save(args.save, "m.{}_{}_n.{}_tmp".format(
                 args.method, args.model, args.name))
+
+        if num_eps % 10 == 0:
             validate(args, writer, probe, num_eps)
             
     env.close()
@@ -211,11 +236,12 @@ if __name__ == '__main__':
     if args.serialize:
         model = torch.load("{}{}.pkl".format(args.save,
                                              "m.{}_{}_n.{}_tmp".format(args.method, args.model, args.name)))
+        optimizer = torch.load("{}{}_opt.pkl".format(args.save,
+                                             "m.{}_{}_n.{}_tmp".format(args.method, args.model, args.name)))
     else:
         model = get_new_model(args.method, args.model, state_size, action_size, reward_size)
-
-    model.share_memory()
+        optimizer = None
     
-    agent = MetaAgent(model, args, is_train=True)
+    agent = MetaAgent(model, args, optimizer=optimizer, is_train=True)
 
     train(agent, args)

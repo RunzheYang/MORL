@@ -28,7 +28,7 @@ class MetaAgent(object):
         model.
     '''
 
-    def __init__(self, model, args, is_train=False):
+    def __init__(self, model, args, optimizer=None, is_train=False):
         self.model_ = model
         self.model = copy.deepcopy(model)
         self.is_train = is_train
@@ -63,10 +63,13 @@ class MetaAgent(object):
         self.use_priority = args.priority
         self.priority_mem = deque()
 
-        if args.optimizer == 'Adam':
-            self.optimizer = optim.Adam(self.model_.parameters(), lr=args.lr)
-        elif args.optimizer == 'RMSprop':
-            self.optimizer = optim.RMSprop(self.model_.parameters(), lr=args.lr)
+        if optimizer is None:
+            if args.optimizer == 'Adam':
+                self.optimizer = optim.Adam(self.model_.parameters(), lr=args.lr)
+            elif args.optimizer == 'RMSprop':
+                self.optimizer = optim.RMSprop(self.model_.parameters(), lr=args.lr)
+        else:
+            self.optimizer = optimizer
 
         self.w_kept = None
         self.update_count = 0
@@ -369,4 +372,5 @@ class MetaAgent(object):
 
     def save(self, save_path, model_name):
         torch.save(self.model, "{}{}.pkl".format(save_path, model_name))
+        torch.save(self.optimizer, "{}{}_opt.pkl".format(save_path, model_name))
 
