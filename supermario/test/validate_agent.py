@@ -92,7 +92,7 @@ def run_one_episode(agent, args, probe, exp):
 
 def validate(args, writer, probe, num_eps):
 
-    REPEAT = 20
+    REPEAT = 8
 
     model = torch.load("{}{}.pkl".format(args.save,
                             "m.{}_{}_n.{}_tmp".format(args.method, args.model, args.name)))
