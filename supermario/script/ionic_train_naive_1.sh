@@ -1,5 +1,5 @@
 python train.py \
---env-name SuperMarioBros2-v1 \
+--env-name SuperMarioBros-v0 \
 --method naive \
 --model cnn \
 --gamma 0.8 \
@@ -14,5 +14,5 @@ python train.py \
 --optimizer Adam \
 --save saved/ \
 --log logs/ \
---name naive_2v1_cnn_100000_16_1e-4_4_100
+--name naive_v0_cnn_100000_16_1e-4_4_100
 

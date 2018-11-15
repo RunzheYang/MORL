@@ -7,6 +7,9 @@ from nes_py.wrappers import BinarySpaceToDiscreteSpaceEnv
 import gym_super_mario_bros
 from gym_super_mario_bros.actions import SIMPLE_MOVEMENT
 
+import random
+from multiprocessing import Process, Pipe
+
 import sys
 import os
 PACKAGE_PARENT = '..'
@@ -81,89 +84,107 @@ LongTensor = torch.cuda.LongTensor if use_cuda else torch.LongTensor
 ByteTensor = torch.cuda.ByteTensor if use_cuda else torch.ByteTensor
 Tensor = FloatTensor
 
-def train(env, agent, args):
+def gain_exp(agent, args, probe, exp):
+    from nes_py.wrappers import BinarySpaceToDiscreteSpaceEnv
+    from gym_super_mario_bros.actions import SIMPLE_MOVEMENT
+    import gym_super_mario_bros
+    env = gym_super_mario_bros.make(args.env_name)
+    env = BinarySpaceToDiscreteSpaceEnv(env, SIMPLE_MOVEMENT)
+    
+    terminal = False
+    loss = 0
+    cnt = 0
+    utility = 0
+    score = 0
+    trajectory = []
+    state = rescale(env.reset())
+
+    history_f = [state] * args.nframe
+    state = np.array(history_f).reshape(-1, state.shape[1], state.shape[2])
+
+    while not terminal:
+
+        if args.single:
+            action = agent.act(state, preference=probe)
+        else:
+            action = agent.act(state)
+
+        next_state, score, terminal, info = env.step(action)
+        next_state = rescale(next_state)
+
+        history_f[0] = 0
+        for i in range(args.nframe-1):
+            history_f[i] = history_f[i+1]
+        history_f[args.nframe-1] = next_state
+        next_state = np.array(history_f).reshape(-1, next_state.shape[1], next_state.shape[2])
+
+        _reward =info['rewards']
+        div = [10.0, 0.1, 160.0, 10.0, 0.1]
+        reward = np.array([_reward[i] / div[i] for i in range(5)])
+        score = info['score']
+        if info['flag_get'] or cnt > 2000:
+            terminal = True
+
+        trajectory.append[(state, action, next_state, reward, terminal)]
+
+        state = next_state
+
+        utility = utility + (probe.cpu().numpy().dot(reward)) * np.power(args.gamma, cnt)
+        cnt = cnt + 1
+    
+    print("end of the epsiode {}".format(eps))
+    
+    exp.send(dict(trajectory=trajectory, utility=utility))
+    env.close()
+    del gym_super_mario_bros
+    del env
+    exp.close()
+    
+
+def train(agent, args):
     current_time = datetime.now().strftime('%b%d_%H-%M-%S')
     log_dir = os.path.join(
                 args.log, current_time + '_' + args.name)
     writer = SummaryWriter(log_dir)
     print("start training...")        
+    
+    probe = FloatTensor([0.4, 0.2, 0.1, 0.1, 0.2])
+
     env.reset()
     for num_eps in range(args.episode_num):
-        terminal = False
-        loss = 0
-        cnt = 0
-        utility = 0
-        score = 0
-        acc_reward = np.zeros(5)
+        random.seed()
+        exp_recv, exp_send = Pipe()
+        p = Process(target=gain_exp, args=(agent, args, probe, exp_send,))
+        p.start()
+        experience = exp_recv.recv()
+        p.join()
 
-        probe = FloatTensor([0.4, 0.2, 0.1, 0.1, 0.2])
-        state = rescale(env.reset())
-    
-        history_f = [state] * args.nframe
-        state = np.array(history_f).reshape(-1, state.shape[1], state.shape[2])
+        for tr in experiece.trajectory:
+            s, a, s_, r, t = tr
+            agent.memorize(s, a, s_, r, t)
 
-        while not terminal:
-
+        for study_strength in range(100):
             if args.single:
-                action = agent.act(state, preference=probe)
+                # single objective learning
+                loss += agent.learn(probe) 
             else:
-                action = agent.act(state)
+                # multi-objective learning
+                loss += agent.learn()
 
-            next_state, score, terminal, info = env.step(action)
-            next_state = rescale(next_state)
-
-            history_f[0] = 0
-            for i in range(args.nframe-1):
-                history_f[i] = history_f[i+1]
-            history_f[args.nframe-1] = next_state
-            next_state = np.array(history_f).reshape(-1, next_state.shape[1], next_state.shape[2])
-
-            _reward =info['rewards']
-            div = [10.0, 0.1, 160.0, 10.0, 0.1]
-            reward = np.array([_reward[i] / div[i] for i in range(5)])
-            score = info['score']
-            if info['flag_get'] or cnt > 2000:
-                terminal = True
-
-            agent.memorize(state, action, next_state, reward, terminal)
-
-            state = next_state
-            
-            if cnt % 4 == 0:
-                if args.single:
-                    # single objective learning
-                    loss += agent.learn(probe) 
-                else:
-                    # multi-objective learning
-                    loss += agent.learn()
-            
-            if terminal:    
-                agent.reset()
-
-            utility = utility + (probe.cpu().numpy().dot(reward)) * np.power(args.gamma, cnt)
-            acc_reward = acc_reward + reward
-            cnt = cnt + 1
-        
-        writer.add_scalar('train/loss', loss / cnt, num_eps)
-        # writer.add_scalars('train/rewards', {
-        #     "x_pos": acc_reward[0],
-        #     "enermy": acc_reward[1],
-        #     "time": acc_reward[2],
-        #     "death": acc_reward[3],
-        #     "coin": acc_reward[4],
-        #     }, num_eps)
-        # writer.add_scalar('train/score', score, num_eps)
+        writer.add_scalar('train/loss', loss/100, num_eps)
 
         print("end of eps %d with utility %0.2f loss: %0.4f" % (
             num_eps,
-            utility,
-            loss / cnt))
+            experience.utility,
+            loss/100))
+        
+        agent.reset()
 
         if num_eps % 10 == 0:
             agent.save(args.save, "m.{}_{}_n.{}_tmp".format(
                 args.method, args.model, args.name))
-            validate(env, args, writer, probe, num_eps)
-    
+            validate(args, writer, probe, num_eps)
+            
     env.close()
     writer.close()
     agent.save(args.save, "m.{}_{}_n.{}".format(args.method, args.model, args.name))
@@ -175,7 +196,6 @@ if __name__ == '__main__':
     env = gym_super_mario_bros.make(args.env_name)
     env = BinarySpaceToDiscreteSpaceEnv(env, SIMPLE_MOVEMENT)
     # reward type (X_POSITION, ENERMY, TIME, DEATH, COIN)
-    # [10.0, 0.1, 160.0, 10.0, 0.1]
 
     # get state / action / reward sizes
     state_size = torch.Tensor(env.observation_space.high).size() 
@@ -185,7 +205,7 @@ if __name__ == '__main__':
                      1])
     action_size = env.action_space.n
     reward_size = 5
-
+    env.close()
 
     # generate an agent for training
     if args.serialize:
@@ -196,4 +216,4 @@ if __name__ == '__main__':
     
     agent = MetaAgent(model, args, is_train=True)
 
-    train(env, agent, args)
+    train(agent, args)
