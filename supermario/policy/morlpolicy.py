@@ -54,7 +54,9 @@ class MetaAgent(object):
         self.beta_delta      = self.beta_expbase / self.tau
 
         self.trans_mem = deque()
-        self.trans = namedtuple('trans', ['s', 'a', 's_', 'r', 'd'])
+        # self.trans = namedtuple('trans', ['s', 'a', 's_', 'r', 'd'])
+        # workaround for torch.multiprocessing...
+        self.trans = lambda s, a, s_, r, d: dict(s=s, a=a, s_=s_, r=r, d=d)
         self.use_priority = args.priority
         self.priority_mem = deque()
 
