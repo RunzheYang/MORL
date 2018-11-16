@@ -2,10 +2,10 @@ CUDA_VISIBLE_DEVICES=2 python train.py \
 --env-name SuperMarioBros-v1 \
 --method naive \
 --model cnn \
---gamma 0.99 \
+--gamma 0.9999 \
 --mem-size 100000 \
 --batch-size 64 \
---lr  1e-2 \
+--lr  1e-4 \
 --epsilon 0.8 \
 --epsilon-decay \
 --weight-num 1 \
@@ -16,4 +16,4 @@ CUDA_VISIBLE_DEVICES=2 python train.py \
 --save saved/ \
 --log logs/ \
 --single \
---name naive_v1_cnn_100000_64_1e-3_1_pri_50_single
+--name naive_v1_cnn_100000_64_1e-4_1_pri_50_single
