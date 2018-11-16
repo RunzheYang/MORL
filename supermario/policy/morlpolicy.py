@@ -63,13 +63,14 @@ class MetaAgent(object):
         self.use_priority = args.priority
         self.priority_mem = deque()
 
-        if optimizer is None:
-            if args.optimizer == 'Adam':
-                self.optimizer = optim.Adam(self.model_.parameters(), lr=args.lr)
-            elif args.optimizer == 'RMSprop':
-                self.optimizer = optim.RMSprop(self.model_.parameters(), lr=args.lr)
-        else:
-            self.optimizer = optimizer
+        
+        if args.optimizer == 'Adam':
+            self.optimizer = optim.Adam(self.model_.parameters(), lr=args.lr)
+        elif args.optimizer == 'RMSprop':
+            self.optimizer = optim.RMSprop(self.model_.parameters(), lr=args.lr)
+        
+        if optimizer:
+            self.optimizer.load_state_dict(optimizer.state_dict())
 
         self.w_kept = None
         self.update_count = 0
@@ -318,8 +319,8 @@ class MetaAgent(object):
 
             self.optimizer.zero_grad()
             loss.backward()
-            for param in self.model_.parameters():
-                param.grad.data.clamp_(-1, 1)
+            # for param in self.model_.parameters():
+            #     param.grad.data.clamp_(-5, 5)
             self.optimizer.step()
 
             if self.update_count % self.update_freq == 0:

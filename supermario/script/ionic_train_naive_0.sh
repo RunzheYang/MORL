@@ -2,17 +2,17 @@ CUDA_VISIBLE_DEVICES=0 python train.py \
 --env-name SuperMarioBros-v1 \
 --method naive \
 --model cnn \
---gamma 0.8 \
+--gamma 0.99 \
 --mem-size 100000 \
---batch-size 16 \
---lr  1e-3 \
+--batch-size 32 \
+--lr  1e-2 \
 --epsilon 0.8 \
 --epsilon-decay \
 --weight-num 4 \
 --episode-num 10000 \
 --priority \
---update-freq 100 \
+--update-freq 50 \
 --optimizer Adam \
 --save saved/ \
 --log logs/ \
---name naive_v1_cnn_100000_16_1e-3_4_pri_100
+--name naive_v1_cnn_100000_32_1e-3_4_pri_50
