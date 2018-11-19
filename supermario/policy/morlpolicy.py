@@ -118,6 +118,9 @@ class MetaAgent(object):
                               torch.rand(1)[0] < self.epsilon):
             action = np.random.choice(self.model_.action_size, 1)[0]
             action = int(action)
+        elif torch.rand(1)[0] < self.epsilon:
+            action = np.random.choice(self.model_.action_size, 1)[0]
+            action = int(action)
 
         return action
 

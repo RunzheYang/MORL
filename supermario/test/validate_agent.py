@@ -52,9 +52,9 @@ def run_one_episode(args, probe, exp):
                                          "m.{}_{}_n.{}_tmp".format(args.method, args.model, args.name)))
 
     args_new = args
-    args_new.eps = 0.05
+    args_new.epsilon = 0.05
     
-    agent = MetaAgent(model, args_new, is_train=True) # is_train is true for adding epsilon noise
+    agent = MetaAgent(model, args_new, is_train=False)
     
     terminal = False
     loss = 0
