@@ -179,7 +179,7 @@ def train(agent, args):
     
     mp.set_start_method('spawn')
     
-    for num_eps in range(args.episode_num/20):
+    for num_eps in range(int(args.episode_num/20)):
         loss = 0.0
         
         random.seed()
