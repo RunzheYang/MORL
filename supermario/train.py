@@ -159,6 +159,8 @@ def gain_exp(args, probe, exp, num_eps_start, delta_n=10):
             utility = utility + (probe.cpu().numpy().dot(reward)) * np.power(args.gamma, cnt)
             cnt = cnt + 1
         
+        agent.reset()
+        
         print("end of the epsiode {}".format(num_eps_start+eps))
     
     exp.send(dict(trajectory=trajectory, utility=utility/delta_n))
@@ -211,14 +213,12 @@ def train(agent, args):
             num_eps*20,
             experience["utility"],
             loss/hardworking))
-        
-        agent.reset()
 
         agent.save(args.save, "m.{}_{}_n.{}_tmp".format(
                 args.method, args.model, args.name))
 
         if num_eps % 5 == 0:
-            t = mp.Process(target=validate, args=(args, writer, probe, num_eps*10))
+            t = mp.Process(target=validate, args=(args, log_dir, probe, num_eps*10))
             t.start()
     
     t.joint()    

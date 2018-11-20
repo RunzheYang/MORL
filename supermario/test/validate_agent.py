@@ -112,9 +112,10 @@ def run_one_episode(args, probe, exp):
     exp.close()
 
 
-def validate(args, writer, probe, num_eps):
+def validate(args, log_dir, probe, num_eps):
 
     REPEAT = 8
+    writer = SummaryWriter(log_dir)
 
     print("start validating...")        
     
@@ -155,3 +156,4 @@ def validate(args, writer, probe, num_eps):
         }, num_eps)
 
     writer.add_scalar('train/score', acc_score, num_eps)
+    writer.close()
