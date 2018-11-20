@@ -211,7 +211,7 @@ def train(agent, args):
         writer.add_scalar('train/loss', loss/hardworking, num_eps)
 
         print("end of eps %d with utility %0.2f loss: %0.4f" % (
-            num_eps*20,
+            num_eps,
             experience["utility"],
             loss/hardworking))
 

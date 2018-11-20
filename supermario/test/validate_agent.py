@@ -119,6 +119,32 @@ def validate(args, log_name, probe, num_eps):
                 args.log, log_name)
     writer = SummaryWriter(log_dir)
 
+    from nes_py.wrappers import BinarySpaceToDiscreteSpaceEnv
+    from gym_super_mario_bros.actions import SIMPLE_MOVEMENT
+    import gym_super_mario_bros
+    env = gym_super_mario_bros.make(args.env_name)
+    env = BinarySpaceToDiscreteSpaceEnv(env, SIMPLE_MOVEMENT)
+
+    # get state / action / reward sizes
+    state_size = torch.Tensor(env.observation_space.high).size() 
+    state_size = torch.Size(
+                    [60 * args.nframe, 
+                     64, 
+                     1])
+    action_size = env.action_space.n
+    reward_size = 5
+
+    # generate an agent for validating
+    model = torch.load("{}{}.pkl".format(args.save,
+                                             "m.{}_{}_n.{}_tmp".format(args.method, args.model, args.name)))
+    optimizer = torch.load("{}{}_opt.pkl".format(args.save,
+                                         "m.{}_{}_n.{}_tmp".format(args.method, args.model, args.name)))
+
+    args_new = args
+    args_new.epsilon = 0.05
+    
+    agent = MetaAgent(model, args_new, is_train=False)
+
     print("start validating...")        
     
     acc_acc_reward = np.zeros(5)
@@ -128,11 +154,64 @@ def validate(args, log_name, probe, num_eps):
 
     for num_eps_sub in range(REPEAT):
         random.seed()
-        exp_recv, exp_send = mp.Pipe()
-        p = mp.Process(target=run_one_episode, args=(args, probe, exp_send,))
-        p.start()
-        acc_reward, score, utility, pred_q = exp_recv.recv()
-        p.join()
+        # exp_recv, exp_send = mp.Pipe()
+        # p = mp.Process(target=run_one_episode, args=(args, probe, exp_send,))
+        # p.start()
+        # acc_reward, score, utility, pred_q = exp_recv.recv()
+        # p.join()
+        
+        terminal = False
+        loss = 0
+        cnt = 0
+        utility = 0
+        score = 0
+        acc_pred_q = 0
+        acc_reward = np.zeros(5)
+
+        state = rescale(env.reset())
+
+        history_f = [state] * args.nframe
+        state = np.array(history_f).reshape(-1, state.shape[1], state.shape[2])
+
+        pred_q = agent.predict(state, probe)
+
+        while not terminal:
+            if args.single:
+                action = agent.act(state, preference=probe)
+            else:
+                action = agent.act(state)
+
+            next_state, score, terminal, info = env.step(action)
+            next_state = rescale(next_state)
+
+            history_f[0] = 0
+            for i in range(args.nframe-1):
+                history_f[i] = history_f[i+1]
+            history_f[args.nframe-1] = next_state
+            next_state = np.array(history_f).reshape(-1, next_state.shape[1], next_state.shape[2])
+
+            _reward =info['rewards']
+            div = [10.0, 0.1, 10.0, 10.0, 0.1]
+            reward = np.array([_reward[i] / div[i] for i in range(5)])
+
+            # reward clipping
+            for i in range(len(reward)):
+                if reward[i] > 50.0:
+                    reward[i] = 50.0
+
+            score = info['score']
+            if info['flag_get'] or cnt > 2000:
+                terminal = True
+
+            state = next_state
+
+            utility = utility + (probe.cpu().numpy().dot(reward)) * np.power(args.gamma, cnt)
+            acc_reward = acc_reward + reward
+            cnt = cnt + 1
+
+        agent.reset()
+        
+        pred_q = float(pred_q[0])
 
         acc_acc_reward = acc_acc_reward + acc_reward
         acc_score = acc_score + score
