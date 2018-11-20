@@ -174,6 +174,7 @@ def train(agent, args):
     current_time = datetime.now().strftime('%b%d_%H-%M-%S')
     log_dir = os.path.join(
                 args.log, current_time + '_' + args.name)
+    log_name = current_time + '_' + args.name
     writer = SummaryWriter(log_dir)
     print("start training...")        
     
@@ -218,7 +219,7 @@ def train(agent, args):
                 args.method, args.model, args.name))
 
         if num_eps % 5 == 0:
-            t = mp.Process(target=validate, args=(args, log_dir, probe, num_eps*10))
+            t = mp.Process(target=validate, args=(args, log_name, probe, num_eps*10))
             t.start()
     
     t.joint()    

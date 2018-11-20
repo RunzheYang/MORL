@@ -112,9 +112,11 @@ def run_one_episode(args, probe, exp):
     exp.close()
 
 
-def validate(args, log_dir, probe, num_eps):
+def validate(args, log_name, probe, num_eps):
 
     REPEAT = 8
+    log_dir = os.path.join(
+                args.log, log_name)
     writer = SummaryWriter(log_dir)
 
     print("start validating...")        
