@@ -84,7 +84,7 @@ LongTensor = torch.cuda.LongTensor if use_cuda else torch.LongTensor
 ByteTensor = torch.cuda.ByteTensor if use_cuda else torch.ByteTensor
 Tensor = FloatTensor
 
-def gain_exp(args, probe, exp, num_eps_start, delta_n=20):
+def gain_exp(args, probe, exp, num_eps_start, delta_n=10):
     from nes_py.wrappers import BinarySpaceToDiscreteSpaceEnv
     from gym_super_mario_bros.actions import SIMPLE_MOVEMENT
     import gym_super_mario_bros
@@ -179,7 +179,7 @@ def train(agent, args):
     
     mp.set_start_method('spawn')
     
-    for num_eps in range(int(args.episode_num/20)):
+    for num_eps in range(int(args.episode_num/10)):
         loss = 0.0
         
         random.seed()
@@ -205,7 +205,7 @@ def train(agent, args):
                 # multi-objective learning
                 loss += agent.learn()
 
-        writer.add_scalar('train/loss', loss/hardworking, num_eps*20)
+        writer.add_scalar('train/loss', loss/hardworking, num_eps*10)
 
         print("end of eps %d with utility %0.2f loss: %0.4f" % (
             num_eps*20,
@@ -218,7 +218,7 @@ def train(agent, args):
                 args.method, args.model, args.name))
 
         if num_eps % 5 == 0:
-            t = mp.Process(target=validate, args=(args, writer, probe, num_eps*20))
+            t = mp.Process(target=validate, args=(args, writer, probe, num_eps*10))
             t.start()
     
     t.joint()    
