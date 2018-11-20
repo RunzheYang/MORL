@@ -175,7 +175,6 @@ def train(agent, args):
     log_dir = os.path.join(
                 args.log, current_time + '_' + args.name)
     log_name = current_time + '_' + args.name
-    writer = SummaryWriter(log_dir)
     print("start training...")        
     
     probe = FloatTensor([0.4, 0.2, 0.1, 0.1, 0.2])
@@ -208,8 +207,10 @@ def train(agent, args):
                 # multi-objective learning
                 loss += agent.learn()
 
+        writer = SummaryWriter(log_dir)
         writer.add_scalar('train/loss', loss/hardworking, num_eps)
-
+        writer.close()
+        
         print("end of eps %d with utility %0.2f loss: %0.4f" % (
             num_eps,
             experience["utility"],
@@ -218,13 +219,12 @@ def train(agent, args):
         agent.save(args.save, "m.{}_{}_n.{}_tmp".format(
                 args.method, args.model, args.name))
 
-        if num_eps % 5 == 0:
+        if num_eps % 50 == 0:
             t = mp.Process(target=validate, args=(args, log_name, probe, num_eps))
             t.start()
     
     t.joint()    
     env.close()
-    writer.close()
     agent.save(args.save, "m.{}_{}_n.{}".format(args.method, args.model, args.name))
 
 
