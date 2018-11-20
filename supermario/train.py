@@ -173,7 +173,7 @@ def gain_exp(args, probe, exp, num_eps_start, delta_n=10):
 def train(agent, args):
     current_time = datetime.now().strftime('%b%d_%H-%M-%S')
     log_dir = os.path.join(
-                args.log, current_time + '_' + args.name)
+                args.log, current_time + '_' + args.name + '_train')
     log_name = current_time + '_' + args.name
     print("start training...")        
     

@@ -116,7 +116,7 @@ def validate(args, log_name, probe, num_eps):
 
     REPEAT = 8
     log_dir = os.path.join(
-                args.log, log_name)
+                args.log, log_name +  '_val')
     writer = SummaryWriter(log_dir)
 
     from nes_py.wrappers import BinarySpaceToDiscreteSpaceEnv
