@@ -11,8 +11,8 @@ CUDA_VISIBLE_DEVICES=0 python train.py \
 --weight-num 4 \
 --episode-num 10000 \
 --priority \
---update-freq 50 \
+--update-freq 20 \
 --optimizer Adam \
 --save saved/ \
 --log logs/ \
---name naive_v1_cnn_100000_32_1e-4_4_pri_50
+--name naive_v1_cnn_100000_32_1e-4_4_pri_20

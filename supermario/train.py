@@ -84,7 +84,7 @@ LongTensor = torch.cuda.LongTensor if use_cuda else torch.LongTensor
 ByteTensor = torch.cuda.ByteTensor if use_cuda else torch.ByteTensor
 Tensor = FloatTensor
 
-def gain_exp(args, probe, exp, num_eps):
+def gain_exp(args, probe, exp, num_eps_start, delta_n=20):
     from nes_py.wrappers import BinarySpaceToDiscreteSpaceEnv
     from gym_super_mario_bros.actions import SIMPLE_MOVEMENT
     import gym_super_mario_bros
@@ -101,7 +101,7 @@ def gain_exp(args, probe, exp, num_eps):
     reward_size = 5
 
     # generate an agent for training
-    if num_eps > 0:
+    if num_eps_start > 0:
         model = torch.load("{}{}.pkl".format(args.save,
                                              "m.{}_{}_n.{}_tmp".format(args.method, args.model, args.name)))
         optimizer = torch.load("{}{}_opt.pkl".format(args.save,
@@ -112,50 +112,56 @@ def gain_exp(args, probe, exp, num_eps):
     
     agent = MetaAgent(model, args, optimizer=optimizer, is_train=True)
     
-    terminal = False
-    loss = 0
-    cnt = 0
-    utility = 0
-    score = 0
     trajectory = []
-    state = rescale(env.reset())
+    utility = 0
 
-    history_f = [state] * args.nframe
-    state = np.array(history_f).reshape(-1, state.shape[1], state.shape[2])
+    for eps in range(delta_n):
+        terminal = False
+        cnt = 0
+        score = 0
+        state = rescale(env.reset())
 
-    while not terminal:
+        history_f = [state] * args.nframe
+        state = np.array(history_f).reshape(-1, state.shape[1], state.shape[2])
 
-        if args.single:
-            action = agent.act(state, preference=probe)
-        else:
-            action = agent.act(state)
+        while not terminal:
 
-        next_state, score, terminal, info = env.step(action)
-        next_state = rescale(next_state)
+            if args.single:
+                action = agent.act(state, preference=probe)
+            else:
+                action = agent.act(state)
 
-        history_f[0] = 0
-        for i in range(args.nframe-1):
-            history_f[i] = history_f[i+1]
-        history_f[args.nframe-1] = next_state
-        next_state = np.array(history_f).reshape(-1, next_state.shape[1], next_state.shape[2])
+            next_state, score, terminal, info = env.step(action)
+            next_state = rescale(next_state)
 
-        _reward =info['rewards']
-        div = [10.0, 0.1, 160.0, 10.0, 0.1]
-        reward = np.array([_reward[i] / div[i] for i in range(5)])
-        score = info['score']
-        if info['flag_get'] or cnt > 2000:
-            terminal = True
+            history_f[0] = 0
+            for i in range(args.nframe-1):
+                history_f[i] = history_f[i+1]
+            history_f[args.nframe-1] = next_state
+            next_state = np.array(history_f).reshape(-1, next_state.shape[1], next_state.shape[2])
 
-        trajectory.append((state, action, next_state, reward, terminal))
+            _reward =info['rewards']
+            div = [10.0, 0.1, 10.0, 10.0, 0.1]
+            reward = np.array([_reward[i] / div[i] for i in range(5)])
+            # reward clipping
+            for i in range(len(reward)):
+                if reward[i] > 50.0:
+                    reward[i] = 50.0
+            
+            score = info['score']
+            if info['flag_get'] or cnt > 2000:
+                terminal = True
 
-        state = next_state
+            trajectory.append((state, action, next_state, reward, terminal))
 
-        utility = utility + (probe.cpu().numpy().dot(reward)) * np.power(args.gamma, cnt)
-        cnt = cnt + 1
+            state = next_state
+
+            utility = utility + (probe.cpu().numpy().dot(reward)) * np.power(args.gamma, cnt)
+            cnt = cnt + 1
+        
+        print("end of the epsiode {}".format(num_eps_start+eps))
     
-    print("end of the epsiode {}".format(num_eps))
-    
-    exp.send(dict(trajectory=trajectory, utility=utility))
+    exp.send(dict(trajectory=trajectory, utility=utility/delta_n))
     env.close()
     del gym_super_mario_bros
     del env
@@ -173,7 +179,7 @@ def train(agent, args):
     
     mp.set_start_method('spawn')
     
-    for num_eps in range(args.episode_num):
+    for num_eps in range(args.episode_num/20):
         loss = 0.0
         
         random.seed()
@@ -190,7 +196,7 @@ def train(agent, args):
             s, a, s_, r, t = tr
             agent.memorize(s, a, s_, r, t)
 
-        hardworking = 500
+        hardworking = 1000
         for hw in range(hardworking):
             if args.single:
                 # single objective learning
@@ -199,10 +205,10 @@ def train(agent, args):
                 # multi-objective learning
                 loss += agent.learn()
 
-        writer.add_scalar('train/loss', loss/hardworking, num_eps)
+        writer.add_scalar('train/loss', loss/hardworking, num_eps*20)
 
         print("end of eps %d with utility %0.2f loss: %0.4f" % (
-            num_eps,
+            num_eps*20,
             experience["utility"],
             loss/hardworking))
         
@@ -211,9 +217,11 @@ def train(agent, args):
         agent.save(args.save, "m.{}_{}_n.{}_tmp".format(
                 args.method, args.model, args.name))
 
-        if num_eps % 50 == 0:
-            validate(args, writer, probe, num_eps)
-            
+        if num_eps % 5 == 0:
+            t = mp.Process(target=validate, args=(args, writer, probe, num_eps*20))
+            t.start()
+    
+    t.joint()    
     env.close()
     writer.close()
     agent.save(args.save, "m.{}_{}_n.{}".format(args.method, args.model, args.name))

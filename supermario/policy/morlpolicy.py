@@ -119,9 +119,9 @@ class MetaAgent(object):
             action = np.random.choice(self.model_.action_size, 1)[0]
             action = int(action)
         elif not self.is_train:
-            print("validation epsilon: ", self.epsilon)
+            # print("validation epsilon: ", self.epsilon)
             if torch.rand(1)[0] < self.epsilon:
-                print("it's a random action")
+                # print("it's a random action")
                 action = np.random.choice(self.model_.action_size, 1)[0]
                 action = int(action)
 

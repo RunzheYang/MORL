@@ -10,10 +10,10 @@ CUDA_VISIBLE_DEVICES=2 python train.py \
 --epsilon-decay \
 --weight-num 1 \
 --episode-num 10000 \
---update-freq 50 \
+--update-freq 20 \
 --priority \
 --optimizer Adam \
 --save saved/ \
 --log logs/ \
 --single \
---name naive_v1_cnn_100000_64_1e-4_1_pri_50_single
+--name naive_v1_cnn_100000_64_1e-4_1_pri_20_single

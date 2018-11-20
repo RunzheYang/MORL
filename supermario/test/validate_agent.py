@@ -87,8 +87,14 @@ def run_one_episode(args, probe, exp):
         next_state = np.array(history_f).reshape(-1, next_state.shape[1], next_state.shape[2])
 
         _reward =info['rewards']
-        div = [10.0, 0.1, 160.0, 10.0, 0.1]
+        div = [10.0, 0.1, 10.0, 10.0, 0.1]
         reward = np.array([_reward[i] / div[i] for i in range(5)])
+
+        # reward clipping
+        for i in range(len(reward)):
+            if reward[i] > 50.0:
+                reward[i] = 50.0
+
         score = info['score']
         if info['flag_get'] or cnt > 2000:
             terminal = True
