@@ -182,7 +182,7 @@ def train(agent, args):
     
     mp.set_start_method('spawn')
     
-    for num_eps in range(int(args.episode_num/10)):
+    for num_eps in range(0, int(args.episode_num), 10):
         loss = 0.0
         
         random.seed()
@@ -208,7 +208,7 @@ def train(agent, args):
                 # multi-objective learning
                 loss += agent.learn()
 
-        writer.add_scalar('train/loss', loss/hardworking, num_eps*10)
+        writer.add_scalar('train/loss', loss/hardworking, num_eps)
 
         print("end of eps %d with utility %0.2f loss: %0.4f" % (
             num_eps*20,
@@ -219,7 +219,7 @@ def train(agent, args):
                 args.method, args.model, args.name))
 
         if num_eps % 5 == 0:
-            t = mp.Process(target=validate, args=(args, log_name, probe, num_eps*10))
+            t = mp.Process(target=validate, args=(args, log_name, probe, num_eps))
             t.start()
     
     t.joint()    
