@@ -145,8 +145,8 @@ def gain_exp(args, probe, exp, num_eps_start, delta_n=10):
             reward = np.array([_reward[i] / div[i] for i in range(5)])
             # reward clipping
             for i in range(len(reward)):
-                if reward[i] > 50.0:
-                    reward[i] = 50.0
+                if reward[i] > 10.0:
+                    reward[i] = 10.0
             
             score = info['score']
             if info['flag_get'] or cnt > 2000:
@@ -199,7 +199,7 @@ def train(agent, args):
             s, a, s_, r, t = tr
             agent.memorize(s, a, s_, r, t)
 
-        hardworking = 1000
+        hardworking = 100
         for hw in range(hardworking):
             if args.single:
                 # single objective learning

@@ -325,8 +325,8 @@ class MetaAgent(object):
 
             self.optimizer.zero_grad()
             loss.backward()
-            # for param in self.model_.parameters():
-            #     param.grad.data.clamp_(-5, 5)
+            for param in self.model_.parameters():
+                param.grad.data.clamp_(-5, 5)
             self.optimizer.step()
 
             if self.update_count % self.update_freq == 0:
