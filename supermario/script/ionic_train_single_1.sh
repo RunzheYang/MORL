@@ -1,4 +1,4 @@
-CUDA_VISIBLE_DEVICES=0 python train.py \
+CUDA_VISIBLE_DEVICES=3 python train.py \
 --env-name SuperMarioBros-v1 \
 --method naive \
 --model cnn \

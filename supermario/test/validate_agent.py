@@ -87,7 +87,7 @@ def run_one_episode(args, probe, exp):
         next_state = np.array(history_f).reshape(-1, next_state.shape[1], next_state.shape[2])
 
         _reward =info['rewards']
-        div = [10.0, 0.1, 10.0, 10.0, 0.1]
+        div = [1.0, 0.01, 1.0, 1.0, 0.01]
         reward = np.array([_reward[i] / div[i] for i in range(5)])
 
         # reward clipping
@@ -184,8 +184,8 @@ def validate(args, log_name, probe, num_eps):
             next_state, score, terminal, info = env.step(action)
             next_state = rescale(next_state)
 
-            if num_eps_sub == 0:
-                env.render()
+            # if num_eps_sub == 0:
+            #     env.render()
 
             history_f[0] = 0
             for i in range(args.nframe-1):
@@ -194,7 +194,7 @@ def validate(args, log_name, probe, num_eps):
             next_state = np.array(history_f).reshape(-1, next_state.shape[1], next_state.shape[2])
 
             _reward =info['rewards']
-            div = [10.0, 0.1, 10.0, 10.0, 0.1]
+            div = [1.0, 0.01, 1.0, 1.0, 0.01]
             reward = np.array([_reward[i] / div[i] for i in range(5)])
 
             # reward clipping

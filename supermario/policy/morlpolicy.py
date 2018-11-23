@@ -180,7 +180,7 @@ class MetaAgent(object):
                 p = abs(float(wr + self.gamma * whq - wq))
 
             else:
-                print(self.beta)
+                # print(self.beta)
                 self.w_kept = None
                 if self.epsilon_decay:
                     self.epsilon -= self.epsilon_delta
@@ -272,7 +272,7 @@ class MetaAgent(object):
                     Tau_Q = Variable(torch.zeros(self.batch_size * self.weight_num).type(FloatTensor))
                     Tau_Q[nontmlmask] = self.gamma * HQ[nontmlmask]
                     Tau_Q += Variable(w_reward_batch)
-                    print(w_reward_batch)
+                    # print(w_reward_batch)
 
                 actions = Variable(torch.cat(action_batch, dim=0))
 
