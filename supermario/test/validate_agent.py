@@ -37,10 +37,10 @@ def run_one_episode(args, probe, exp):
     env = BinarySpaceToDiscreteSpaceEnv(env, SIMPLE_MOVEMENT)
 
     # get state / action / reward sizes
-    state_size = torch.Tensor(env.observation_space.high).size() 
+    state_size = torch.Tensor(env.observation_space.high).size()
     state_size = torch.Size(
-                    [60 * args.nframe, 
-                     64, 
+                    [60 * args.nframe,
+                     64,
                      1])
     action_size = env.action_space.n
     reward_size = 5
@@ -53,9 +53,9 @@ def run_one_episode(args, probe, exp):
 
     args_new = args
     args_new.epsilon = 0.05
-    
+
     agent = MetaAgent(model, args_new, is_train=False)
-    
+
     terminal = False
     loss = 0
     cnt = 0
@@ -104,7 +104,7 @@ def run_one_episode(args, probe, exp):
         utility = utility + (probe.cpu().numpy().dot(reward)) * np.power(args.gamma, cnt)
         acc_reward = acc_reward + reward
         cnt = cnt + 1
-    
+
     exp.send((acc_reward, score, utility, float(pred_q[0])))
     env.close()
     del gym_super_mario_bros
@@ -126,10 +126,10 @@ def validate(args, log_name, probe, num_eps):
     env = BinarySpaceToDiscreteSpaceEnv(env, SIMPLE_MOVEMENT)
 
     # get state / action / reward sizes
-    state_size = torch.Tensor(env.observation_space.high).size() 
+    state_size = torch.Tensor(env.observation_space.high).size()
     state_size = torch.Size(
-                    [60 * args.nframe, 
-                     64, 
+                    [60 * args.nframe,
+                     64,
                      1])
     action_size = env.action_space.n
     reward_size = 5
@@ -142,11 +142,11 @@ def validate(args, log_name, probe, num_eps):
 
     args_new = args
     args_new.epsilon = 0.05
-    
+
     agent = MetaAgent(model, args_new, is_train=False)
 
-    print("start validating...")        
-    
+    print("start validating...")
+
     acc_acc_reward = np.zeros(5)
     acc_utility = 0
     acc_score = 0
@@ -159,7 +159,7 @@ def validate(args, log_name, probe, num_eps):
         # p.start()
         # acc_reward, score, utility, pred_q = exp_recv.recv()
         # p.join()
-        
+
         terminal = False
         loss = 0
         cnt = 0
@@ -183,6 +183,9 @@ def validate(args, log_name, probe, num_eps):
 
             next_state, score, terminal, info = env.step(action)
             next_state = rescale(next_state)
+
+            if num_eps_sub == 0:
+                env.render()
 
             history_f[0] = 0
             for i in range(args.nframe-1):
@@ -210,7 +213,7 @@ def validate(args, log_name, probe, num_eps):
             cnt = cnt + 1
 
         agent.reset()
-        
+
         pred_q = float(pred_q[0])
 
         acc_acc_reward = acc_acc_reward + acc_reward
@@ -223,7 +226,7 @@ def validate(args, log_name, probe, num_eps):
     acc_utility = acc_utility * 1.0 / REPEAT
     acc_pred_q = acc_pred_q * 1.0 / REPEAT
 
-    writer.add_scalars('train/rewards', {
+    writer.add_scalars('val/rewards', {
         "x_pos": acc_acc_reward[0],
         "enemy": acc_acc_reward[1],
         "time": acc_acc_reward[2],
@@ -231,10 +234,11 @@ def validate(args, log_name, probe, num_eps):
         "coin": acc_acc_reward[4],
         }, num_eps)
 
-    writer.add_scalars('train/utility', {
+    writer.add_scalars('val/utility', {
         "real utility": acc_utility,
         "predicted utility": acc_pred_q,
         }, num_eps)
 
-    writer.add_scalar('train/score', acc_score, num_eps)
+    writer.add_scalar('val/score', acc_score, num_eps)
     writer.close()
+    env.close()

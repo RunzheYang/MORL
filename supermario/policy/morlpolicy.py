@@ -41,7 +41,7 @@ class MetaAgent(object):
         self.gamma = args.gamma
         self.epsilon = args.epsilon
         self.epsilon_decay = args.epsilon_decay
-        # decay to 0.05 for first 20% episode then keep steady 
+        # decay to 0.05 for first 20% episode then keep steady
         self.epsilon_delta = (args.epsilon - 0.05) / args.episode_num * 5.0
 
         self.mem_size = args.mem_size
@@ -63,12 +63,12 @@ class MetaAgent(object):
         self.use_priority = args.priority
         self.priority_mem = deque()
 
-        
+
         if args.optimizer == 'Adam':
             self.optimizer = optim.Adam(self.model_.parameters(), lr=args.lr)
         elif args.optimizer == 'RMSprop':
             self.optimizer = optim.RMSprop(self.model_.parameters(), lr=args.lr)
-        
+
         if optimizer:
             self.optimizer.load_state_dict(optimizer.state_dict())
 
@@ -141,7 +141,7 @@ class MetaAgent(object):
             action,  # action
             torch.from_numpy(next_state).type(torch.FloatTensor),  # next state
             torch.from_numpy(reward).type(torch.FloatTensor),  # reward
-            terminal))  # terminal        
+            terminal))  # terminal
 
         # randomly produce a preference for calculating priority
         # preference = self.w_kept
@@ -197,7 +197,7 @@ class MetaAgent(object):
         self.priority_mem.append(
             p
         )
-        
+
         if len(self.trans_mem) > self.mem_size:
             self.trans_mem.popleft()
             self.priority_mem.popleft()
@@ -240,7 +240,7 @@ class MetaAgent(object):
             terminal_batch = batchify(map(lambda x: x['d'], minibatch))
 
             w_batch = np.random.randn(self.weight_num, reward_size)
-            
+
             if preferences is not None:
                 w_batch = preferences.unsqueeze(0).cpu().numpy().repeat(self.batch_size, axis=0)
                 w_batch = torch.from_numpy(w_batch).type(FloatTensor)
@@ -254,13 +254,14 @@ class MetaAgent(object):
                 __, Q = self.model_(Variable(torch.cat(state_batch, dim=0)),
                                     Variable(w_batch))
                 # detach since we don't want gradients to propagate
-                # HQ, _    = self.model_(Variable(torch.cat(next_state_batch, dim=0), volatile=True),
-                #                     Variable(w_batch, volatile=True))
+                # HQ, _    = self.model_(Variable(torch.cat(next_state_batch, dim=0), requires_grad=false),
+                #                     Variable(w_batch, requires_grad=False))
                 _, DQ = self.model(Variable(torch.cat(next_state_batch, dim=0), requires_grad=False),
                                    Variable(w_batch, requires_grad=False))
                 _, act = self.model_(Variable(torch.cat(next_state_batch, dim=0), requires_grad=False),
                                      Variable(w_batch, requires_grad=False))[1].max(1)
                 HQ = DQ.gather(1, act.unsqueeze(dim=1)).squeeze()
+
 
                 w_reward_batch = torch.bmm(w_batch.unsqueeze(1),
                                            torch.cat(reward_batch, dim=0).unsqueeze(2)
@@ -271,12 +272,13 @@ class MetaAgent(object):
                     Tau_Q = Variable(torch.zeros(self.batch_size * self.weight_num).type(FloatTensor))
                     Tau_Q[nontmlmask] = self.gamma * HQ[nontmlmask]
                     Tau_Q += Variable(w_reward_batch)
+                    print(w_reward_batch)
 
                 actions = Variable(torch.cat(action_batch, dim=0))
 
                 # Compute Huber loss
                 loss = F.smooth_l1_loss(Q.gather(1, actions.unsqueeze(dim=1)), Tau_Q.unsqueeze(dim=1))
-            
+
             elif self.mehtod == "envelope":
                 __, Q = self.model_(Variable(torch.cat(state_batch, dim=0)),
                                     Variable(w_batch), w_num=self.weight_num)
@@ -380,4 +382,3 @@ class MetaAgent(object):
     def save(self, save_path, model_name):
         torch.save(self.model, "{}{}.pkl".format(save_path, model_name))
         torch.save(self.optimizer, "{}{}_opt.pkl".format(save_path, model_name))
-

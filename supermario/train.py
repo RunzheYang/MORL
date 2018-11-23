@@ -92,10 +92,10 @@ def gain_exp(args, probe, exp, num_eps_start, delta_n=10):
     env = BinarySpaceToDiscreteSpaceEnv(env, SIMPLE_MOVEMENT)
 
     # get state / action / reward sizes
-    state_size = torch.Tensor(env.observation_space.high).size() 
+    state_size = torch.Tensor(env.observation_space.high).size()
     state_size = torch.Size(
-                    [60 * args.nframe, 
-                     64, 
+                    [60 * args.nframe,
+                     64,
                      1])
     action_size = env.action_space.n
     reward_size = 5
@@ -109,11 +109,12 @@ def gain_exp(args, probe, exp, num_eps_start, delta_n=10):
     else:
         model = get_new_model(args.method, args.model, state_size, action_size, reward_size)
         optimizer = None
-    
+
     agent = MetaAgent(model, args, optimizer=optimizer, is_train=True)
-    
+
     trajectory = []
     utility = 0
+    acc_score = 0
 
     for eps in range(delta_n):
         terminal = False
@@ -141,15 +142,16 @@ def gain_exp(args, probe, exp, num_eps_start, delta_n=10):
             next_state = np.array(history_f).reshape(-1, next_state.shape[1], next_state.shape[2])
 
             _reward =info['rewards']
-            div = [10.0, 0.1, 10.0, 10.0, 0.1]
+            div = [1.0, 0.01, 1.0, 1.0, 0.01]
             reward = np.array([_reward[i] / div[i] for i in range(5)])
             # reward clipping
             for i in range(len(reward)):
                 if reward[i] > 10.0:
                     reward[i] = 10.0
-            
+
             score = info['score']
-            if info['flag_get'] or cnt > 2000:
+            # train for only one life
+            if info['flag_get'] or cnt > 2000 or reward[4] < 0:
                 terminal = True
 
             trajectory.append((state, action, next_state, reward, terminal))
@@ -158,17 +160,19 @@ def gain_exp(args, probe, exp, num_eps_start, delta_n=10):
 
             utility = utility + (probe.cpu().numpy().dot(reward)) * np.power(args.gamma, cnt)
             cnt = cnt + 1
-        
+
+        acc_score = acc_score + score
+
         agent.reset()
-        
+
         print("end of the epsiode {}".format(num_eps_start+eps))
-    
-    exp.send(dict(trajectory=trajectory, utility=utility/delta_n))
+
+    exp.send(dict(trajectory=trajectory, utility=utility/delta_n, score=acc_score*1.0/delta_n))
     env.close()
     del gym_super_mario_bros
     del env
     exp.close()
-    
+
 
 def train(agent, args):
     current_time = datetime.now().strftime('%b%d_%H-%M-%S')
@@ -176,18 +180,20 @@ def train(agent, args):
                 args.log, current_time + '_' + args.name + '_train')
     log_name = current_time + '_' + args.name
     writer = SummaryWriter(log_dir)
-    print("start training...")        
-    
-    probe = FloatTensor([0.4, 0.2, 0.1, 0.1, 0.2])
-    
+    print("start training...")
+
+    # X_POSITION, ENEMY, TIME, DEATH, COIN)
+    # probe = FloatTensor([0.4, 0.2, 0.1, 0.1, 0.2])
+    probe = FloatTensor([1.0, 0.0, 0.0, 0.0, 0.0])
+
     mp.set_start_method('spawn')
-    
+
     for num_eps in range(0, int(args.episode_num), 10):
         loss = 0.0
-        
+
         random.seed()
         exp_recv, exp_send = mp.Pipe()
-        
+
         args.epsilon = agent.epsilon
 
         p = mp.Process(target=gain_exp, args=(args, probe, exp_send, num_eps))
@@ -199,21 +205,24 @@ def train(agent, args):
             s, a, s_, r, t = tr
             agent.memorize(s, a, s_, r, t)
 
-        hardworking = 100
+        hardworking = 2000
         for hw in range(hardworking):
             if args.single:
                 # single objective learning
-                loss += agent.learn(probe) 
+                loss += agent.learn(probe)
             else:
                 # multi-objective learning
                 loss += agent.learn()
 
         writer.add_scalar('train/loss', loss/hardworking, num_eps)
-        
-        print("end of eps %d with utility %0.2f loss: %0.4f" % (
+        writer.add_scalar('train/utility', experience['utility'], num_eps)
+        writer.add_scalar('train/score', experience['score'], num_eps)
+
+        print("end of eps %d with utility %0.2f loss: %0.4f eps: %0.4f" % (
             num_eps,
             experience["utility"],
-            loss/hardworking))
+            loss/hardworking,
+            agent.epsilon))
 
         agent.save(args.save, "m.{}_{}_n.{}_tmp".format(
                 args.method, args.model, args.name))
@@ -221,8 +230,8 @@ def train(agent, args):
         if num_eps % 50 == 0:
             t = mp.Process(target=validate, args=(args, log_name, probe, num_eps))
             t.start()
-    
-    t.joint()    
+
+    t.joint()
     env.close()
     writer.close()
     agent.save(args.save, "m.{}_{}_n.{}".format(args.method, args.model, args.name))
@@ -232,13 +241,13 @@ if __name__ == '__main__':
     args = parser.parse_args()
     env = gym_super_mario_bros.make(args.env_name)
     env = BinarySpaceToDiscreteSpaceEnv(env, SIMPLE_MOVEMENT)
-    # reward type (X_POSITION, ENERMY, TIME, DEATH, COIN)
+    # reward type (X_POSITION, ENEMY, TIME, DEATH, COIN)
 
     # get state / action / reward sizes
-    state_size = torch.Tensor(env.observation_space.high).size() 
+    state_size = torch.Tensor(env.observation_space.high).size()
     state_size = torch.Size(
-                    [60 * args.nframe, 
-                     64, 
+                    [60 * args.nframe,
+                     64,
                      1])
     action_size = env.action_space.n
     reward_size = 5
@@ -253,7 +262,7 @@ if __name__ == '__main__':
     else:
         model = get_new_model(args.method, args.model, state_size, action_size, reward_size)
         optimizer = None
-    
+
     agent = MetaAgent(model, args, optimizer=optimizer, is_train=True)
 
     train(agent, args)

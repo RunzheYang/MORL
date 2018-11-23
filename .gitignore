@@ -3,6 +3,8 @@
 *.pyc
 *.pkl
 *.log
+logs/*
+saved/*
 .idea/*
 .ipynb_checkpoints/*
 supermario/runs/*
