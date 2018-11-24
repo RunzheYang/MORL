@@ -139,7 +139,7 @@ class ActorAgent(object):
             gamma,
             lam=0.95,
             use_gae=True,
-            use_cuda=False,
+            use_cuda=True,
             use_noisy_net=True):
         self.model = CnnActorCriticNetwork(
             input_size, output_size, use_noisy_net)
@@ -382,7 +382,7 @@ if __name__ == '__main__':
     load_model_path = 'models/xxx'
 
     lam = 0.95
-    num_worker = 16
+    num_worker = 4
     num_step = 128
     ppo_eps = 0.1
     epoch = 3
