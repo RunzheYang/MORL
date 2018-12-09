@@ -3,10 +3,11 @@
 *.pyc
 *.pkl
 *.log
-logs/*
-saved/*
+multimario/logs/*
+multimario/saved/*
+supermario/logs/*
+supermario/saved/*
 .idea/*
 .ipynb_checkpoints/*
-supermario/runs/*
 pydial/.idea/*
 pydial/.ipynb_checkpoints/*
