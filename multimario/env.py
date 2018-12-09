@@ -17,7 +17,7 @@ from nes_py.wrappers import BinarySpaceToDiscreteSpaceEnv
 from gym_super_mario_bros.actions import SIMPLE_MOVEMENT
 
 
-class MarioEnvironment(Process):
+class MoMarioEnv(Process):
     def __init__(
             self,
             args,
@@ -26,7 +26,7 @@ class MarioEnvironment(Process):
             history_size=4,
             h=84,
             w=84):
-        super(MarioEnvironment, self).__init__()
+        super(MoMarioEnv, self).__init__()
         self.daemon = True
         self.env = BinarySpaceToDiscreteSpaceEnv(
             gym_super_mario_bros.make(args.env_id), SIMPLE_MOVEMENT)
@@ -36,7 +36,13 @@ class MarioEnvironment(Process):
         self.steps = 0
         self.episode = 0
         self.rall = 0
+        self.coin = 0
+        self.x_pos = 0
+        self.time = 0
+        self.n_mo = 4
+        self.morall = np.zeros(self.n_mo)
         self.recent_rlist = deque(maxlen=100)
+        self.recent_morlist = deque(maxlen=100)
         self.child_conn = child_conn
         self.life_done = args.life_done
 
@@ -48,12 +54,46 @@ class MarioEnvironment(Process):
         self.reset()
 
     def run(self):
-        super(MarioEnvironment, self).run()
+        super(MoMarioEnv, self).run()
         while True:
             action = self.child_conn.recv()
             if self.is_render:
                 self.env.render()
             obs, reward, done, info = self.env.step(action)
+
+            ''' Construct Multi-Objective Reward'''#####################################
+            # [x_pos, time, death, coin]
+            moreward = []
+            # 1. x position
+            xpos_r = info["x_pos"] - self.x_pos
+            self.x_pos = info["x_pos"]
+            # resolve an issue where after death the x position resets
+            if xpos_r < -5:
+                xpos_r = 0
+            moreward.append(xpos_r)
+            
+            # 2. time penaltiy 
+            time_r = info["time"] - self.time
+            self.time = info["time"]
+            # time is aways decreasing
+            if time_r > 0:
+                time_r = 0
+            moreward.append(time_r)
+
+            # 3. death 
+            if self.lives > info['life']:
+                death_t = -25
+            else:
+                death_t = 0
+            moreward.append(death_t)
+
+            # 4. coin
+            coin_r = (info['coins'] - self.coin) * 100
+            self.coin = info['coins']
+            moreward.append(coin_r)
+
+            ############################################################################
+            
 
             if self.life_done:
                 # when Mario loses life, changes the state to the terminal
@@ -69,44 +109,46 @@ class MarioEnvironment(Process):
                 force_done = done
 
             # reward range -15 ~ 15
-            log_reward = reward / 15
+            r = reward / 15
             self.rall += reward
 
-            r = log_reward
+            self.morall += np.array(moreward)
+            mor = np.array(moreward) * self.n_mo / 15
 
             self.history[:3, :, :] = self.history[1:, :, :]
             self.history[3, :, :] = self.pre_proc(obs)
 
             self.steps += 1
 
-            self.max_pos = max([self.max_pos, info['x_pos']])
-
             if done:
                 self.recent_rlist.append(self.rall)
+                self.recent_morlist.append(self.morall)
                 print(
-                    "[Episode {}({})] Step: {}  Reward: {}  Recent Reward: {}  Stage: {} current x:{}   max x:{}".format(
+                    "[Episode {}({})]\tStep: {}\tScore: {}\tMoReward: {}\tRecent MoReward: {}\tcoin: {}\tcurrent x:{}".format(
                         self.episode,
                         self.env_idx,
+                        info['score'],
                         self.steps,
-                        self.rall,
+                        self.morall,
                         np.mean(
-                            self.recent_rlist),
-                        info['stage'],
-                        info['x_pos'],
-                        self.max_pos))
+                            self.recent_morlist, axis=0),
+                        info['coins'],
+                        info['x_pos']))
 
                 self.history = self.reset()
 
             self.child_conn.send(
-                [self.history[:, :, :], r, force_done, done, log_reward])
+                [self.history[:, :, :], r, force_done, done, mor, info['score']])
 
     def reset(self):
         self.steps = 0
         self.episode += 1
         self.rall = 0
         self.lives = 3
-        self.stage = 1
-        self.max_pos = 0
+        self.coin = 0
+        self.x_pos = 0
+        self.time = 0
+        self.morall = np.zeros(self.n_mo)
         self.get_init_state(self.env.reset())
         return self.history[:, :, :]
 

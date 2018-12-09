@@ -27,7 +27,7 @@ import gym_super_mario_bros
 from nes_py.wrappers import BinarySpaceToDiscreteSpaceEnv
 from gym_super_mario_bros.actions import SIMPLE_MOVEMENT
 
-from env import MarioEnvironment
+from env import MoMarioEnv
 from agent import ActorAgent
 
 parser = argparse.ArgumentParser(description='MORL')
@@ -154,7 +154,7 @@ if __name__ == '__main__':
     child_conns = []
     for idx in range(args.num_worker):
         parent_conn, child_conn = Pipe()
-        work = MarioEnvironment(args, idx, child_conn)
+        work = MoMarioEnv(args, idx, child_conn)
         work.start()
         works.append(work)
         parent_conns.append(parent_conn)
@@ -164,13 +164,16 @@ if __name__ == '__main__':
 
     sample_episode = 0
     sample_rall = 0
+    sample_morall = 0
     sample_step = 0
     sample_env_idx = 0
     global_step = 0
     recent_prob = deque(maxlen=10)
 
+    fixed_w = np.array([0.25, 0.25, 0.25, 0.25])
+
     while True:
-        total_state, total_reward, total_done, total_next_state, total_action = [], [], [], [], []
+        total_state, total_reward, total_done, total_next_state, total_action, total_moreward = [], [], [], [], [], []
         global_step += (args.num_worker * args.num_step)
 
         for _ in range(args.num_step):
@@ -181,36 +184,46 @@ if __name__ == '__main__':
             for parent_conn, action in zip(parent_conns, actions):
                 parent_conn.send(action)
 
-            next_states, rewards, dones, real_dones, log_rewards = [], [], [], [], []
+            next_states, rewards, dones, real_dones, morewards, scores = [], [], [], [], [], []
             for parent_conn in parent_conns:
-                s, r, d, rd, lr = parent_conn.recv()
+                s, r, d, rd, mor, sc = parent_conn.recv()
                 next_states.append(s)
-                rewards.append(r)
+                rewards.append(fixed_w.dot(mor))
                 dones.append(d)
                 real_dones.append(rd)
-                log_rewards.append(lr)
+                morewards.append(mor)
+                scores.append(sc)
 
             next_states = np.stack(next_states)
             rewards = np.hstack(rewards) * args.reward_scale
             dones = np.hstack(dones)
             real_dones = np.hstack(real_dones)
+            morewards = np.stack(morewards) * args.reward_scale
 
             total_state.append(states)
             total_next_state.append(next_states)
             total_reward.append(rewards)
             total_done.append(dones)
             total_action.append(actions)
+            total_moreward.append(morewards)
 
             states = next_states[:, :, :, :]
 
-            sample_rall += log_rewards[sample_env_idx]
+            sample_rall += rewards[sample_env_idx]
+            sample_morall = sample_morall + morewards[sample_env_idx]
             sample_step += 1
             if real_dones[sample_env_idx]:
                 sample_episode += 1
                 writer.add_scalar('data/reward', sample_rall, sample_episode)
                 writer.add_scalar('data/step', sample_step, sample_episode)
+                writer.add_scalar('data/score', scores[sample_env_idx], sample_episode)
+                writer.add_scalar('data/x_pos_reward', sample_morall[0], sample_episode)
+                writer.add_scalar('data/time_penalty', sample_morall[1], sample_episode)
+                writer.add_scalar('data/death_penalty', sample_morall[2], sample_episode)
+                writer.add_scalar('data/coin_reward', sample_morall[3], sample_episode)
                 sample_rall = 0
                 sample_step = 0
+                sample_morall = 0
 
         if args.training:
             total_state = np.stack(total_state).transpose(

@@ -5,4 +5,4 @@ python run_a3c.py \
 	--life-done \
 	--training \
 	--standardization \
-	--num-worker 1
+	--num-worker 4
