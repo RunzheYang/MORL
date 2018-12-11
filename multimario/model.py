@@ -1,3 +1,6 @@
+## multi-obejcetive super mario bros
+## modified by Runzhe Yang on Dec. 8, 2018
+
 import torch.nn.functional as F
 import torch.nn as nn
 import torch
@@ -140,6 +143,65 @@ class CnnActorCriticNetwork(nn.Module):
 
     def forward(self, state):
         x = self.feature(state)
+        policy = self.actor(x)
+        value = self.critic(x)
+        return policy, value
+
+
+class NaiveMoCnnActorCriticNetwork(nn.Module):
+    def __init__(self, input_size, output_size, reward_size):
+        super(NaiveMoCnnActorCriticNetwork, self).__init__()
+        
+        linear = nn.Linear
+
+        self.feature = nn.Sequential(
+            nn.Conv2d(
+                in_channels=4,
+                out_channels=32,
+                kernel_size=8,
+                stride=4),
+            nn.LeakyReLU(),
+            nn.Conv2d(
+                in_channels=32,
+                out_channels=64,
+                kernel_size=4,
+                stride=2),
+            nn.LeakyReLU(),
+            nn.Conv2d(
+                in_channels=64,
+                out_channels=64,
+                kernel_size=3,
+                stride=1),
+            nn.LeakyReLU(),
+            Flatten(),
+            linear(
+                7 * 7 * 64,
+                512),
+            nn.LeakyReLU(),
+        )
+        self.actor = nn.Sequential(
+            linear(512+reward_size, 128),
+            nn.LeakyReLU(),
+            linear(128, output_size),
+        )
+        self.critic = nn.Sequential(
+            linear(512+reward_size, 128),
+            nn.LeakyReLU(),
+            linear(128, 1),
+        )
+
+        for p in self.modules():
+            if isinstance(p, nn.Conv2d):
+                init.kaiming_uniform_(p.weight)
+                p.bias.data.zero_()
+
+            if isinstance(p, nn.Linear):
+                init.kaiming_uniform_(p.weight, a=1.0)
+                p.bias.data.zero_()
+
+    def forward(self, state, preference):
+        x = self.feature(state)
+        x = torch.cat((x, preference), dim=1)
         policy = self.actor(x)
         value = self.critic(x)
         return policy, value

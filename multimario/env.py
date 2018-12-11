@@ -39,12 +39,15 @@ class MoMarioEnv(Process):
         self.coin = 0
         self.x_pos = 0
         self.time = 0
-        self.n_mo = 4
+        self.score = 0
+        self.n_mo = 5
         self.morall = np.zeros(self.n_mo)
         self.recent_rlist = deque(maxlen=100)
         self.recent_morlist = deque(maxlen=100)
         self.child_conn = child_conn
         self.life_done = args.life_done
+        self.single_stage = args.single_stage
+        self.stage_bonus = 0
 
         self.history_size = history_size
         self.history = np.zeros([history_size, h, w])
@@ -60,6 +63,10 @@ class MoMarioEnv(Process):
             if self.is_render:
                 self.env.render()
             obs, reward, done, info = self.env.step(action)
+
+            if self.single_stage and info["flag_get"]:
+                self.stage_bonus = 10000
+                done = True
 
             ''' Construct Multi-Objective Reward'''#####################################
             # [x_pos, time, death, coin]
@@ -82,15 +89,22 @@ class MoMarioEnv(Process):
 
             # 3. death 
             if self.lives > info['life']:
-                death_t = -25
+                death_r = -25
             else:
-                death_t = 0
-            moreward.append(death_t)
+                death_r = 0
+            moreward.append(death_r)
 
             # 4. coin
             coin_r = (info['coins'] - self.coin) * 100
             self.coin = info['coins']
             moreward.append(coin_r)
+
+            # 5. enemy
+            enemy_r = info['score'] - self.score
+            if coin_r > 0 or done:
+                enemy_r = 0
+            self.score = info['score']
+            moreward.append(enemy_r)
 
             ############################################################################
             
@@ -127,8 +141,8 @@ class MoMarioEnv(Process):
                     "[Episode {}({})]\tStep: {}\tScore: {}\tMoReward: {}\tRecent MoReward: {}\tcoin: {}\tcurrent x:{}".format(
                         self.episode,
                         self.env_idx,
-                        info['score'],
                         self.steps,
+                        info['score']+self.stage_bonus,
                         self.morall,
                         np.mean(
                             self.recent_morlist, axis=0),
@@ -138,7 +152,7 @@ class MoMarioEnv(Process):
                 self.history = self.reset()
 
             self.child_conn.send(
-                [self.history[:, :, :], r, force_done, done, mor, info['score']])
+                [self.history[:, :, :], r, force_done, done, mor, info['score']+self.stage_bonus])
 
     def reset(self):
         self.steps = 0
@@ -148,6 +162,8 @@ class MoMarioEnv(Process):
         self.coin = 0
         self.x_pos = 0
         self.time = 0
+        self.score = 0
+        self.stage_bonus = 0
         self.morall = np.zeros(self.n_mo)
         self.get_init_state(self.env.reset())
         return self.history[:, :, :]

@@ -28,14 +28,14 @@ from nes_py.wrappers import BinarySpaceToDiscreteSpaceEnv
 from gym_super_mario_bros.actions import SIMPLE_MOVEMENT
 
 from env import MoMarioEnv
-from agent import ActorAgent
+from agent import NaiveMoActorAgent
 
 parser = argparse.ArgumentParser(description='MORL')
 
 # set envrioment id and directory
 parser.add_argument('--env-id', default='SuperMarioBros-v2', metavar='ENVID',
                     help='Super Mario Bros Game 1-2 (Skip Frame) v0-v3')
-parser.add_argument('--name', default='a3c', metavar='name',
+parser.add_argument('--name', default='n3c', metavar='name',
                     help='specify the model name')
 parser.add_argument('--logdir', default='logs/', metavar='LOG',
                     help='path for recording training informtion')
@@ -81,7 +81,8 @@ parser.add_argument('--clip-grad-norm', type=float, default=0.5, metavar='CLIP',
                     help='gradient norm clipping (default 0.5)')
 parser.add_argument('--reward-scale', type=float, default=1.0, metavar='RS',
                     help='reward scaling (default 1.0)')
-
+parser.add_argument('--sample-size', type=int, default=8, metavar='SS',
+                    help='number of preference samples for updating')
 
 def make_train_data(args, reward, done, value, next_value):
     discounted_return = np.empty([args.num_step])
@@ -111,6 +112,24 @@ def make_train_data(args, reward, done, value, next_value):
     return discounted_return, adv
 
 
+def generate_w(num_prefence, reward_size, fixed_w=None):
+    if fixed_w is not None:
+        w = np.random.randn(num_prefence-1, reward_size)
+        # normalize as a simplex
+        w = np.abs(w) / np.linalg.norm(w, ord=1, axis=1).reshape(num_prefence-1, 1)
+        return np.concatenate(([fixed_w], w))
+    else:
+        w = np.random.randn(num_prefence-1, reward_size)
+        w = np.abs(w) / np.linalg.norm(w, ord=1, axis=1).reshape(num_prefence-1, 1)
+        return w
+
+def renew_w(preferences, dim):
+    w = np.random.randn(reward_size)
+    w = np.abs(w) / np.linalg.norm(w, ord=1, axis=1).reshape(num_prefence-1, 1)
+    preferences[dim] = w
+    return preferences
+
+
 if __name__ == '__main__':
 
     args = parser.parse_args()
@@ -120,6 +139,7 @@ if __name__ == '__main__':
         gym_super_mario_bros.make(args.env_id), SIMPLE_MOVEMENT)
     input_size = env.observation_space.shape
     output_size = env.action_space.n
+    reward_size = 5
 
     env.close()
 
@@ -134,10 +154,11 @@ if __name__ == '__main__':
                     args.name, current_time)
     load_model_path = 'saved/{}'.format(args.prev_model)
 
-    agent = ActorAgent(
+    agent = NaiveMoActorAgent(
         args,
         input_size,
-        output_size)
+        output_size,
+        reward_size)
 
     if args.load_model:
         if args.use_cuda:
@@ -173,6 +194,7 @@ if __name__ == '__main__':
     recent_prob = deque(maxlen=10)
 
     fixed_w = np.array([0.20, 0.20, 0.20, 0.20, 0.20])
+    explore_w = generate_w(args.num_worker, reward_size, fixed_w)
 
     while True:
         total_state, total_reward, total_done, total_next_state, total_action, total_moreward = [], [], [], [], [], []
@@ -181,12 +203,13 @@ if __name__ == '__main__':
         for _ in range(args.num_step):
             if not args.training:
                 time.sleep(0.05)
-            actions = agent.get_action(states)
+            actions = agent.get_action(states, explore_w)
 
             for parent_conn, action in zip(parent_conns, actions):
                 parent_conn.send(action)
 
             next_states, rewards, dones, real_dones, morewards, scores = [], [], [], [], [], []
+            cnt = 0
             for parent_conn in parent_conns:
                 s, r, d, rd, mor, sc = parent_conn.recv()
                 next_states.append(s)
@@ -195,6 +218,10 @@ if __name__ == '__main__':
                 real_dones.append(rd)
                 morewards.append(mor)
                 scores.append(sc)
+                # resample if done
+                if cnt > 0 and d:
+                    explore_w = renew_w(explore_w, cnt)
+                    print("renew the preference for exploration", explore_w)
 
             next_states = np.stack(next_states)
             rewards = np.hstack(rewards) * args.reward_scale
@@ -229,16 +256,33 @@ if __name__ == '__main__':
                 sample_morall = 0
 
         if args.training:
+            # [w1, w1, w1, w2, w2, w2, w3, w3, w3...]
+            # [s1, s2, s3, s1, s2, s3, s1, s2, s3...]
+            # expand w batch
+            update_w = generate_w(args.sample_size, reward_size, fixed_w)
+            update_w = update_w.repeat(len(total_state)*args.num_worker, axis=0)
+            # expand state batch
+            total_state = total_state * args.sample_size
             total_state = np.stack(total_state).transpose(
                 [1, 0, 2, 3, 4]).reshape([-1, 4, 84, 84])
+            # expand next_state batch
+            total_next_state = total_next_state * args.sample_size
             total_next_state = np.stack(total_next_state).transpose(
                 [1, 0, 2, 3, 4]).reshape([-1, 4, 84, 84])
-            total_reward = np.stack(total_reward).transpose().reshape([-1])
+            # calculate utility from reward vectors
+            total_moreward = np.array(
+                                total_moreward*args.sample_size
+                             ).transpose([1, 0, 2]).reshape([-1, reward_size])
+            total_utility = np.sum(total_moreward * update_w, axis=-1).reshape([-1])
+            # expand action batch
+            total_action = total_action * args.sample_size
             total_action = np.stack(total_action).transpose().reshape([-1])
+            # expand done batch
+            total_done = total_done * args.sample_size
             total_done = np.stack(total_done).transpose().reshape([-1])
 
             value, next_value, policy = agent.forward_transition(
-                total_state, total_next_state)
+                total_state, total_next_state, update_w)
 
             # logging utput to see how convergent it is.
             policy = policy.detach()
@@ -251,18 +295,21 @@ if __name__ == '__main__':
 
             total_target = []
             total_adv = []
-            for idx in range(args.num_worker):
-                target, adv = make_train_data(args,
-                              total_reward[idx * args.num_step:(idx + 1) * args.num_step],
-                              total_done[idx * args.num_step:(idx + 1) * args.num_step],
-                              value[idx * args.num_step:(idx + 1) * args.num_step],
-                              next_value[idx * args.num_step:(idx + 1) * args.num_step])
-                total_target.append(target)
-                total_adv.append(adv)
+            for idw in range(args.sample_size):
+                ofs = args.num_worker * args.num_step
+                for idx in range(args.num_worker):
+                    target, adv = make_train_data(args,
+                                  total_utility[idx*args.num_step+idw*ofs : (idx+1)*args.num_step+idw*ofs],
+                                  total_done[idx*args.num_step+idw*ofs: (idx+1)*args.num_step+idw*ofs],
+                                  value[idx*args.num_step+idw*ofs : (idx+1)*args.num_step+idw*ofs],
+                                  next_value[idx*args.num_step+idw*ofs : (idx+1)*args.num_step+idw*ofs])
+                    total_target.append(target)
+                    total_adv.append(adv)
 
             agent.train_model(
                 total_state,
                 total_next_state,
+                update_w,
                 np.hstack(total_target),
                 total_action,
                 np.hstack(total_adv))
