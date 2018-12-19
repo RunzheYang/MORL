@@ -1,5 +1,5 @@
 ## multi-obejcetive super mario bros
-## modified by Runzhe Yang on Dec. 8, 2018
+## modified by Runzhe Yang on Dec. 18, 2018
 
 import gym
 import os
@@ -28,14 +28,14 @@ from nes_py.wrappers import BinarySpaceToDiscreteSpaceEnv
 from gym_super_mario_bros.actions import SIMPLE_MOVEMENT
 
 from env import MoMarioEnv
-from agent import NaiveMoActorAgent
+from agent import EnveMoActorAgent
 
 parser = argparse.ArgumentParser(description='MORL')
 
 # set envrioment id and directory
 parser.add_argument('--env-id', default='SuperMarioBros-v2', metavar='ENVID',
                     help='Super Mario Bros Game 1-2 (Skip Frame) v0-v3')
-parser.add_argument('--name', default='n3c', metavar='name',
+parser.add_argument('--name', default='e3c', metavar='name',
                     help='specify the model name')
 parser.add_argument('--logdir', default='logs/', metavar='LOG',
                     help='path for recording training informtion')
@@ -65,6 +65,8 @@ parser.add_argument('--num-worker', type=int, default=16, metavar='NWORKER',
 # hyperparameters
 parser.add_argument('--lam', type=float, default=0.95, metavar='LAM',
                     help='lambda for gae (default 0.95)')
+parser.add_argument('--beta', type=float, default=0.95, metavar='LAM',
+                    help='beta for balancing l1 and l2 loss')
 parser.add_argument('--num-step', type=int, default=5, metavar='NSTEP',
                     help='number of gae steps (default 5)')
 parser.add_argument('--max-step', type=int, default=1.15e8, metavar='MSTEP',
@@ -84,9 +86,9 @@ parser.add_argument('--reward-scale', type=float, default=1.0, metavar='RS',
 parser.add_argument('--sample-size', type=int, default=8, metavar='SS',
                     help='number of preference samples for updating')
 
-def make_train_data(args, reward, done, value, next_value):
+def make_train_data(args, preference, reward, done, value, next_value):
     discounted_return = np.empty([args.num_step])
-
+    
     # Discounted Return
     if args.use_gae:
         gae = 0
@@ -97,19 +99,32 @@ def make_train_data(args, reward, done, value, next_value):
 
             discounted_return[t] = gae + value[t]
 
-        # For Actor
-        adv = discounted_return - value
-
     else:
         running_add = next_value[-1]
         for t in range(args.num_step - 1, -1, -1):
             running_add = reward[t] + args.gamma * running_add * (1 - done[t])
             discounted_return[t] = running_add
 
-        # For Actor
-        adv = discounted_return - value
+    return discounted_return
 
-    return discounted_return, adv
+
+def envelope_operator(args, preference, target, value, reward_size):
+    
+    # [w1, w1, w1, w1, w1, w1, w2, w2, w2, w2, w2, w2...]
+    # [s1, s2, s3, u1, u2, u3, s1, s2, s3, u1, u2, u3...]
+
+    # weak envelope calculation
+    ofs = args.num_worker * args.num_step
+    target = np.concatenate(target).reshape(-1, reward_size)
+    prod = np.inner(target, preference)
+    envemask = prod.transpose().reshape(args.sample_size, ofs, -1).argmax(axis=2)
+    envemask = envemask.reshape(-1) * ofs + np.array(range(ofs)*args.sample_size)
+    target = target[envemask]
+
+    # For Actor
+    adv = target - value
+
+    return target, adv
 
 
 def generate_w(num_prefence, reward_size, fixed_w=None):
@@ -154,7 +169,7 @@ if __name__ == '__main__':
                     args.name, current_time)
     load_model_path = 'saved/{}'.format(args.prev_model)
 
-    agent = NaiveMoActorAgent(
+    agent = EnveMoActorAgent(
         args,
         input_size,
         output_size,
@@ -265,7 +280,7 @@ if __name__ == '__main__':
             # [s1, s2, s3, s1, s2, s3, s1, s2, s3...]
             # expand w batch
             update_w = generate_w(args.sample_size, reward_size, fixed_w)
-            update_w = update_w.repeat(len(total_state)*args.num_worker, axis=0)
+            total_update_w = update_w.repeat(len(total_state)*args.num_worker, axis=0)
             # expand state batch
             total_state = total_state * args.sample_size
             total_state = np.stack(total_state).transpose(
@@ -278,7 +293,7 @@ if __name__ == '__main__':
             total_moreward = np.array(
                                 total_moreward*args.sample_size
                              ).transpose([1, 0, 2]).reshape([-1, reward_size])
-            total_utility = np.sum(total_moreward * update_w, axis=-1).reshape([-1])
+            total_utility = np.sum(total_moreward * total_update_w, axis=-1).reshape([-1])
             # expand action batch
             total_action = total_action * args.sample_size
             total_action = np.stack(total_action).transpose().reshape([-1])
@@ -287,7 +302,7 @@ if __name__ == '__main__':
             total_done = np.stack(total_done).transpose().reshape([-1])
 
             value, next_value, policy = agent.forward_transition(
-                total_state, total_next_state, update_w)
+                total_state, total_next_state, total_update_w)
 
             # logging utput to see how convergent it is.
             policy = policy.detach()
@@ -303,21 +318,23 @@ if __name__ == '__main__':
             for idw in range(args.sample_size):
                 ofs = args.num_worker * args.num_step
                 for idx in range(args.num_worker):
-                    target, adv = make_train_data(args,
-                                  total_utility[idx*args.num_step+idw*ofs : (idx+1)*args.num_step+idw*ofs],
+                    target = make_train_data(args,
+                                  update_w,
+                                  total_moreward[idx*args.num_step+idw*ofs : (idx+1)*args.num_step+idw*ofs],
                                   total_done[idx*args.num_step+idw*ofs: (idx+1)*args.num_step+idw*ofs],
                                   value[idx*args.num_step+idw*ofs : (idx+1)*args.num_step+idw*ofs],
                                   next_value[idx*args.num_step+idw*ofs : (idx+1)*args.num_step+idw*ofs])
                     total_target.append(target)
-                    total_adv.append(adv)
+
+            total_target, total_adv = envelope_operator(total_target, value, reward_size)
 
             agent.train_model(
                 total_state,
                 total_next_state,
                 update_w,
-                np.hstack(total_target),
+                total_target,
                 total_action,
-                np.hstack(total_adv))
+                total_adv)
 
             # adjust learning rate
             if args.lr_schedule:
