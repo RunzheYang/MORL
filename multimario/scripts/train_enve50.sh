@@ -6,7 +6,7 @@ python run_e3c.py \
 	--single-stage \
 	--training \
 	--standardization \
-	--num-worker 2 \
-	--sample-size 2 \
-	--beta 0.95 \
-	--name e3c_b095
+	--num-worker 16 \
+	--sample-size 8 \
+	--beta 0.50 \
+	--name e3c_b50

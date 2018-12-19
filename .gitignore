@@ -3,6 +3,7 @@
 *.pyc
 *.pkl
 *.log
+*.txt
 multimario/logs/*
 multimario/saved/*
 supermario/logs/*

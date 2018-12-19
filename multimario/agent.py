@@ -302,7 +302,7 @@ class EnveMoActorAgent(object):
             action_batch = torch.LongTensor(action_batch).to(self.device)
             adv_batch = torch.FloatTensor(adv_batch).to(self.device)
 
-        # calculate scalarized advantage    
+        # calculate scalarized advantage   
         wadv_batch = torch.bmm(adv_batch.unsqueeze(1), 
                                w_batch.unsqueeze(2)).squeeze()
 

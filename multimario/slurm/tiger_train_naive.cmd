@@ -21,4 +21,4 @@ export LC_ALL=en_US.UTF-8
 source activate rllab3
 
 cd /home/runzhey/MORL/multimario/
-sh train_naive.sh
+sh scripts/train_naive.sh

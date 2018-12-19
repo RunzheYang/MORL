@@ -86,12 +86,12 @@ parser.add_argument('--reward-scale', type=float, default=1.0, metavar='RS',
 parser.add_argument('--sample-size', type=int, default=8, metavar='SS',
                     help='number of preference samples for updating')
 
-def make_train_data(args, preference, reward, done, value, next_value):
-    discounted_return = np.empty([args.num_step])
+def make_train_data(args, reward, done, value, next_value, reward_size):
+    discounted_return = np.empty([args.num_step, reward_size])
     
     # Discounted Return
     if args.use_gae:
-        gae = 0
+        gae = np.zeros(reward_size)
         for t in range(args.num_step - 1, -1, -1):
             delta = reward[t] + args.gamma * \
                 next_value[t] * (1 - done[t]) - value[t]
@@ -118,7 +118,7 @@ def envelope_operator(args, preference, target, value, reward_size):
     target = np.concatenate(target).reshape(-1, reward_size)
     prod = np.inner(target, preference)
     envemask = prod.transpose().reshape(args.sample_size, ofs, -1).argmax(axis=2)
-    envemask = envemask.reshape(-1) * ofs + np.array(range(ofs)*args.sample_size)
+    envemask = envemask.reshape(-1) * ofs + np.array(list(range(ofs))*args.sample_size)
     target = target[envemask]
 
     # For Actor
@@ -319,19 +319,19 @@ if __name__ == '__main__':
                 ofs = args.num_worker * args.num_step
                 for idx in range(args.num_worker):
                     target = make_train_data(args,
-                                  update_w,
                                   total_moreward[idx*args.num_step+idw*ofs : (idx+1)*args.num_step+idw*ofs],
                                   total_done[idx*args.num_step+idw*ofs: (idx+1)*args.num_step+idw*ofs],
                                   value[idx*args.num_step+idw*ofs : (idx+1)*args.num_step+idw*ofs],
-                                  next_value[idx*args.num_step+idw*ofs : (idx+1)*args.num_step+idw*ofs])
+                                  next_value[idx*args.num_step+idw*ofs : (idx+1)*args.num_step+idw*ofs],
+                                  reward_size)
                     total_target.append(target)
 
-            total_target, total_adv = envelope_operator(total_target, value, reward_size)
+            total_target, total_adv = envelope_operator(args, update_w, total_target, value, reward_size)
 
             agent.train_model(
                 total_state,
                 total_next_state,
-                update_w,
+                total_update_w,
                 total_target,
                 total_action,
                 total_adv)
