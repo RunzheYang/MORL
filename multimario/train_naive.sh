@@ -6,5 +6,5 @@ python run_n3c.py \
 	--single-stage \
 	--training \
 	--standardization \
-	--num-worker 4 \
+	--num-worker 16 \
 	--sample-size 8 \

@@ -6,4 +6,4 @@ python run_a3c.py \
 	--single-stage \
 	--training \
 	--standardization \
-	--num-worker 4 \
+	--num-worker 16 \
