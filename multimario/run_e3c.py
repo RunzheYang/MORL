@@ -117,7 +117,7 @@ def envelope_operator(args, preference, target, value, reward_size):
     ofs = args.num_worker * args.num_step
     target = np.concatenate(target).reshape(-1, reward_size)
     prod = np.inner(target, preference)
-    envemask = prod.transpose().reshape(args.sample_size, ofs, -1).argmax(axis=2)
+    envemask = prod.transpose().reshape(args.sample_size, -1, ofs).argmax(axis=1)
     envemask = envemask.reshape(-1) * ofs + np.array(list(range(ofs))*args.sample_size)
     target = target[envemask]
 
