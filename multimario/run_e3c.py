@@ -67,6 +67,8 @@ parser.add_argument('--lam', type=float, default=0.95, metavar='LAM',
                     help='lambda for gae (default 0.95)')
 parser.add_argument('--beta', type=float, default=0.95, metavar='LAM',
                     help='beta for balancing l1 and l2 loss')
+parser.add_argument('--T', type=float, default=10, metavar='TEMP',
+                    help='softmax with tempreture to encorage exploration')
 parser.add_argument('--num-step', type=int, default=5, metavar='NSTEP',
                     help='number of gae steps (default 5)')
 parser.add_argument('--max-step', type=int, default=1.15e8, metavar='MSTEP',
@@ -75,7 +77,7 @@ parser.add_argument('--learning-rate', type=float, default=2.5e-4, metavar='LR',
                     help='initial learning rate (default 2.5e-4)')
 parser.add_argument('--lr-schedule', action='store_true',
                     help='enable learning rate scheduling')
-parser.add_argument('--entropy-coef', type=float, default=0.2, metavar='ENTROPY',
+parser.add_argument('--entropy-coef', type=float, default=0.02, metavar='ENTROPY',
                     help='entropy coefficient for regurization (default 0.2)')
 parser.add_argument('--gamma', type=float, default=0.99, metavar='GAMMA',
                     help='gamma for discounted rewards (default 0.99)')
@@ -263,6 +265,7 @@ if __name__ == '__main__':
             sample_step += 1
             if real_dones[sample_env_idx]:
                 sample_episode += 1
+                agent.anneal()
                 writer.add_scalar('data/reward', sample_rall, sample_episode)
                 writer.add_scalar('data/step', sample_step, sample_episode)
                 writer.add_scalar('data/score', scores[sample_env_idx], sample_episode)

@@ -185,10 +185,10 @@ if __name__ == '__main__':
     # guessed_w = np.array([0.20, 0.20, 0.20, 0.20, 0.20])
     # guessed_w = np.array([1.0, 0.0, 0.0, 0.0, 0.0])
     # guessed_w = np.array([0.0, 1.0, 0.0, 0.0, 0.0])
-    guessed_w = np.array([0.0, 0.0, 1.0, 0.0, 0.0])
+    # guessed_w = np.array([0.0, 0.0, 1.0, 0.0, 0.0])
     # guessed_w = np.array([0.30, 0.10, 0.10, 0.20, 0.30])
     # guessed_w = np.array([0.20, 0.20, 0.20, 0.20, 0.20])
-    # guessed_w = UNKNOWN_PREFERENCE
+    guessed_w = UNKNOWN_PREFERENCE
     
     explore_w = generate_w(args.num_worker, reward_size, guessed_w)
 

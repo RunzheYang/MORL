@@ -277,6 +277,8 @@ class EnveMoActorAgent(object):
         self.optimizer = optim.Adam(
             self.model.parameters(), lr=args.learning_rate)
         self.standardization = args.standardization
+        # tempreture for action generation
+        self.T = args.T
         self.entropy_coef = args.entropy_coef
         self.beta = args.beta
         self.clip_grad_norm = args.clip_grad_norm
@@ -285,13 +287,14 @@ class EnveMoActorAgent(object):
 
         self.model = self.model.to(self.device)
 
+    # get action using softmax with tempreture
     def get_action(self, state, preference):
         state = torch.Tensor(state).to(self.device)
         state = state.float()
         w = torch.Tensor(preference).to(self.device)
         w = w.float()
         policy, value = self.model(state, w)
-        policy = F.softmax(policy, dim=-1).data.cpu().numpy()
+        policy = F.softmax(policy/self.T, dim=-1).data.cpu().numpy()
 
         action = self.random_choice_prob_index(policy)
 
@@ -319,6 +322,9 @@ class EnveMoActorAgent(object):
         next_value = next_value.data.cpu().numpy().squeeze()
 
         return value, next_value, policy
+
+    def anneal(self):
+        self.T = 0.01+0.99*self.T
 
     def train_model(
             self,
@@ -372,7 +378,7 @@ class EnveMoActorAgent(object):
 
         self.optimizer.zero_grad()
 
-        # Total loss
+        # Total loss (don't compute tempreture)
         loss = actor_loss.mean()
         loss += 0.5 * (self.beta * critic_loss_l1 + (1-self.beta) * critic_loss_l2)
         loss -= self.entropy_coef * entropy.mean()
