@@ -176,6 +176,41 @@ class NaiveMoActorAgent(object):
 
         return value, next_value, policy
 
+    def find_preference(
+            self,
+            s_batch,
+            w_batch,
+            target_batch,
+            action_batch):
+    
+        with torch.no_grad():
+            s_batch = torch.FloatTensor(s_batch).to(self.device)
+            target_batch = torch.FloatTensor(target_batch).to(self.device)
+            action_batch = torch.LongTensor(action_batch).to(self.device)
+
+        w_batch = torch.FloatTensor(w_batch).to(self.device)
+        
+        # obtaining gradient for prefenrece
+        w_batch.requires_grad = True
+        policy, value = self.model(s_batch, w_batch)
+        m = Categorical(F.softmax(policy, dim=-1))
+
+        # Actor loss
+        actor_loss = -m.log_prob(action_batch) * target_batch
+
+        self.optimizer.zero_grad()
+        # Total loss
+        loss = actor_loss.mean()
+        loss.backward()
+         
+        eta = 10
+        w_batch = w_batch + eta * w_batch.grad
+        w = w_batch.mean(dim=0).detach().cpu().numpy()
+        # project back to simplex
+        w = simplex_proj(w)
+
+        return w
+
     def train_model(
             self,
             s_batch,
@@ -192,7 +227,7 @@ class NaiveMoActorAgent(object):
             target_batch = torch.FloatTensor(target_batch).to(self.device)
             action_batch = torch.LongTensor(action_batch).to(self.device)
             adv_batch = torch.FloatTensor(adv_batch).to(self.device)
-
+            
         if self.standardization:
             adv_batch = (adv_batch - adv_batch.mean()) / \
                 (adv_batch.std() + 1e-30)
@@ -345,3 +380,18 @@ class EnveMoActorAgent(object):
         loss.backward()
         torch.nn.utils.clip_grad_norm_(self.model.parameters(), self.clip_grad_norm)
         self.optimizer.step()       
+
+# projection to simplex
+def simplex_proj(x):
+    y = -np.sort(-x)
+    sum = 0
+    ind = []
+    for j in range(len(x)):
+        sum = sum + y[j]
+        if y[j] + (1 - sum) / (j + 1) > 0:
+            ind.append(j)
+        else:
+            ind.append(0)
+    rho = np.argmax(ind)
+    delta = (1 - (y[:rho+1]).sum())/(rho+1)
+    return np.clip(x + delta, 0, 1)
