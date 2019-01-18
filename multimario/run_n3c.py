@@ -120,12 +120,12 @@ def generate_w(num_prefence, reward_size, fixed_w=None):
         return np.concatenate(([fixed_w], w))
     else:
         w = np.random.randn(num_prefence-1, reward_size)
-        w = np.abs(w) / np.linalg.norm(w, ord=1, axis=1).reshape(num_prefence-1, 1)
+        w = np.abs(w) / np.linalg.norm(w, ord=1, axis=1).reshape(num_prefence, 1)
         return w
 
 def renew_w(preferences, dim):
     w = np.random.randn(reward_size)
-    w = np.abs(w) / np.linalg.norm(w, ord=1, axis=1).reshape(num_prefence-1, 1)
+    w = np.abs(w) / np.linalg.norm(w, ord=1, axis=1)
     preferences[dim] = w
     return preferences
 

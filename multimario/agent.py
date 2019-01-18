@@ -178,38 +178,32 @@ class NaiveMoActorAgent(object):
 
     def find_preference(
             self,
-            s_batch,
             w_batch,
             target_batch,
-            action_batch):
-    
+            pref_param):
+
         with torch.no_grad():
-            s_batch = torch.FloatTensor(s_batch).to(self.device)
-            target_batch = torch.FloatTensor(target_batch).to(self.device)
-            action_batch = torch.LongTensor(action_batch).to(self.device)
+            w_batch = torch.FloatTensor(w_batch).to(self.device)
+            target_batch = torch.FloatTensor(pref_param).to(self.device)
 
-        w_batch = torch.FloatTensor(w_batch).to(self.device)
-        
-        # obtaining gradient for prefenrece
-        w_batch.requires_grad = True
-        policy, value = self.model(s_batch, w_batch)
-        m = Categorical(F.softmax(policy, dim=-1))
-
-        # Actor loss
-        actor_loss = -m.log_prob(action_batch) * target_batch
+        # compute loss
+        pref_param = torch.FloatTensor(pref_param).to(self.device)
+        pref_param.requires_grad = True
+        sigmas = torch.Tensor([0.1]*len(pref_param))
+        dist = torch.distributions.normal.Normal(pref_param, sigmas)
+        pref_loss = dist.log_prob(w_batch).sum(dim=1) * target_batch
 
         self.optimizer.zero_grad()
         # Total loss
-        loss = actor_loss.mean()
+        loss = pref_loss.mean()
         loss.backward()
-         
-        eta = 10
-        w_batch = w_batch + eta * w_batch.grad
-        w = w_batch.mean(dim=0).detach().cpu().numpy()
-        # project back to simplex
-        w = simplex_proj(w)
+        
+        eta = 0.01
+        pref_param = pref_param + eta * pref_param.grad
+        pref_param = simplex_proj(pref_param.detach().numpy())
+        print("update prefreence parameters to", pref_param)
 
-        return w
+        return pref_param
 
     def train_model(
             self,

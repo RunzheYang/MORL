@@ -59,7 +59,7 @@ parser.add_argument('--standardization', action='store_true',
                     help='load previous model (default FALSE)')
 parser.add_argument('--num-worker', type=int, default=1, metavar='NWORKER',
                     help='number of wokers (defualt 1 for adaptation)')
-parser.add_argument('--episode-limit', type=int, default=20, metavar='EL',
+parser.add_argument('--episode-limit', type=int, default=200, metavar='EL',
                     help='upper bound for the number of episodes to adapte the preference')
 
 # hyperparameters
@@ -89,34 +89,37 @@ UNKNOWN_PREFERENCE = np.array([1.00, 0.00, 0.00, 0.00, 0.00])
 
 def make_train_data(num_step, reward):
     discounted_return = np.empty([num_step])
-
     # Discounted Return
     running_add = 0
     for t in range(num_step - 1, -1, -1):
-        running_add = reward[t]
+        running_add += reward[t]
         discounted_return[t] = running_add
+    return discounted_return[0]
 
-    return discounted_return
 
-
-def generate_w(num_prefence, reward_size, fixed_w=None):
-    if fixed_w is not None:
-        w = np.random.randn(num_prefence-1, reward_size)
-        # normalize as a simplex
+def generate_w(num_prefence, pref_param, fixed_w=None):
+    if fixed_w is not None and num_prefence>1:
+        sigmas = torch.Tensor([0.1]*len(pref_param))
+        w = torch.distributions.normal.Normal(torch.Tensor(pref_param), sigmas)
+        w = w.sample(torch.Size((num_prefence-1,))).numpy()
         w = np.abs(w) / np.linalg.norm(w, ord=1, axis=1).reshape(num_prefence-1, 1)
         return np.concatenate(([fixed_w], w))
+    elif fixed_w is not None and num_prefence==1:
+        return np.array([fixed_w])
     else:
-        w = np.random.randn(num_prefence-1, reward_size)
-        w = np.abs(w) / np.linalg.norm(w, ord=1, axis=1).reshape(num_prefence-1, 1)
+        sigmas = torch.Tensor([0.1]*len(pref_param))
+        w = torch.distributions.normal.Normal(torch.Tensor(pref_param), sigmas)
+        w = w.sample(torch.Size((num_prefence,))).numpy()
+        w = np.abs(w) / np.linalg.norm(w, ord=1, axis=1).reshape(num_prefence, 1)
         return w
+    return w
 
-def renew_w(preferences, dim, w=None):
-    if w is None:
-        w = np.random.randn(reward_size)
-        w = np.abs(w) / np.linalg.norm(w, ord=1, axis=1).reshape(num_prefence-1, 1)
-        preferences[dim] = w
-    else:
-        preferences[dim] = w
+def renew_w(preferences, dim, pref_param):
+    sigmas = torch.Tensor([0.1]*len(pref_param))
+    w = torch.distributions.normal.Normal(torch.Tensor(pref_param), sigmas)
+    w = w.sample(torch.Size((1,))).numpy()
+    w = np.abs(w) / np.linalg.norm(w, ord=1, axis=1)
+    preferences[dim] = w
     return preferences
 
 if __name__ == '__main__':
@@ -181,16 +184,10 @@ if __name__ == '__main__':
     sample_step = 0
     sample_env_idx = 0
     recent_prob = deque(maxlen=10)
-
-    # guessed_w = np.array([0.20, 0.20, 0.20, 0.20, 0.20])
-    # guessed_w = np.array([1.0, 0.0, 0.0, 0.0, 0.0])
-    # guessed_w = np.array([0.0, 1.0, 0.0, 0.0, 0.0])
-    # guessed_w = np.array([0.0, 0.0, 1.0, 0.0, 0.0])
-    # guessed_w = np.array([0.30, 0.10, 0.10, 0.20, 0.30])
-    # guessed_w = np.array([0.20, 0.20, 0.20, 0.20, 0.20])
-    guessed_w = UNKNOWN_PREFERENCE
     
-    explore_w = generate_w(args.num_worker, reward_size, guessed_w)
+    pref_param = np.array([0.2, 0.2, 0.2, 0.2, 0.2])
+
+    explore_w = generate_w(args.num_worker, pref_param)
 
     while True:
         total_state, total_reward, total_target_reward, total_done, total_action, total_moreward\
@@ -209,16 +206,15 @@ if __name__ == '__main__':
             for parent_conn in parent_conns:
                 s, r, d, rd, mor, sc = parent_conn.recv()
                 next_states.append(s)
-                rewards.append(guessed_w.dot(mor))
+                rewards.append(explore_w.dot(mor))
                 target_rewards.append(UNKNOWN_PREFERENCE.dot(mor))
                 dones.append(d)
                 real_dones.append(rd)
                 morewards.append(mor)
                 scores.append(sc)
                 # resample if done
-                if cnt > 0 and d:
-                    explore_w = renew_w(explore_w, cnt)
-                    print("renew the preference for exploration", explore_w)
+                if d:
+                    explore_w = renew_w(explore_w, cnt, pref_param)
 
             next_states = np.stack(next_states)
             rewards = np.hstack(rewards) * args.reward_scale
@@ -260,10 +256,12 @@ if __name__ == '__main__':
         # [w1, w1, w1, w2, w2, w2, w3, w3, w3...]
         # [s1, s2, s3, s1, s2, s3, s1, s2, s3...]
         # expand w batch
-        update_w = generate_w(args.sample_size, reward_size, guessed_w)
-        real_w = generate_w(args.sample_size, reward_size, UNKNOWN_PREFERENCE)
+        update_w = generate_w(args.sample_size, pref_param)
+        real_w = np.array([UNKNOWN_PREFERENCE]*args.sample_size)
         real_w = real_w.repeat(len(total_state)*args.num_worker, axis=0)
-        update_w = update_w.repeat(len(total_state)*args.num_worker, axis=0)
+        
+        update_w = update_w.repeat(args.num_worker, axis=0)
+        
         # expand state batch
         total_state = total_state * args.sample_size
         total_state = np.stack(total_state).transpose(
@@ -283,7 +281,6 @@ if __name__ == '__main__':
         total_done = np.stack(total_done).transpose().reshape([-1])
 
         total_target = []
-        total_adv = []
 
         num_step = len(total_done)
 
@@ -294,14 +291,12 @@ if __name__ == '__main__':
                               total_target_utility[idx*num_step+idw*ofs : (idx+1)*num_step+idw*ofs])
                 total_target.append(target)
 
-        guessed_w = agent.find_preference(
-            total_state,
+        pref_param = agent.find_preference(
             update_w,
             np.hstack(total_target),
-            total_action)
+            pref_param)
 
-        explore_w = renew_w(explore_w, 0, guessed_w)
-        print("update preference to {}".format(explore_w))
+        explore_w = renew_w(explore_w, 0, pref_param)
 
         if sample_episode >= args.episode_limit:
             break

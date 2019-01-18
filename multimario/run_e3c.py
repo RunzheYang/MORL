@@ -77,6 +77,8 @@ parser.add_argument('--learning-rate', type=float, default=2.5e-4, metavar='LR',
                     help='initial learning rate (default 2.5e-4)')
 parser.add_argument('--lr-schedule', action='store_true',
                     help='enable learning rate scheduling')
+parser.add_argument('--enve-start', type=int, default=3e5, metavar='ESTART',
+                    help='minimum number of naive traning before envelope')
 parser.add_argument('--entropy-coef', type=float, default=0.02, metavar='ENTROPY',
                     help='entropy coefficient for regurization (default 0.2)')
 parser.add_argument('--gamma', type=float, default=0.99, metavar='GAMMA',
@@ -110,7 +112,7 @@ def make_train_data(args, reward, done, value, next_value, reward_size):
     return discounted_return
 
 
-def envelope_operator(args, preference, target, value, reward_size):
+def envelope_operator(args, preference, target, value, reward_size, g_step):
     
     # [w1, w1, w1, w1, w1, w1, w2, w2, w2, w2, w2, w2...]
     # [s1, s2, s3, u1, u2, u3, s1, s2, s3, u1, u2, u3...]
@@ -118,11 +120,11 @@ def envelope_operator(args, preference, target, value, reward_size):
     # weak envelope calculation
     ofs = args.num_worker * args.num_step
     target = np.concatenate(target).reshape(-1, reward_size)
-    prod = np.inner(target, preference)
-    envemask = prod.transpose().reshape(args.sample_size, -1, ofs).argmax(axis=1)
-    envemask = envemask.reshape(-1) * ofs + np.array(list(range(ofs))*args.sample_size)
-    target = target[envemask]
-
+    if g_step > args.enve_start:
+        prod = np.inner(target, preference)
+        envemask = prod.transpose().reshape(args.sample_size, -1, ofs).argmax(axis=1)
+        envemask = envemask.reshape(-1) * ofs + np.array(list(range(ofs))*args.sample_size)
+        target = target[envemask]
     # For Actor
     adv = target - value
 
@@ -137,12 +139,12 @@ def generate_w(num_prefence, reward_size, fixed_w=None):
         return np.concatenate(([fixed_w], w))
     else:
         w = np.random.randn(num_prefence-1, reward_size)
-        w = np.abs(w) / np.linalg.norm(w, ord=1, axis=1).reshape(num_prefence-1, 1)
+        w = np.abs(w) / np.linalg.norm(w, ord=1, axis=1).reshape(num_prefence, 1)
         return w
 
 def renew_w(preferences, dim):
     w = np.random.randn(reward_size)
-    w = np.abs(w) / np.linalg.norm(w, ord=1, axis=1).reshape(num_prefence-1, 1)
+    w = np.abs(w) / np.linalg.norm(w, ord=1, axis=1)
     preferences[dim] = w
     return preferences
 
@@ -329,7 +331,7 @@ if __name__ == '__main__':
                                   reward_size)
                     total_target.append(target)
 
-            total_target, total_adv = envelope_operator(args, update_w, total_target, value, reward_size)
+            total_target, total_adv = envelope_operator(args, update_w, total_target, value, reward_size, global_step)
 
             agent.train_model(
                 total_state,
