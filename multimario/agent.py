@@ -184,7 +184,7 @@ class NaiveMoActorAgent(object):
 
         with torch.no_grad():
             w_batch = torch.FloatTensor(w_batch).to(self.device)
-            target_batch = torch.FloatTensor(pref_param).to(self.device)
+            target_batch = torch.FloatTensor(pref_param).to(self.device)/200
 
         # compute loss
         pref_param = torch.FloatTensor(pref_param).to(self.device)
@@ -198,7 +198,7 @@ class NaiveMoActorAgent(object):
         loss = pref_loss.mean()
         loss.backward()
         
-        eta = 0.01
+        eta = 0.1
         pref_param = pref_param + eta * pref_param.grad
         pref_param = simplex_proj(pref_param.detach().numpy())
         print("update prefreence parameters to", pref_param)

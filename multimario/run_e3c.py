@@ -77,7 +77,7 @@ parser.add_argument('--learning-rate', type=float, default=2.5e-4, metavar='LR',
                     help='initial learning rate (default 2.5e-4)')
 parser.add_argument('--lr-schedule', action='store_true',
                     help='enable learning rate scheduling')
-parser.add_argument('--enve-start', type=int, default=3e5, metavar='ESTART',
+parser.add_argument('--enve-start', type=int, default=2e7, metavar='ESTART',
                     help='minimum number of naive traning before envelope')
 parser.add_argument('--entropy-coef', type=float, default=0.02, metavar='ENTROPY',
                     help='entropy coefficient for regurization (default 0.2)')
@@ -276,6 +276,7 @@ if __name__ == '__main__':
                 writer.add_scalar('data/death_penalty', sample_morall[2], sample_episode)
                 writer.add_scalar('data/coin_reward', sample_morall[3], sample_episode)
                 writer.add_scalar('data/enemy_reward', sample_morall[4], sample_episode)
+                writer.add_scalar('data/tempreture', agent.T, sample_episode)
                 sample_rall = 0
                 sample_step = 0
                 sample_morall = 0
