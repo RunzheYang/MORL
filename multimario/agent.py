@@ -268,6 +268,7 @@ class EnveMoActorAgent(object):
         self.input_size = input_size
         self.num_step = args.num_step
         self.use_gae = args.use_gae
+        self.training = args.training
         self.optimizer = optim.Adam(
             self.model.parameters(), lr=args.learning_rate)
         self.standardization = args.standardization
@@ -288,7 +289,10 @@ class EnveMoActorAgent(object):
         w = torch.Tensor(preference).to(self.device)
         w = w.float()
         policy, value = self.model(state, w)
-        policy = F.softmax(policy/self.T, dim=-1).data.cpu().numpy()
+        if self.training:
+            policy = F.softmax(policy/self.T, dim=-1).data.cpu().numpy()
+        else:
+            policy = F.softmax(policy, dim=-1).data.cpu().numpy()
 
         action = self.random_choice_prob_index(policy)
 
