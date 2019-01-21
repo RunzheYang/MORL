@@ -77,7 +77,7 @@ parser.add_argument('--learning-rate', type=float, default=2.5e-4, metavar='LR',
                     help='initial learning rate (default 2.5e-4)')
 parser.add_argument('--lr-schedule', action='store_true',
                     help='enable learning rate scheduling')
-parser.add_argument('--enve-start', type=int, default=0, metavar='ESTART',
+parser.add_argument('--enve-start', type=int, default=1e5, metavar='ESTART',
                     help='minimum number of naive traning before envelope')
 parser.add_argument('--entropy-coef', type=float, default=0.02, metavar='ENTROPY',
                     help='entropy coefficient for regurization (default 0.2)')
