@@ -1,5 +1,5 @@
 ## multi-obejcetive super mario bros
-## created by Runzhe Yang on Jan. 17, 2019
+## created by Runzhe Yang on Jan. 21, 2019
 
 import gym
 import os
@@ -28,14 +28,14 @@ from nes_py.wrappers import BinarySpaceToDiscreteSpaceEnv
 from gym_super_mario_bros.actions import SIMPLE_MOVEMENT
 
 from env import MoMarioEnv
-from agent import NaiveMoActorAgent
+from agent import EnveMoActorAgent
 
 parser = argparse.ArgumentParser(description='MORL')
 
 # set envrioment id and directory
 parser.add_argument('--env-id', default='SuperMarioBros-v2', metavar='ENVID',
                     help='Super Mario Bros Game 1-2 (Skip Frame) v0-v3')
-parser.add_argument('--name', default='n3c', metavar='name',
+parser.add_argument('--name', default='e3c', metavar='name',
                     help='specify the model name')
 parser.add_argument('--logdir', default='logs/', metavar='LOG',
                     help='path for recording training informtion')
@@ -53,6 +53,8 @@ parser.add_argument('--single-stage', action='store_true',
                     help='only train on one stage ')
 parser.add_argument('--load-model', action='store_true',
                     help='load previous model (default FALSE)')
+parser.add_argument('--training', action='store_true',
+                    help='run for training (default FALSE)')
 parser.add_argument('--render', action='store_true',
                     help='render the game (default FALSE)')
 parser.add_argument('--standardization', action='store_true',
@@ -65,12 +67,18 @@ parser.add_argument('--episode-limit', type=int, default=30, metavar='EL',
 # hyperparameters
 parser.add_argument('--lam', type=float, default=0.95, metavar='LAM',
                     help='lambda for gae (default 0.95)')
+parser.add_argument('--beta', type=float, default=0.95, metavar='LAM',
+                    help='beta for balancing l1 and l2 loss')
 parser.add_argument('--num-step', type=int, default=50, metavar='NSTEP',
                     help='number of gae steps (default 5)')
 parser.add_argument('--max-step', type=int, default=1.15e8, metavar='MSTEP',
                     help='max number of steps for learning rate scheduling (default 1.15e8)')
+parser.add_argument('--T', type=float, default=1.0, metavar='TEMP',
+                    help='softmax with tempreture to encorage exploration')
 parser.add_argument('--learning-rate', type=float, default=2.5e-4, metavar='LR',
                     help='initial learning rate (default 2.5e-4)')
+parser.add_argument('--enve-start', type=int, default=1e5, metavar='ESTART',
+                    help='minimum number of naive traning before envelope')
 parser.add_argument('--lr-schedule', action='store_true',
                     help='enable learning rate scheduling')
 parser.add_argument('--entropy-coef', type=float, default=0.02, metavar='ENTROPY',
@@ -146,7 +154,7 @@ if __name__ == '__main__':
                     args.name, current_time)
     load_model_path = 'saved/{}'.format(args.prev_model)
 
-    agent = NaiveMoActorAgent(
+    agent = EnveMoActorAgent(
         args,
         input_size,
         output_size,
@@ -262,23 +270,11 @@ if __name__ == '__main__':
         
         update_w = update_w.repeat(args.num_worker, axis=0)
         
-        # expand state batch
-        total_state = total_state * args.sample_size
-        total_state = np.stack(total_state).transpose(
-            [1, 0, 2, 3, 4]).reshape([-1, 4, 84, 84])
-        
         # calculate utility from reward vectors
-        total_moreward = np.array(
-                            total_moreward*args.sample_size
-                         ).transpose([1, 0, 2]).reshape([-1, reward_size])
+        total_moreward = np.array(total_moreward).transpose([1, 0, 2]).reshape([-1, reward_size])
+        total_moreward = np.tile(total_moreward, (args.sample_size, 1))
         # total_utility = np.sum(total_moreward * update_w, axis=-1).reshape([-1])
         total_target_utility = np.sum(total_moreward * real_w, axis=-1).reshape([-1])
-        # expand action batch
-        total_action = total_action * args.sample_size
-        total_action = np.stack(total_action).transpose().reshape([-1])
-        # expand done batch
-        total_done = total_done * args.sample_size
-        total_done = np.stack(total_done).transpose().reshape([-1])
 
         total_target = []
 

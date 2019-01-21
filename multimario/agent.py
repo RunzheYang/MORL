@@ -198,7 +198,7 @@ class NaiveMoActorAgent(object):
         loss = pref_loss.mean()
         loss.backward()
         
-        eta = 0.1
+        eta = 1.0
         pref_param = pref_param + eta * pref_param.grad
         pref_param = simplex_proj(pref_param.detach().numpy())
         print("update prefreence parameters to", pref_param)
@@ -323,6 +323,35 @@ class EnveMoActorAgent(object):
 
     def anneal(self):
         self.T = 0.01+0.99*self.T
+
+    def find_preference(
+            self,
+            w_batch,
+            target_batch,
+            pref_param):
+
+        with torch.no_grad():
+            w_batch = torch.FloatTensor(w_batch).to(self.device)
+            target_batch = torch.FloatTensor(pref_param).to(self.device)/200
+
+        # compute loss
+        pref_param = torch.FloatTensor(pref_param).to(self.device)
+        pref_param.requires_grad = True
+        sigmas = torch.Tensor([0.1]*len(pref_param))
+        dist = torch.distributions.normal.Normal(pref_param, sigmas)
+        pref_loss = dist.log_prob(w_batch).sum(dim=1) * target_batch
+
+        self.optimizer.zero_grad()
+        # Total loss
+        loss = pref_loss.mean()
+        loss.backward()
+        
+        eta = 1.0
+        pref_param = pref_param + eta * pref_param.grad
+        pref_param = simplex_proj(pref_param.detach().numpy())
+        print("update prefreence parameters to", pref_param)
+
+        return pref_param
 
     def train_model(
             self,
