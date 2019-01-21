@@ -291,7 +291,6 @@ if __name__ == '__main__':
             # WRONG!!! total_state = total_state * args.sample_size
             total_state = np.stack(total_state).transpose(
                 [1, 0, 2, 3, 4]).reshape([-1, 4, 84, 84])
-            total_state = np.array(total_state.tolist() * args.sample_size)
             total_state = np.tile(total_state, (args.sample_size, 1, 1, 1))
             # expand next_state batch
             # WRONG!!! total_next_state = total_next_state * args.sample_size
