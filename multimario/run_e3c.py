@@ -282,30 +282,31 @@ if __name__ == '__main__':
                 sample_morall = 0
 
         if args.training:
-            # [w1, w1, w1, w2, w2, w2, w3, w3, w3...]
-            # [s1, s2, s3, s1, s2, s3, s1, s2, s3...]
+            # [w1, w1, w1, w1, w1, w1, w2, w2, w2, w2, w2, w2...]
+            # [s1, s2, s3, u1, u2, u3, s1, s2, s3, u1, u2, u3...]
             # expand w batch
             update_w = generate_w(args.sample_size, reward_size, fixed_w)
-            total_update_w = update_w.repeat(len(total_state)*args.num_worker, axis=0)
+            total_update_w = update_w.repeat(args.num_step*args.num_worker, axis=0)
             # expand state batch
-            total_state = total_state * args.sample_size
+            # WRONG!!! total_state = total_state * args.sample_size
             total_state = np.stack(total_state).transpose(
                 [1, 0, 2, 3, 4]).reshape([-1, 4, 84, 84])
+            total_state = np.array(total_state.tolist() * args.sample_size)
             # expand next_state batch
-            total_next_state = total_next_state * args.sample_size
+            # WRONG!!! total_next_state = total_next_state * args.sample_size
             total_next_state = np.stack(total_next_state).transpose(
                 [1, 0, 2, 3, 4]).reshape([-1, 4, 84, 84])
+            total_next_state = np.array(total_next_state.tolist() * args.sample_size)
             # calculate utility from reward vectors
-            total_moreward = np.array(
-                                total_moreward*args.sample_size
-                             ).transpose([1, 0, 2]).reshape([-1, reward_size])
+            total_moreward = np.array(total_moreward).transpose([1, 0, 2]).reshape([-1, reward_size])
+            total_moreward = np.array(total_moreward.tolist() * args.sample_size)
             total_utility = np.sum(total_moreward * total_update_w, axis=-1).reshape([-1])
             # expand action batch
-            total_action = total_action * args.sample_size
             total_action = np.stack(total_action).transpose().reshape([-1])
+            total_action = np.array(total_action.tolist() * args.sample_size)
             # expand done batch
-            total_done = total_done * args.sample_size
             total_done = np.stack(total_done).transpose().reshape([-1])
+            total_done = np.array(total_done.tolist() * args.sample_size)
 
             value, next_value, policy = agent.forward_transition(
                 total_state, total_next_state, total_update_w)
