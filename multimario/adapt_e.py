@@ -61,7 +61,7 @@ parser.add_argument('--standardization', action='store_true',
                     help='load previous model (default FALSE)')
 parser.add_argument('--num-worker', type=int, default=1, metavar='NWORKER',
                     help='number of wokers (defualt 1 for adaptation)')
-parser.add_argument('--episode-limit', type=int, default=30, metavar='EL',
+parser.add_argument('--episode-limit', type=int, default=100, metavar='EL',
                     help='upper bound for the number of episodes to adapte the preference')
 
 # hyperparameters
@@ -107,7 +107,7 @@ def make_train_data(num_step, reward):
 
 def generate_w(num_prefence, pref_param, fixed_w=None):
     if fixed_w is not None and num_prefence>1:
-        sigmas = torch.Tensor([0.1]*len(pref_param))
+        sigmas = torch.Tensor([0.01]*len(pref_param))
         w = torch.distributions.normal.Normal(torch.Tensor(pref_param), sigmas)
         w = w.sample(torch.Size((num_prefence-1,))).numpy()
         w = np.abs(w) / np.linalg.norm(w, ord=1, axis=1).reshape(num_prefence-1, 1)
@@ -115,7 +115,7 @@ def generate_w(num_prefence, pref_param, fixed_w=None):
     elif fixed_w is not None and num_prefence==1:
         return np.array([fixed_w])
     else:
-        sigmas = torch.Tensor([0.1]*len(pref_param))
+        sigmas = torch.Tensor([0.01]*len(pref_param))
         w = torch.distributions.normal.Normal(torch.Tensor(pref_param), sigmas)
         w = w.sample(torch.Size((num_prefence,))).numpy()
         w = np.abs(w) / np.linalg.norm(w, ord=1, axis=1).reshape(num_prefence, 1)
@@ -123,7 +123,7 @@ def generate_w(num_prefence, pref_param, fixed_w=None):
     return w
 
 def renew_w(preferences, dim, pref_param):
-    sigmas = torch.Tensor([0.1]*len(pref_param))
+    sigmas = torch.Tensor([0.01]*len(pref_param))
     w = torch.distributions.normal.Normal(torch.Tensor(pref_param), sigmas)
     w = w.sample(torch.Size((1,))).numpy()
     w = np.abs(w) / np.linalg.norm(w, ord=1, axis=1)
@@ -195,106 +195,128 @@ if __name__ == '__main__':
     
     pref_param = np.array([0.2, 0.2, 0.2, 0.2, 0.2])
 
+    REPEAT = 10
+
     explore_w = generate_w(args.num_worker, pref_param)
 
     while True:
-        total_state, total_reward, total_target_reward, total_done, total_action, total_moreward\
-            = [], [], [], [], [], []
-
-
-        while True:
-            actions = agent.get_action(states, explore_w)
-
-            for parent_conn, action in zip(parent_conns, actions):
-                parent_conn.send(action)
-
-            next_states, rewards, target_rewards, dones, real_dones, morewards, scores\
-                = [], [], [], [], [], [], []
-            cnt = 0
-            for parent_conn in parent_conns:
-                s, r, d, rd, mor, sc = parent_conn.recv()
-                next_states.append(s)
-                rewards.append(explore_w.dot(mor))
-                target_rewards.append(UNKNOWN_PREFERENCE.dot(mor))
-                dones.append(d)
-                real_dones.append(rd)
-                morewards.append(mor)
-                scores.append(sc)
-                # resample if done
-                if d:
-                    explore_w = renew_w(explore_w, cnt, pref_param)
-
-            next_states = np.stack(next_states)
-            rewards = np.hstack(rewards) * args.reward_scale
-            target_rewards = np.hstack(target_rewards) * args.reward_scale
-            dones = np.hstack(dones)
-            real_dones = np.hstack(real_dones)
-            morewards = np.stack(morewards) * args.reward_scale
-
-            total_state.append(states)
-            total_reward.append(rewards)
-            total_target_reward.append(target_rewards)
-            total_done.append(dones)
-            total_action.append(actions)
-            total_moreward.append(morewards)
-
-            states = next_states[:, :, :, :]
-
-            sample_rall += rewards[sample_env_idx]
-            sample_target_rall += target_rewards[sample_env_idx]
-            sample_morall = sample_morall + morewards[sample_env_idx]
-            sample_step += 1
-            if real_dones[sample_env_idx]:
-                sample_episode += 1
-                writer.add_scalar('data/reward', sample_rall, sample_episode)
-                writer.add_scalar('data/target_rewards', sample_target_rall, sample_episode)
-                writer.add_scalar('data/step', sample_step, sample_episode)
-                writer.add_scalar('data/score', scores[sample_env_idx], sample_episode)
-                writer.add_scalar('data/x_pos_reward', sample_morall[0], sample_episode)
-                writer.add_scalar('data/time_penalty', sample_morall[1], sample_episode)
-                writer.add_scalar('data/death_penalty', sample_morall[2], sample_episode)
-                writer.add_scalar('data/coin_reward', sample_morall[3], sample_episode)
-                writer.add_scalar('data/enemy_reward', sample_morall[4], sample_episode)
-                sample_rall = 0
-                sample_target_rall = 0
-                sample_step = 0
-                sample_morall = 0
-                break
-
-        # [w1, w1, w1, w2, w2, w2, w3, w3, w3...]
-        # [s1, s2, s3, s1, s2, s3, s1, s2, s3...]
-        # expand w batch
-        update_w = generate_w(args.sample_size, pref_param)
-        real_w = np.array([UNKNOWN_PREFERENCE]*args.sample_size)
-        real_w = real_w.repeat(len(total_state)*args.num_worker, axis=0)
         
-        update_w = update_w.repeat(args.num_worker, axis=0)
-        
-        # calculate utility from reward vectors
-        total_moreward = np.array(total_moreward).transpose([1, 0, 2]).reshape([-1, reward_size])
-        total_moreward = np.tile(total_moreward, (args.sample_size, 1))
-        # total_utility = np.sum(total_moreward * update_w, axis=-1).reshape([-1])
-        total_target_utility = np.sum(total_moreward * real_w, axis=-1).reshape([-1])
+        max_target = 0
+        acc_target = 0
+        best_param = 0
+        rep_target = []
+        rep_explore_w = []
 
-        total_target = []
+        for _ in range(REPEAT):
 
-        num_step = len(total_done)
+            total_state, total_reward, total_target_reward, total_done, total_action, total_moreward\
+                = [], [], [], [], [], []
+            
+            while True:
+                actions = agent.get_action(states, explore_w)
 
-        for idw in range(args.sample_size):
-            ofs = args.num_worker * num_step
-            for idx in range(args.num_worker):
-                target = make_train_data(num_step,
-                              total_target_utility[idx*num_step+idw*ofs : (idx+1)*num_step+idw*ofs])
-                total_target.append(target)
+                for parent_conn, action in zip(parent_conns, actions):
+                    parent_conn.send(action)
+
+                next_states, rewards, target_rewards, dones, real_dones, morewards, scores\
+                    = [], [], [], [], [], [], []
+                cnt = 0
+                for parent_conn in parent_conns:
+                    s, r, d, rd, mor, sc = parent_conn.recv()
+                    next_states.append(s)
+                    rewards.append(explore_w.dot(mor))
+                    target_rewards.append(UNKNOWN_PREFERENCE.dot(mor))
+                    dones.append(d)
+                    real_dones.append(rd)
+                    morewards.append(mor)
+                    scores.append(sc)
+                    # resample if done
+                    # if d:
+                    #     explore_w = renew_w(explore_w, cnt, pref_param)
+
+                next_states = np.stack(next_states)
+                rewards = np.hstack(rewards) * args.reward_scale
+                target_rewards = np.hstack(target_rewards) * args.reward_scale
+                dones = np.hstack(dones)
+                real_dones = np.hstack(real_dones)
+                morewards = np.stack(morewards) * args.reward_scale
+
+                total_state.append(states)
+                total_reward.append(rewards)
+                total_target_reward.append(target_rewards)
+                total_done.append(dones)
+                total_action.append(actions)
+                total_moreward.append(morewards)
+
+                states = next_states[:, :, :, :]
+
+                sample_rall += rewards[sample_env_idx]
+                sample_target_rall += target_rewards[sample_env_idx]
+                sample_morall = sample_morall + morewards[sample_env_idx]
+                sample_step += 1
+                if real_dones[sample_env_idx]:
+                    sample_episode += 1
+                    writer.add_scalar('data/reward', sample_rall, sample_episode)
+                    writer.add_scalar('data/target_rewards', sample_target_rall, sample_episode)
+                    writer.add_scalar('data/step', sample_step, sample_episode)
+                    writer.add_scalar('data/score', scores[sample_env_idx], sample_episode)
+                    writer.add_scalar('data/x_pos_reward', sample_morall[0], sample_episode)
+                    writer.add_scalar('data/time_penalty', sample_morall[1], sample_episode)
+                    writer.add_scalar('data/death_penalty', sample_morall[2], sample_episode)
+                    writer.add_scalar('data/coin_reward', sample_morall[3], sample_episode)
+                    writer.add_scalar('data/enemy_reward', sample_morall[4], sample_episode)
+                    sample_rall = 0
+                    sample_target_rall = 0
+                    sample_step = 0
+                    sample_morall = 0
+                    break
+
+            # [w1, w1, w1, w2, w2, w2, w3, w3, w3...]
+            # [s1, s2, s3, s1, s2, s3, s1, s2, s3...]
+            # expand w batch
+            real_w = np.array([UNKNOWN_PREFERENCE]*args.sample_size)
+            real_w = real_w.repeat(len(total_state)*args.num_worker, axis=0)
+            
+            # calculate utility from reward vectors
+            total_moreward = np.array(total_moreward).transpose([1, 0, 2]).reshape([-1, reward_size])
+            total_moreward = np.tile(total_moreward, (args.sample_size, 1))
+            # total_utility = np.sum(total_moreward * update_w, axis=-1).reshape([-1])
+            total_target_utility = np.sum(total_moreward * real_w, axis=-1).reshape([-1])
+
+            total_target = []
+
+            num_step = len(total_done)
+
+            for idw in range(args.sample_size):
+                ofs = args.num_worker * num_step
+                for idx in range(args.num_worker):
+                    target = make_train_data(num_step,
+                                  total_target_utility[idx*num_step+idw*ofs : (idx+1)*num_step+idw*ofs])
+                    total_target.append(target)
+
+            acc_target += target
+            rep_target.append(target)
+            rep_explore_w.append(explore_w)
+
+        acc_target = acc_target/REPEAT
+
+        print("avg performance", acc_target)
+
+        writer.add_scalar('data/avg_target_rewards', acc_target, sample_episode)
+
+        if acc_target > max_target:
+            max_target = acc_target
+            best_param = pref_param
 
         pref_param = agent.find_preference(
-            update_w,
-            np.hstack(total_target),
+            np.stack(rep_explore_w),
+            np.hstack(rep_target),
             pref_param)
 
         explore_w = renew_w(explore_w, 0, pref_param)
 
         if sample_episode >= args.episode_limit:
+            print("the best param:", best_param)
             break
 
 
