@@ -200,7 +200,7 @@ class NaiveMoActorAgent(object):
         
         eta = 2.0
         pref_param = pref_param + eta * pref_param.grad
-        pref_param = simplex_proj(pref_param.detach().numpy())
+        pref_param = simplex_proj(pref_param.detach().cpu().cpu().numpy())
         print("update prefreence parameters to", pref_param)
 
         return pref_param
@@ -348,7 +348,7 @@ class EnveMoActorAgent(object):
         
         eta = 2.0
         pref_param = pref_param + eta * pref_param.grad
-        pref_param = simplex_proj(pref_param.detach().numpy())
+        pref_param = simplex_proj(pref_param.detach().cpu().numpy())
         print("update prefreence parameters to", pref_param)
 
         return pref_param
