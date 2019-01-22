@@ -199,9 +199,10 @@ if __name__ == '__main__':
 
     explore_w = generate_w(args.num_worker, pref_param)
 
+    max_target = 0
+
     while True:
         
-        max_target = 0
         acc_target = 0
         best_param = 0
         rep_target = []
@@ -292,6 +293,7 @@ if __name__ == '__main__':
                 for idx in range(args.num_worker):
                     target = make_train_data(num_step,
                                   total_target_utility[idx*num_step+idw*ofs : (idx+1)*num_step+idw*ofs])
+                    target = scores[0]
                     total_target.append(target)
 
             acc_target += target
