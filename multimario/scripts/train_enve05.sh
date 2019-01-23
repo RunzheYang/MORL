@@ -1,4 +1,4 @@
-python run_e3c.py \
+python run_e3c_double.py \
 	--env-id SuperMarioBros-v2 \
 	--use-cuda \
 	--use-gae \
