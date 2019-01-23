@@ -245,7 +245,6 @@ if __name__ == '__main__':
                 # resample if done
                 if cnt > 0 and rd:
                     explore_w = renew_w(explore_w, cnt)
-                    print("renew the preference for exploration", explore_w)
                 cnt += 1
 
             next_states = np.stack(next_states)
