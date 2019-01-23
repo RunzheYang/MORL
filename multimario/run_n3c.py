@@ -125,7 +125,7 @@ def generate_w(num_prefence, reward_size, fixed_w=None):
 
 def renew_w(preferences, dim):
     w = np.random.randn(reward_size)
-    w = np.abs(w) / np.linalg.norm(w, ord=1, axis=1)
+    w = np.abs(w) / np.linalg.norm(w, ord=1, axis=0)
     preferences[dim] = w
     return preferences
 

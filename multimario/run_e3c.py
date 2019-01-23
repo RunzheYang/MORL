@@ -144,7 +144,7 @@ def generate_w(num_prefence, reward_size, fixed_w=None):
 
 def renew_w(preferences, dim):
     w = np.random.randn(reward_size)
-    w = np.abs(w) / np.linalg.norm(w, ord=1, axis=1)
+    w = np.abs(w) / np.linalg.norm(w, ord=1, axis=0)
     preferences[dim] = w
     return preferences
 
@@ -289,12 +289,10 @@ if __name__ == '__main__':
             update_w = generate_w(args.sample_size, reward_size, fixed_w)
             total_update_w = update_w.repeat(args.num_step*args.num_worker, axis=0)
             # expand state batch
-            # WRONG!!! total_state = total_state * args.sample_size
             total_state = np.stack(total_state).transpose(
                 [1, 0, 2, 3, 4]).reshape([-1, 4, 84, 84])
             total_state = np.tile(total_state, (args.sample_size, 1, 1, 1))
             # expand next_state batch
-            # WRONG!!! total_next_state = total_next_state * args.sample_size
             total_next_state = np.stack(total_next_state).transpose(
                 [1, 0, 2, 3, 4]).reshape([-1, 4, 84, 84])
             total_next_state = np.tile(total_next_state, (args.sample_size, 1, 1, 1))
