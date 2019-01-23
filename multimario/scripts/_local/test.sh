@@ -14,6 +14,7 @@ python run_e3c.py \
 	--load-model \
 	--prev-model SuperMarioBros-v2_e3c_b95_Jan21_08-38-27.model \
 	--use-gae \
+	--render \
 	--life-done \
 	--single-stage \
 	--standardization \

@@ -227,6 +227,7 @@ if __name__ == '__main__':
                 if cnt > 0 and d:
                     explore_w = renew_w(explore_w, cnt)
                     print("renew the preference for exploration", explore_w)
+                cnt += 1
 
             next_states = np.stack(next_states)
             rewards = np.hstack(rewards) * args.reward_scale
@@ -267,24 +268,23 @@ if __name__ == '__main__':
             update_w = generate_w(args.sample_size, reward_size, fixed_w)
             update_w = update_w.repeat(len(total_state)*args.num_worker, axis=0)
             # expand state batch
-            total_state = total_state * args.sample_size
             total_state = np.stack(total_state).transpose(
                 [1, 0, 2, 3, 4]).reshape([-1, 4, 84, 84])
+            total_state = np.tile(total_state, (args.sample_size, 1, 1, 1))
             # expand next_state batch
-            total_next_state = total_next_state * args.sample_size
             total_next_state = np.stack(total_next_state).transpose(
                 [1, 0, 2, 3, 4]).reshape([-1, 4, 84, 84])
+            total_next_state = np.tile(total_next_state, (args.sample_size, 1, 1, 1))
             # calculate utility from reward vectors
-            total_moreward = np.array(
-                                total_moreward*args.sample_size
-                             ).transpose([1, 0, 2]).reshape([-1, reward_size])
+            total_moreward = np.array(total_moreward).transpose([1, 0, 2]).reshape([-1, reward_size])
+            total_moreward = np.tile(total_moreward, (args.sample_size, 1))
             total_utility = np.sum(total_moreward * update_w, axis=-1).reshape([-1])
             # expand action batch
-            total_action = total_action * args.sample_size
             total_action = np.stack(total_action).transpose().reshape([-1])
+            total_action = np.tile(total_action, args.sample_size)
             # expand done batch
-            total_done = total_done * args.sample_size
             total_done = np.stack(total_done).transpose().reshape([-1])
+            total_done = np.tile(total_done, args.sample_size)
 
             value, next_value, policy = agent.forward_transition(
                 total_state, total_next_state, update_w)

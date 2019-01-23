@@ -251,6 +251,7 @@ if __name__ == '__main__':
                 if cnt > 0 and d:
                     explore_w = renew_w(explore_w, cnt)
                     print("renew the preference for exploration", explore_w)
+                cnt += 1
 
             next_states = np.stack(next_states)
             rewards = np.hstack(rewards) * args.reward_scale

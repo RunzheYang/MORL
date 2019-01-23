@@ -212,7 +212,7 @@ if __name__ == '__main__':
 
                 next_states, rewards, target_rewards, dones, real_dones, morewards, scores\
                     = [], [], [], [], [], [], []
-                cnt = 0
+                
                 for parent_conn in parent_conns:
                     s, r, d, rd, mor, sc = parent_conn.recv()
                     next_states.append(s)

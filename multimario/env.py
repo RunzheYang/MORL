@@ -134,6 +134,8 @@ class MoMarioEnv(Process):
 
             self.steps += 1
 
+            score = info['score']+self.stage_bonus
+
             if done:
                 self.recent_rlist.append(self.rall)
                 self.recent_morlist.append(self.morall)
@@ -142,7 +144,7 @@ class MoMarioEnv(Process):
                         self.episode,
                         self.env_idx,
                         self.steps,
-                        info['score']+self.stage_bonus,
+                        score,
                         self.morall,
                         np.mean(
                             self.recent_morlist, axis=0),
@@ -152,7 +154,7 @@ class MoMarioEnv(Process):
                 self.history = self.reset()
 
             self.child_conn.send(
-                [self.history[:, :, :], r, force_done, done, mor, info['score']+self.stage_bonus])
+                [self.history[:, :, :], r, force_done, done, mor, score])
 
     def reset(self):
         self.steps = 0
