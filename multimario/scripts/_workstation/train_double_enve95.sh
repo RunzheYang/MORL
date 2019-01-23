@@ -1,0 +1,12 @@
+python run_e3c.py \
+	--env-id SuperMarioBros-v2 \
+	--use-cuda \
+	--use-gae \
+	--life-done \
+	--single-stage \
+	--training \
+	--standardization \
+	--num-worker 10 \
+	--sample-size 8 \
+	--beta 0.95 \
+	--name e3c_b95

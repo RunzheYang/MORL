@@ -1,5 +1,5 @@
 ## multi-obejcetive super mario bros
-## modified by Runzhe Yang on Dec. 8, 2018
+## modified by Runzhe Yang on Dec. 18, 2018
 
 import gym
 import os
@@ -28,14 +28,14 @@ from nes_py.wrappers import BinarySpaceToDiscreteSpaceEnv
 from gym_super_mario_bros.actions import SIMPLE_MOVEMENT
 
 from env import MoMarioEnv
-from agent import NaiveMoActorAgent
+from agent import EnveDoubleMoActorAgent
 
 parser = argparse.ArgumentParser(description='MORL')
 
 # set envrioment id and directory
 parser.add_argument('--env-id', default='SuperMarioBros-v2', metavar='ENVID',
                     help='Super Mario Bros Game 1-2 (Skip Frame) v0-v3')
-parser.add_argument('--name', default='n3c', metavar='name',
+parser.add_argument('--name', default='e3c', metavar='name',
                     help='specify the model name')
 parser.add_argument('--logdir', default='logs/', metavar='LOG',
                     help='path for recording training informtion')
@@ -65,6 +65,10 @@ parser.add_argument('--num-worker', type=int, default=16, metavar='NWORKER',
 # hyperparameters
 parser.add_argument('--lam', type=float, default=0.95, metavar='LAM',
                     help='lambda for gae (default 0.95)')
+parser.add_argument('--beta', type=float, default=0.95, metavar='LAM',
+                    help='beta for balancing l1 and l2 loss')
+parser.add_argument('--T', type=float, default=10, metavar='TEMP',
+                    help='softmax with tempreture to encorage exploration')
 parser.add_argument('--num-step', type=int, default=5, metavar='NSTEP',
                     help='number of gae steps (default 5)')
 parser.add_argument('--max-step', type=int, default=1.15e8, metavar='MSTEP',
@@ -73,8 +77,12 @@ parser.add_argument('--learning-rate', type=float, default=2.5e-4, metavar='LR',
                     help='initial learning rate (default 2.5e-4)')
 parser.add_argument('--lr-schedule', action='store_true',
                     help='enable learning rate scheduling')
+parser.add_argument('--enve-start', type=int, default=1e5, metavar='ESTART',
+                    help='minimum number of naive traning before envelope')
+parser.add_argument('--update-target-critic', type=int, default=1e5, metavar='UTC',
+                    help='the number of steps to update target critic')
 parser.add_argument('--entropy-coef', type=float, default=0.02, metavar='ENTROPY',
-                    help='entropy coefficient for regurization (default 0.02)')
+                    help='entropy coefficient for regurization (default 0.2)')
 parser.add_argument('--gamma', type=float, default=0.99, metavar='GAMMA',
                     help='gamma for discounted rewards (default 0.99)')
 parser.add_argument('--clip-grad-norm', type=float, default=0.5, metavar='CLIP',
@@ -84,12 +92,12 @@ parser.add_argument('--reward-scale', type=float, default=1.0, metavar='RS',
 parser.add_argument('--sample-size', type=int, default=8, metavar='SS',
                     help='number of preference samples for updating')
 
-def make_train_data(args, reward, done, value, next_value):
-    discounted_return = np.empty([args.num_step])
-
+def make_train_data(args, reward, done, value, next_value, reward_size):
+    discounted_return = np.empty([args.num_step, reward_size])
+    
     # Discounted Return
     if args.use_gae:
-        gae = 0
+        gae = np.zeros(reward_size)
         for t in range(args.num_step - 1, -1, -1):
             delta = reward[t] + args.gamma * \
                 next_value[t] * (1 - done[t]) - value[t]
@@ -97,19 +105,32 @@ def make_train_data(args, reward, done, value, next_value):
 
             discounted_return[t] = gae + value[t]
 
-        # For Actor
-        adv = discounted_return - value
-
     else:
         running_add = next_value[-1]
         for t in range(args.num_step - 1, -1, -1):
             running_add = reward[t] + args.gamma * running_add * (1 - done[t])
             discounted_return[t] = running_add
 
-        # For Actor
-        adv = discounted_return - value
+    return discounted_return
 
-    return discounted_return, adv
+
+def envelope_operator(args, preference, target, value, reward_size, g_step):
+    
+    # [w1, w1, w1, w1, w1, w1, w2, w2, w2, w2, w2, w2...]
+    # [s1, s2, s3, u1, u2, u3, s1, s2, s3, u1, u2, u3...]
+
+    # weak envelope calculation
+    ofs = args.num_worker * args.num_step
+    target = np.concatenate(target).reshape(-1, reward_size)
+    if g_step > args.enve_start:
+        prod = np.inner(target, preference)
+        envemask = prod.transpose().reshape(args.sample_size, -1, ofs).argmax(axis=1)
+        envemask = envemask.reshape(-1) * ofs + np.array(list(range(ofs))*args.sample_size)
+        target = target[envemask]
+    # For Actor
+    adv = target - value
+
+    return target, adv
 
 
 def generate_w(num_prefence, reward_size, fixed_w=None):
@@ -154,7 +175,7 @@ if __name__ == '__main__':
                     args.name, current_time)
     load_model_path = 'saved/{}'.format(args.prev_model)
 
-    agent = NaiveMoActorAgent(
+    agent = EnveDoubleMoActorAgent(
         args,
         input_size,
         output_size,
@@ -163,14 +184,17 @@ if __name__ == '__main__':
     if args.load_model:
         if args.use_cuda:
             agent.model.load_state_dict(torch.load(load_model_path))
+            agent.model_ = copy.deepcopy(agent.model)
         else:
             agent.model.load_state_dict(
                 torch.load(
                     load_model_path,
                     map_location='cpu'))
+            agent.model_ = copy.deepcopy(agent.model)
 
     if not args.training:
         agent.model.eval()
+        agent.model_.eval()
 
     works = []
     parent_conns = []
@@ -206,7 +230,7 @@ if __name__ == '__main__':
         global_step += (args.num_worker * args.num_step)
 
         for _ in range(args.num_step):
-            if not args.training and args.render:
+            if not args.training:
                 time.sleep(0.05)
             actions = agent.get_action(states, explore_w)
 
@@ -248,6 +272,7 @@ if __name__ == '__main__':
             sample_step += 1
             if real_dones[sample_env_idx]:
                 sample_episode += 1
+                agent.anneal()
                 writer.add_scalar('data/reward', sample_rall, sample_episode)
                 writer.add_scalar('data/step', sample_step, sample_episode)
                 writer.add_scalar('data/score', scores[sample_env_idx], sample_episode)
@@ -256,38 +281,40 @@ if __name__ == '__main__':
                 writer.add_scalar('data/death_penalty', sample_morall[2], sample_episode)
                 writer.add_scalar('data/coin_reward', sample_morall[3], sample_episode)
                 writer.add_scalar('data/enemy_reward', sample_morall[4], sample_episode)
+                writer.add_scalar('data/tempreture', agent.T, sample_episode)
                 sample_rall = 0
                 sample_step = 0
                 sample_morall = 0
 
         if args.training:
-            # [w1, w1, w1, w2, w2, w2, w3, w3, w3...]
-            # [s1, s2, s3, s1, s2, s3, s1, s2, s3...]
+            # [w1, w1, w1, w1, w1, w1, w2, w2, w2, w2, w2, w2...]
+            # [s1, s2, s3, u1, u2, u3, s1, s2, s3, u1, u2, u3...]
             # expand w batch
             update_w = generate_w(args.sample_size, reward_size, fixed_w)
-            update_w = update_w.repeat(len(total_state)*args.num_worker, axis=0)
+            total_update_w = update_w.repeat(args.num_step*args.num_worker, axis=0)
             # expand state batch
-            total_state = total_state * args.sample_size
+            # WRONG!!! total_state = total_state * args.sample_size
             total_state = np.stack(total_state).transpose(
                 [1, 0, 2, 3, 4]).reshape([-1, 4, 84, 84])
+            total_state = np.tile(total_state, (args.sample_size, 1, 1, 1))
             # expand next_state batch
-            total_next_state = total_next_state * args.sample_size
+            # WRONG!!! total_next_state = total_next_state * args.sample_size
             total_next_state = np.stack(total_next_state).transpose(
                 [1, 0, 2, 3, 4]).reshape([-1, 4, 84, 84])
+            total_next_state = np.tile(total_next_state, (args.sample_size, 1, 1, 1))
             # calculate utility from reward vectors
-            total_moreward = np.array(
-                                total_moreward*args.sample_size
-                             ).transpose([1, 0, 2]).reshape([-1, reward_size])
-            total_utility = np.sum(total_moreward * update_w, axis=-1).reshape([-1])
+            total_moreward = np.array(total_moreward).transpose([1, 0, 2]).reshape([-1, reward_size])
+            total_moreward = np.tile(total_moreward, (args.sample_size, 1))
+            total_utility = np.sum(total_moreward * total_update_w, axis=-1).reshape([-1])
             # expand action batch
-            total_action = total_action * args.sample_size
             total_action = np.stack(total_action).transpose().reshape([-1])
+            total_action = np.tile(total_action, args.sample_size)
             # expand done batch
-            total_done = total_done * args.sample_size
             total_done = np.stack(total_done).transpose().reshape([-1])
+            total_done = np.tile(total_done, args.sample_size)
 
             value, next_value, policy = agent.forward_transition(
-                total_state, total_next_state, update_w)
+                total_state, total_next_state, total_update_w)
 
             # logging utput to see how convergent it is.
             policy = policy.detach()
@@ -303,21 +330,23 @@ if __name__ == '__main__':
             for idw in range(args.sample_size):
                 ofs = args.num_worker * args.num_step
                 for idx in range(args.num_worker):
-                    target, adv = make_train_data(args,
-                                  total_utility[idx*args.num_step+idw*ofs : (idx+1)*args.num_step+idw*ofs],
+                    target = make_train_data(args,
+                                  total_moreward[idx*args.num_step+idw*ofs : (idx+1)*args.num_step+idw*ofs],
                                   total_done[idx*args.num_step+idw*ofs: (idx+1)*args.num_step+idw*ofs],
                                   value[idx*args.num_step+idw*ofs : (idx+1)*args.num_step+idw*ofs],
-                                  next_value[idx*args.num_step+idw*ofs : (idx+1)*args.num_step+idw*ofs])
+                                  next_value[idx*args.num_step+idw*ofs : (idx+1)*args.num_step+idw*ofs],
+                                  reward_size)
                     total_target.append(target)
-                    total_adv.append(adv)
+
+            total_target, total_adv = envelope_operator(args, update_w, total_target, value, reward_size, global_step)
 
             agent.train_model(
                 total_state,
                 total_next_state,
-                update_w,
-                np.hstack(total_target),
+                total_update_w,
+                total_target,
                 total_action,
-                np.hstack(total_adv))
+                total_adv)
 
             # adjust learning rate
             if args.lr_schedule:
@@ -330,3 +359,6 @@ if __name__ == '__main__':
 
             if global_step % (args.num_worker * args.num_step * 100) == 0:
                 torch.save(agent.model.state_dict(), model_path)
+
+            if global_step % args.update_target_critic == 0:
+                agent.sync()

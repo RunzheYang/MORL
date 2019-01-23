@@ -13,7 +13,6 @@ python run_e3c.py \
 	--env-id SuperMarioBros-v2 \
 	--load-model \
 	--prev-model SuperMarioBros-v2_e3c_b95_Jan21_08-38-27.model \
-	--render \
 	--use-gae \
 	--life-done \
 	--single-stage \
