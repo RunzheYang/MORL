@@ -227,6 +227,29 @@ def train(env, agent, args):
                            #    q__max,
                            loss / cnt)
 
+
+        agent.is_train=False
+        terminal = False
+        env.reset()
+        cnt = 0
+        tot_reward_mo = 0
+        probe = None
+        if args.env_name == "dst":
+            probe = corner_w
+        elif args.env_name in ['ft', 'ft5', 'ft7']:
+            probe = FloatTensor([0.8, 0.2, 0.0, 0.0, 0.0, 0.0])
+        while not terminal:
+            state = env.observe()
+            action = agent.act(state, corner_w)
+            agent.w_kept = corner_w
+            next_state, reward, terminal = env.step(action)
+            if cnt > 100:
+                terminal = True
+                agent.reset()
+            tot_reward_mo = tot_reward_mo + reward * np.power(args.gamma, cnt)
+            cnt = cnt + 1
+        agent.is_train=True
+
         S, corWs = update_ccs(S, corWs, tot_reward_mo)
 
     # if num_eps+1 % 100 == 0:
