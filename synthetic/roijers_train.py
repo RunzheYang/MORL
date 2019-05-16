@@ -81,7 +81,8 @@ def intersect(v, s):
 
 def update_ccs(S, corWs, new_value):
     if len(S) == 0:
-        S.add(optvalue(new_value[0], new_value[1], 0.0, 1.0))
+        nv = optvalue(new_value[0], new_value[1], 0.0, 1.0)
+        S.add(nv)
         print(colored("add {} to set.".format(nv), "green"))
     else:
         discard = True
@@ -94,10 +95,12 @@ def update_ccs(S, corWs, new_value):
                (nv.v1+dnv*s.u > s.v1+ds*s.u or nv.v1+dnv*s.u == s.v1+ds*s.u):
                 if s.l > nv.l: nv._replace(l = s.l)
                 if s.u < nv.u: nv._replace(u = s.u)
-                if not nv.v1+dnv*s.l == s.v1+ds*s.l or\
+                if not nv.v1+dnv*s.l == s.v1+ds*s.l and\
                    not nv.v1+dnv*s.u == s.v1+ds*s.u:
+                    discard = True
+                else:
                     useless.append(s)
-                discard = False
+                    discard = False
             elif (nv.v1+dnv*s.l < s.v1+ds*s.l or nv.v1+dnv*s.l == s.v1+ds*s.l) and\
                  (nv.v1+dnv*s.u < s.v1+ds*s.u or nv.v1+dnv*s.u == s.v1+ds*s.u):
                 # do nothing for this point
@@ -168,7 +171,7 @@ def train(env, agent, args):
 
             probe = None
             if args.env_name == "dst":
-                probe = FloatTensor([0.8, 0.2])
+                probe = corner_w
             elif args.env_name in ['ft', 'ft5', 'ft7']:
                 probe = FloatTensor([0.8, 0.2, 0.0, 0.0, 0.0, 0.0])
 
@@ -208,9 +211,11 @@ def train(env, agent, args):
             elif args.method == "crl-energy":
                 act_1 = probe.dot(act_1.data)
                 act_2 = probe.dot(act_2.data)
-            print("end of eps %d with total reward (1) %0.2f, the Q is %0.2f | %0.2f; loss: %0.4f" % (
+            print("end of eps %d with total reward (1) %0.2f (%0.2f, %0.2f), the Q is %0.2f | %0.2f; loss: %0.4f" % (
                 num_eps,
                 tot_reward,
+                tot_reward_mo[0],
+                tot_reward_mo[1],
                 act_1,
                 act_2,
                 # q__max,
