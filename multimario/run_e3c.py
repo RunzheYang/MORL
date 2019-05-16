@@ -213,7 +213,8 @@ if __name__ == '__main__':
     recent_prob = deque(maxlen=10)
 
     fixed_w = np.array([0.20, 0.20, 0.20, 0.20, 0.20])
-    # fixed_w = np.array([0.00, 0.00, 0.00, 1.00, 0.00])
+    # fixed_w = np.array([0.02, 0.02, 0.02, 0.92, 0.02])
+    fixed_w = np.array([0.00, 0.00, 0.00, 1.00, 0.00])
     # fixed_w = np.array([0.00, 0.00, 0.00, 0.00, 1.00])
     # fixed_w = np.array([1.00, 0.00, 0.00, 0.00, 0.00])
     # fixed_w = np.array([0.00, 1.00, 0.00, 0.00, 0.00])

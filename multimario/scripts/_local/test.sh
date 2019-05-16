@@ -12,7 +12,7 @@
 python run_e3c.py \
 	--env-id SuperMarioBros-v2 \
 	--load-model \
-	--prev-model SuperMarioBros-v2_e3c_b95_Jan21_08-38-27.model \
+	--prev-model SuperMarioBros-v2_e3c_b95_Jan23_11-04-34.model \
 	--use-gae \
 	--render \
 	--life-done \
@@ -21,6 +21,7 @@ python run_e3c.py \
 	--num-worker 1 \
 	--sample-size 1 \
 
+# SuperMarioBros-v2_e3c_b95_Jan23_11-04-34.model
 # SuperMarioBros-v2_e3c_b95_Jan21_08-38-27.model
 # SuperMarioBros-v2_e3c_b95_Jan19_11-41-37.model
 # SuperMarioBros-v2_e3c_b95_Jan19_01-34-29.model
