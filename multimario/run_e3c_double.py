@@ -79,7 +79,7 @@ parser.add_argument('--lr-schedule', action='store_true',
                     help='enable learning rate scheduling')
 parser.add_argument('--enve-start', type=int, default=1e5, metavar='ESTART',
                     help='minimum number of naive traning before envelope')
-parser.add_argument('--update-target-critic', type=int, default=1e5, metavar='UTC',
+parser.add_argument('--update-target-critic', type=int, default=1e4, metavar='UTC',
                     help='the number of steps to update target critic')
 parser.add_argument('--entropy-coef', type=float, default=0.02, metavar='ENTROPY',
                     help='entropy coefficient for regurization (default 0.2)')

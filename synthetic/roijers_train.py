@@ -5,9 +5,9 @@ import torch
 from utils.monitor import Monitor
 from envs.mo_env import MultiObjectiveEnv
 
-import Queue
-from sets import Set
+import queue
 from collections import namedtuple
+from termcolor import colored
 
 parser = argparse.ArgumentParser(description='MORL')
 # CONFIG
@@ -61,43 +61,72 @@ ByteTensor = torch.cuda.ByteTensor if use_cuda else torch.ByteTensor
 Tensor = FloatTensor
 
 
-optvalue = namedtuple("value", ["v", "l", "u"])
+optvalue = namedtuple("value", ["v0", "v1", "l", "u"])
 
 def is_corner(corner_w, S):
     for s in S:
         if s.l < corner_w[0] and\
            s.u > corner_w[0]:
+            print(colored("skip {} ...".format(corner_w), "green"))
             return False
     return True
 
+def intersect(v, s):
+    d = (v.v1 - v.v0) - (s.v1 - s.v0)
+    if d <= 0: return None
+    w = (v.v1 - s.v1) / d
+    if w < v.l or w > v.u or w < s.l or w > s.u:
+        return None
+    return w
+
 def update_ccs(S, corWs, new_value):
     if len(S) == 0:
-        S.add(optvalue(new_value, 0.0, 1.0))
+        S.add(optvalue(new_value[0], new_value[1], 0.0, 1.0))
+        print(colored("add {} to set.".format(nv), "green"))
     else:
-        discard = False
-        nv = optvalue(new_value, 0.0, 1.0) 
+        discard = True
+        useless = []
+        nv = optvalue(new_value[0], new_value[1], 0.0, 1.0) 
         for s in S:
-            if new_value[0] > s.v[0] and new_value[1] > s.v[1]:
-                nv.l = s.l if s.l > nv.l
-                nv.u = s.u if s.u < nv.u
-                S.remove(s)
-            elif new_value[0] < s.v[0] and new_value[1] < s.v[1]:
+            dnv = nv.v0 - nv.v1
+            ds = s.v0 - s.v1
+            if (nv.v1+dnv*s.l > s.v1+ds*s.l or nv.v1+dnv*s.l == s.v1+ds*s.l) and\
+               (nv.v1+dnv*s.u > s.v1+ds*s.u or nv.v1+dnv*s.u == s.v1+ds*s.u):
+                if s.l > nv.l: nv._replace(l = s.l)
+                if s.u < nv.u: nv._replace(u = s.u)
+                if not nv.v1+dnv*s.l == s.v1+ds*s.l or\
+                   not nv.v1+dnv*s.u == s.v1+ds*s.u:
+                    useless.append(s)
+                discard = False
+            elif (nv.v1+dnv*s.l < s.v1+ds*s.l or nv.v1+dnv*s.l == s.v1+ds*s.l) and\
+                 (nv.v1+dnv*s.u < s.v1+ds*s.u or nv.v1+dnv*s.u == s.v1+ds*s.u):
                 # do nothing for this point
                 discard = True
                 break
             else:
                 # None if the intersection is out of range
                 w = intersect(nv, s)
-                if w and nv.v[1] > s.v[1]:
-                    nv.u = w if w < nv.u
-                    s.l = w if w > s.l
-                    corWs.put(FloatTensor([w, 1.0-w]))
-                elif w and nv.v[0] > s.v[0]:
-                    nv.l = w if w > nv.l
-                    s.u = w if w < s.u
-                    corWs.put(FloatTensor([w, 1.0-w]))
+                if w and nv.v1 > s.v1:
+                    if w < nv.u: nv._replace(u = w)
+                    if w > s.l: s._replace(l = w)
+                    corWs.put_nowait(FloatTensor([w, 1.0-w]))
+                    print(colored("add perference {} to set.".format(w), "green"))
+                    discard = False
+                elif w and nv.v0 > s.v0:
+                    if w > nv.l: nv._replace(l = w)
+                    if w < s.u: s._replace(u = w)
+                    corWs.put_nowait(FloatTensor([w, 1.0-w]))
+                    print(colored("add perference {} to set.".format(w), "green"))
+                    discard = False
+        
+        for s in useless:
+            print(colored("remove {} from set.".format(s), "green"))
+            S.remove(s)
+
         if not discard:
             S.add(nv)
+            print(colored("add {} to set.".format(nv), "green"))
+
     return S, corWs
 
 
@@ -106,9 +135,9 @@ def train(env, agent, args):
     monitor.init_log(args.log, "roi_m.{}_e.{}_n.{}".format(args.model, args.env_name, args.name))
     env.reset()
 
-    S = Set()
+    S = set()
 
-    corWs = Queue.Queue()
+    corWs = queue.Queue()
 
     # add two extreme points
     corWs.put(FloatTensor([1.0, 0.0]))
@@ -117,15 +146,18 @@ def train(env, agent, args):
     # outer_loop!
     for _ in range(args.ws):
 
-        corner_w = corWs.get()
-        while not is_corner(corner_w, S) and not corWs.empty():
-            corner_w = corWs.get()
-        if not is_corner(corner_w, S):
-            print("no more corner w...")
-            break
-        print("solve for w:", corner_w)
+        print(colored("size of corWs: {}".format(corWs.qsize()), "green"))
 
-        for num_eps in range(args.episode_num / args.ws):
+        corner_w = corWs.get_nowait()
+        while not is_corner(corner_w, S) and corWs.qsize()>0:
+            corner_w = corWs.get_nowait()
+            print(colored("{} left....".format(corWs.qsize()), "green"))
+        if not is_corner(corner_w, S):
+            print(colored("no more corner w...", "green"))
+            break
+        print(colored("solve for w: {}".format(corner_w), "green"))
+
+        for num_eps in range(int(args.episode_num / args.ws)):
             terminal = False
             env.reset()
             loss = 0
@@ -143,6 +175,7 @@ def train(env, agent, args):
             while not terminal:
                 state = env.observe()
                 action = agent.act(state, corner_w)
+                agent.w_kept = corner_w
                 next_state, reward, terminal = env.step(action)
                 if args.log:
                     monitor.add_log(state, action, reward, terminal, agent.w_kept)

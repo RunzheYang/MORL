@@ -164,7 +164,7 @@ class MetaAgent(object):
                 w_batch = torch.from_numpy(w_batch.repeat(self.batch_size, axis=0)).type(FloatTensor)
             else:
                 w_batch = preference.cpu().numpy()
-                w_batch = w_batch.unsqueeze(0)
+                w_batch = np.expand_dims(w_batch, axis=0)
                 w_batch = np.abs(w_batch) / \
                           np.linalg.norm(w_batch, ord=1, axis=1, keepdims=True)
                 w_batch = torch.from_numpy(w_batch.repeat(self.batch_size, axis=0)).type(FloatTensor)
