@@ -84,7 +84,7 @@ class MetaAgent(object):
 
         return action
 
-    def memorize(self, state, action, next_state, reward, terminal):
+    def memorize(self, state, action, next_state, reward, terminal, roi=False):
         self.trans_mem.append(self.trans(
             torch.from_numpy(state).type(FloatTensor),  # state
             action,  # action
@@ -93,10 +93,12 @@ class MetaAgent(object):
             terminal))  # terminal
 
         # randomly produce a preference for calculating priority
-        # preference = self.w_kept
-        preference = torch.randn(self.model_.reward_size)
-        preference = (torch.abs(preference) / \
-                      torch.norm(preference, p=1)).type(FloatTensor)
+        if roi: 
+            preference = self.w_kept
+        else:
+            preference = torch.randn(self.model_.reward_size)
+            preference = (torch.abs(preference) / \
+                          torch.norm(preference, p=1)).type(FloatTensor)
 
         state = torch.from_numpy(state).type(FloatTensor)
 

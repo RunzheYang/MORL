@@ -445,8 +445,11 @@ def trainBatch(domain, configId, trainerr, ndialogs, source_iteration,seed=None)
     Settings.config.write(cf)
     error = float(trainerr) / 100.0
     # run the system
+    roi = False
+    if policytype == "roi-morl":
+        roi = True
     simulator = Simulate.SimulationSystem(error_rate=error)
-    simulator.run_dialogs(ndialogs)
+    simulator.run_dialogs(ndialogs, roi)
     if gdeleteprevpolicy:
         if isSingleDomain:
             if inpolicy[-1] != '0':

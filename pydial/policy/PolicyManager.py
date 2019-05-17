@@ -300,6 +300,9 @@ class PolicyManager(object):
             elif policy_type == 'morl':
                 from policy import MORLPolicy
                 self.domainPolicies[domainString] = MORLPolicy.MORLPolicy(in_policy_file, out_policy_file, domainString, learning)
+            elif policy_type == 'roi-morl':
+                from policy import RoiMORLPolicy
+                self.domainPolicies[domainString] = RoiMORLPolicy.RoiMORLPolicy(in_policy_file, out_policy_file, domainString, learning)
             else:
                 try:
                     # try to view the config string as a complete module path to the class to be instantiated

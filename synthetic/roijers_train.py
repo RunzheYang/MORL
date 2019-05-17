@@ -202,7 +202,7 @@ def train(env, agent, args):
                 next_state, reward, terminal = env.step(action)
                 if args.log:
                     monitor.add_log(state, action, reward, terminal, agent.w_kept)
-                agent.memorize(state, action, next_state, reward, terminal)
+                agent.memorize(state, action, next_state, reward, terminal, roi=True)
                 loss += agent.learn(corner_w)
                 if cnt > 100:
                     terminal = True
