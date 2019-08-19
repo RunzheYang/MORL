@@ -449,7 +449,7 @@ def trainBatch(domain, configId, trainerr, ndialogs, source_iteration,seed=None)
     if policytype == "roi-morl":
         roi = True
     simulator = Simulate.SimulationSystem(error_rate=error)
-    simulator.run_dialogs(ndialogs, roi)
+    simulator.run_dialogs(ndialogs)
     if gdeleteprevpolicy:
         if isSingleDomain:
             if inpolicy[-1] != '0':
@@ -1110,28 +1110,47 @@ def chat_command(configfile, seed=None, trainerrorrate=None, trainsourceiteratio
             configId = getConfigId(configfile)
             initialise(configId, configfile, seed, "chat", trainerrorrate=trainerrorrate,
                        trainsourceiteration=trainsourceiteration)
-            for dom in domains:
-                if policytypes[dom] != 'hdc':
-                    setupPolicy(dom, configId, gtrainerrorrate,
+            
+            if isSingleDomain:
+                if policytype != 'hdc':
+                    setupPolicy(domain, configId, gtrainerrorrate,
                                 gtrainsourceiteration, gtrainsourceiteration)
                     # make sure that learning is switched off
-                    if Settings.config.has_section("policy_" + dom):
-                        Settings.config.set("policy_" + dom, "learning", 'False')
+                    if Settings.config.has_section("policy_" + domain):
+                        Settings.config.set("policy_" + domain, "learning", 'False')
                     else:
                         Settings.config.set("policy", "learning", 'False')
                     # if gp, make sure to reset scale to 1 for evaluation
-                    if policytypes[dom] == "gp":
-                        if Settings.config.has_section("gpsarsa_" + dom):
-                            Settings.config.set("gpsarsa_" + dom, "scale", "1")
+                    if policytype == "gp":
+                        if Settings.config.has_section("gpsarsa_" + domain):
+                            Settings.config.set("gpsarsa_" + domain, "scale", "1")
                         else:
                             Settings.config.set("gpsarsa", "scale", "1")
-            mess = "*** Chatting with policies %s: ***" % str(domains)
+                mess = "*** Chatting with policy [%s]: ***" % str(domain)
+            else:
+                for dom in domains:
+                    if policytypes[dom] != 'hdc':
+                        setupPolicy(dom, configId, gtrainerrorrate,
+                                    gtrainsourceiteration, gtrainsourceiteration)
+                        # make sure that learning is switched off
+                        if Settings.config.has_section("policy_" + dom):
+                            Settings.config.set("policy_" + dom, "learning", 'False')
+                        else:
+                            Settings.config.set("policy", "learning", 'False')
+                        # if gp, make sure to reset scale to 1 for evaluation
+                        if policytypes[dom] == "gp":
+                            if Settings.config.has_section("gpsarsa_" + dom):
+                                Settings.config.set("gpsarsa_" + dom, "scale", "1")
+                            else:
+                                Settings.config.set("gpsarsa", "scale", "1")
+                mess = "*** Chatting with policies %s: ***" % str(domains)
+            
             if tracedialog > 0: print mess
             logger.dial(mess)
 
             # create text hub and run it
             hub = Texthub.ConsoleHub()
-            hub.run()
+            hub.run(domain)
             logger.dial("*** Chat complete")
             # Save a copy of config file
             confsavefile = conf_dir + configId + ".chat.cfg"

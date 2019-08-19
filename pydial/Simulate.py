@@ -130,11 +130,11 @@ class SimulationSystem(object):
         '''
         for i in range(numDialogs):
             logger.info('Dialogue %d' % (i+1))
-            self.run(session_id='simulate_dialog'+str(i), sim_level=self.sim_level, roi=roi)
+            self.run(session_id='simulate_dialog'+str(i), sim_level=self.sim_level)
  
         self.agent_factory.power_down_factory() # Important! -uses FORCE_SAVE on policy- which will finalise learning and save policy.
        
-    def run(self, session_id, agent_id='Smith', sim_level='dial_act', roi=False):
+    def run(self, session_id, agent_id='Smith', sim_level='dial_act'):
         '''
         Runs one episode through the simulator
         
@@ -150,8 +150,6 @@ class SimulationSystem(object):
 
         preference = torch.randn(2)
         preference = (torch.abs(preference) / torch.norm(preference, p=1)).type(FloatTensor)
-        if roi:
-            pass
         logger.dial('User\'s preference: [{}, {}]'.format(preference[0], preference[1]))
 
         # RESET THE USER SIMULATOR:

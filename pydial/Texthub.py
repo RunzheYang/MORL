@@ -58,6 +58,8 @@ Optional arguments/flags [default values]::
 '''
 import argparse, re
 
+import torch
+
 from Agent import DialogueAgent
 from utils import ContextLogger
 from utils import Settings
@@ -66,6 +68,9 @@ logger = ContextLogger.getLogger('')
 
 __author__ = "cued_dialogue_systems_group"
 __version__ = Settings.__version__
+
+use_cuda = torch.cuda.is_available()
+FloatTensor = torch.cuda.FloatTensor if use_cuda else torch.FloatTensor
 
 class ConsoleHub(object):
     '''
@@ -77,15 +82,25 @@ class ConsoleHub(object):
         #-----------------------------------------
         self.agent = DialogueAgent(hub_id='texthub')
 
-    def run(self):
+    def run(self, domain):
         '''
         Runs one episode through Hub
 
         :returns: None
         '''
 
+        # GENERATE A USER PREFERENCE: a * Length + (1-a) * Success
+        
+
+        preference = torch.randn(2)
+        preference = (torch.abs(preference) / torch.norm(preference, p=1)).type(FloatTensor)
+        logger.dial('User\'s preference: [{}, {}]'.format(preference[0], preference[1]))
+        print 'User\'s preference: [Brevity: {}, Success: {}]'.format(preference[0], preference[1])
+
         logger.warning("NOTE: texthub is not using any error simulation at present.")
-        sys_act = self.agent.start_call(session_id='texthub_dialog')
+        sys_act = self.agent.start_call(session_id='texthub_dialog',
+                                        preference=preference)
+
         print 'Prompt > ' + sys_act.prompt
         while not self.agent.ENDING_DIALOG:
             # USER ACT:
@@ -107,15 +122,16 @@ class ConsoleHub(object):
                 #     print 'Semi > null() [0.001]'
                 #--------------------------------
             '''
-            domain = None
-            if "domain(" in obs:
-                match = re.search("(.*)(domain\()([^\)]+)(\))(.*)",obs)
-                if match is not None:
-                    domain = match.group(3)
-                    obs = match.group(1) + match.group(5)
+
+            # domain = None
+            # if "domain(" in obs:
+            #     match = re.search("(.*)(domain\()([^\)]+)(\))(.*)",obs)
+            #     if match is not None:
+            #         domain = match.group(3)
+            #         obs = match.group(1) + match.group(5)
                 
             # SYSTEM ACT:
-            sys_act = self.agent.continue_call(asr_info = [(obs,1.0)], domainString = domain)
+            sys_act = self.agent.continue_call(asr_info = [(obs,1.0)], domainString = domain, preference=preference)
             print 'Prompt > ' + sys_act.prompt
 
         # Process ends. -----------------------------------------------------

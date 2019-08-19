@@ -202,6 +202,7 @@ class DialogueAgent(object):
             
         # SEMO:
         self.prompt_str = self._agents_semo(sys_act)
+
         
         self.callValidator.validate(sys_act)
         
@@ -268,20 +269,22 @@ class DialogueAgent(object):
         
         state = self.semi_belief_manager.update_belief_state(ASR_obs=asr_info, sys_act=prev_sys_act,
                                                      dstring=currentDomain, turn=self.currentTurn,hub_id = self.hub_id, sim_lvl=self.sim_level)
-        
+
         self._print_usr_act(state, currentDomain)
-        
+
         # 2. Policy -- Determine system act/response
         sys_act = self.policy_manager.act_on(dstring=currentDomain, 
                                                   state=state, preference=preference)
 
         # Check ending the call:
         sys_act = self._check_ENDING_CALL(state, sys_act)  # NB: this may change the self.prompt_str
-
-        self._print_sys_act(sys_act)
-
+        
+        self._print_sys_act(sys_act)        
+        
         # SEMO:
+        # print(sys_act)
         self.prompt_str = self._agents_semo(sys_act)
+
         sys_act.prompt = self.prompt_str
         
         

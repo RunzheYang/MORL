@@ -93,12 +93,12 @@ class MetaAgent(object):
             terminal))  # terminal
 
         # randomly produce a preference for calculating priority
-        if roi: 
-            preference = self.w_kept
-        else:
-            preference = torch.randn(self.model_.reward_size)
-            preference = (torch.abs(preference) / \
-                          torch.norm(preference, p=1)).type(FloatTensor)
+        #if roi: 
+        #    preference = self.w_kept
+        #else:
+        preference = torch.randn(self.model_.reward_size)
+        preference = (torch.abs(preference) / \
+                      torch.norm(preference, p=1)).type(FloatTensor)
 
         state = torch.from_numpy(state).type(FloatTensor)
 
@@ -118,6 +118,9 @@ class MetaAgent(object):
                 self.epsilon -= self.epsilon_delta
             p = abs(wr - q)
         p += 1e-5
+	
+        #if roi: 
+        #    p = 1
 
         self.priority_mem.append(
             p

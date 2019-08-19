@@ -256,3 +256,49 @@ class MetaAgent(object):
 
     def save(self, save_path, model_name):
         torch.save(self.model, "{}{}.pkl".format(save_path, model_name))
+
+
+    def find_preference(
+            self,
+            w_batch,
+            target_batch,
+            pref_param):
+
+        with torch.no_grad():
+            w_batch = FloatTensor(w_batch)
+            target_batch = FloatTensor(target_batch)
+
+        # compute loss
+        pref_param = FloatTensor(pref_param)
+        pref_param.requires_grad = True
+        sigmas = FloatTensor([0.001]*len(pref_param))
+        dist = torch.distributions.normal.Normal(pref_param, sigmas)
+        pref_loss = dist.log_prob(w_batch).sum(dim=1) * target_batch
+
+        self.optimizer.zero_grad()
+        # Total loss
+        loss = pref_loss.mean()
+        loss.backward()
+        
+        eta = 1e-3
+        pref_param = pref_param + eta * pref_param.grad
+        pref_param = simplex_proj(pref_param.detach().cpu().numpy())
+        # print("update prefreence parameters to", pref_param)
+
+        return pref_param
+
+
+# projection to simplex
+def simplex_proj(x):
+    y = -np.sort(-x)
+    sum = 0
+    ind = []
+    for j in range(len(x)):
+        sum = sum + y[j]
+        if y[j] + (1 - sum) / (j + 1) > 0:
+            ind.append(j)
+        else:
+            ind.append(0)
+    rho = np.argmax(ind)
+    delta = (1 - (y[:rho+1]).sum())/(rho+1)
+    return np.clip(x + delta, 0, 1)
