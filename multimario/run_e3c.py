@@ -138,7 +138,7 @@ def generate_w(num_prefence, reward_size, fixed_w=None):
         w = np.abs(w) / np.linalg.norm(w, ord=1, axis=1).reshape(num_prefence-1, 1)
         return np.concatenate(([fixed_w], w))
     else:
-        w = np.random.randn(num_prefence-1, reward_size)
+        w = np.random.randn(num_prefence, reward_size)
         w = np.abs(w) / np.linalg.norm(w, ord=1, axis=1).reshape(num_prefence, 1)
         return w
 
@@ -212,22 +212,28 @@ if __name__ == '__main__':
     global_step = 0
     recent_prob = deque(maxlen=10)
 
-    fixed_w = np.array([0.20, 0.20, 0.20, 0.20, 0.20])
+    # fixed_w = np.array([0.20, 0.20, 0.20, 0.20, 0.20])
     # fixed_w = np.array([0.02, 0.02, 0.02, 0.92, 0.02])
-    fixed_w = np.array([0.00, 0.00, 0.00, 1.00, 0.00])
+    # fixed_w = np.array([0.20, 0.20, 0.20, 0.20, 0.20])
+    fixed_w = None 
+    # np.array([0.20, 0.20, 0.20, 0.20, 0.20])
     # fixed_w = np.array([0.00, 0.00, 0.00, 0.00, 1.00])
     # fixed_w = np.array([1.00, 0.00, 0.00, 0.00, 0.00])
     # fixed_w = np.array([0.00, 1.00, 0.00, 0.00, 0.00])
     # fixed_w = np.array([0.00, 0.00, 1.00, 0.00, 0.00])
     explore_w = generate_w(args.num_worker, reward_size, fixed_w)
+    fixed_w = explore_w 
+
+    if not args.training:
+        rw = []
 
     while True:
         total_state, total_reward, total_done, total_next_state, total_action, total_moreward = [], [], [], [], [], []
         global_step += (args.num_worker * args.num_step)
 
         for _ in range(args.num_step):
-            if not args.training:
-                time.sleep(0.05)
+            # if not args.training:
+                # time.sleep(0.05)
             actions = agent.get_action(states, explore_w)
 
             for parent_conn, action in zip(parent_conns, actions):
@@ -238,13 +244,15 @@ if __name__ == '__main__':
             for parent_conn in parent_conns:
                 s, r, d, rd, mor, sc = parent_conn.recv()
                 next_states.append(s)
-                rewards.append(fixed_w.dot(mor))
+                # rewards.append(fixed_w.dot(mor))
+                rewards.append(explore_w.dot(mor))
                 dones.append(d)
                 real_dones.append(rd)
                 morewards.append(mor)
                 scores.append(sc)
                 # resample if done
-                if cnt > 0 and rd:
+                if rd:
+                # if cnt > 0 and rd:
                     explore_w = renew_w(explore_w, cnt)
                 cnt += 1
 
@@ -278,9 +286,16 @@ if __name__ == '__main__':
                 writer.add_scalar('data/coin_reward', sample_morall[3], sample_episode)
                 writer.add_scalar('data/enemy_reward', sample_morall[4], sample_episode)
                 writer.add_scalar('data/tempreture', agent.T, sample_episode)
+                if not args.training:
+                    rw.append(sample_rall)
+                    rw_np = np.array(rw)
+                    print(">>>>", sample_rall, sample_episode, rw_np.mean(), rw_np.std())
                 sample_rall = 0
                 sample_step = 0
                 sample_morall = 0
+
+        if sample_episode == 100:
+            break
 
         if args.training:
             # [w1, w1, w1, w1, w1, w1, w2, w2, w2, w2, w2, w2...]

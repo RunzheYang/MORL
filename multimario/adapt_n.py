@@ -85,7 +85,9 @@ parser.add_argument('--sample-size', type=int, default=1, metavar='SS',
                     help='number of preference samples for updating (default 1 for adaptation)')
 
 # x_pos, time, death, coin, enermy
-UNKNOWN_PREFERENCE = np.array([0.00, 0.00, 0.00, 0.00, 1.00])
+# UNKNOWN_PREFERENCE = np.array([0.00, 0.00, 0.00, 0.00, 1.00])
+UNKNOWN_PREFERENCE = np.array([0.50, 0.50, 0.00, 0.00, 0.00])
+
 
 def make_train_data(num_step, reward):
     discounted_return = np.empty([num_step])

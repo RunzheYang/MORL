@@ -497,7 +497,7 @@ class EnveDoubleMoActorAgent(object):
 
         with torch.no_grad():
             w_batch = torch.FloatTensor(w_batch).to(self.device)
-            target_batch = torch.FloatTensor(pref_param).to(self.device)/200
+            target_batch = torch.FloatTensor(target_batch).to(self.device)
 
         # compute loss
         pref_param = torch.FloatTensor(pref_param).to(self.device)
