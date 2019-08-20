@@ -1,8 +1,6 @@
 # Deep Multi-Objective Reinforcement Learning
 ----
 [A Generalized Algorithm for Multi-Objective RLand Policy Adaptation](), Under Review.   
-[Deep Multi-Objective Reinforcement Learning and Its Application in Task-Oriented Dialogue Systems](http://sjcg.jwc.sjtu.edu.cn/326/2018/2018/Dissertation.html)
-_Runzhe Yang, Undergraduate Thesis, 2018_
 
 We'll add more instructions for the code soon.
 
