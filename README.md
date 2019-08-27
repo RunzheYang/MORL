@@ -4,11 +4,11 @@
 
 ## Abstract
 
-We introduce a new algorithm for multi-objective reinforcement learning (MORL) with linear preferences, with the goal of enabling few-shot adaptation to new tasks.In MORL, the aim is to learn policies over multiple competing objectives whoserelative importance (preferences) is unknown to the agent. While this alleviatesdependence on scalar reward design, the expected return of a policy can changesignificantly with varying preferences, making it challenging to learn a singlemodel to produce optimal policies under different preference conditions. We propose a generalized version of the Bellman equation to learn a single parametricrepresentation for optimal policies over the space of all possible preferences. Afterthis initial learning phase, our agent can quickly adapt to any given preference, orautomatically infer an underlying preference with very few samples. Experimentsacross four different domains demonstrate the effectiveness of our approach.a
+We introduce a new algorithm for **multi-objective reinforcement learning (MORL)** with **linear preferences**, with the goal of enabling **few-shot adaptation** to new tasks.In MORL, the aim is to learn policies over multiple competing objectives whoserelative importance (preferences) is **unknown** to the agent. While this alleviatesdependence on scalar reward design, the expected return of a policy can changesignificantly with varying preferences, making it challenging to learn a singlemodel to produce optimal policies under different preference conditions. We propose a generalized version of the Bellman equation to learn a single parametric representation for **optimal policies over the space of all possible preferences**. After this initial learning phase, our agent can quickly adapt to any given preference, or automatically infer an underlying preference with very few samples. Experimentsacross four different domains demonstrate the effectiveness of our approach.
 
 ## Instructions
 
-The experiments on two synthetic domains, Deep Sea Treasure (DST) and Fruit Tree Navigation (FTN), as well as two complex real domains, Task-Oriented Dialog Policy Learning (Dialog) and SuperMario Game (SuperMario).
+The experiments on two synthetic domains, **Deep Sea Treasure (DST)** and **Fruit Tree Navigation (FTN)**, as well as two complex real domains, **Task-Oriented Dialog Policy Learning (Dialog)** and **SuperMario Game (SuperMario)**.
 
 ### `synthetic`
 
