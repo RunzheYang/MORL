@@ -1,6 +1,8 @@
 # Deep Multi-Objective Reinforcement Learning
-----
+
 [A Generalized Algorithm for Multi-Objective RLand Policy Adaptation](https://arxiv.org/abs/1908.08342), arXiv:1908.08342.   
+
+![](http://www.cs.princeton.edu/~runzhey/demo/morl-poster.pdf)
 
 ## Abstract
 
