@@ -1,6 +1,6 @@
 # Deep Multi-Objective Reinforcement Learning
 
-[A Generalized Algorithm for Multi-Objective RLand Policy Adaptation](https://arxiv.org/abs/1908.08342), arXiv:1908.08342.   
+[A Generalized Algorithm for Multi-Objective RL and Policy Adaptation](https://arxiv.org/abs/1908.08342), arXiv:1908.08342.   
 
 ## Abstract
 
