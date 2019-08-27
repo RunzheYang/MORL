@@ -35,7 +35,7 @@ The multi-objective version SuperMario Game. The environment is modified from [K
 
 The code for our envelope MOQ-learning algorithm is in `multimario/agent.py`. Two multi-objective version environment is in `multimario/env.py`.
 
-## Cite
+## Citation
 ```
 @article{MORL:arxiv-1908-08342,
   author    = {Runzhe Yang and
