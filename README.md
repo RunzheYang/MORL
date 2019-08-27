@@ -44,7 +44,7 @@ The code for our envelope MOQ-learning algorithm is in `multimario/agent.py`. Tw
   title     = {A Generalized Algorithm for Multi-Objective Reinforcement Learning and Policy Adaptation},
   journal   = {CoRR},
   volume    = {abs/1908.08342},
-  year      = {2018},
+  year      = {2019},
   url       = {http://arxiv.org/abs/1908.08342},
   archivePrefix = {arXiv},
   eprint    = {1908.08342},
