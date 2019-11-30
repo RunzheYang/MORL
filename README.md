@@ -12,8 +12,8 @@ The experiments on two synthetic domains, **Deep Sea Treasure (DST)** and **Frui
 
 ### `synthetic`
 
-PyTorch version for the code in `synthetic` was torch 0.4.0 (sorry for the 2 years old code) with Python 3.5.
-visdom version is 0.1.6.3
+PyTorch version for the code in `synthetic` was torch 0.4.0 (sorry for the 2 years old code) with Python 3.5,
+and the visdom version is 0.1.6.3
 
 * Example - train envelope MOQ-learning on FTN domain:  
 `python train.py --env-name ft --method crl-envelope --model linear --gamma  0.99 --mem-size 4000 --batch-size 256 --lr  1e-3 --epsilon 0.5 --epsilon-decay --weight-num 32 --episode-num 5000 --optimizer Adam --save crl/envelope/saved/ --log crl/envelope/logs/ --update-freq 100 --beta 0.01 --name 0`
@@ -44,14 +44,14 @@ The code for our envelope MOQ-learning algorithm is in `multimario/agent.py`. Tw
 
 ## Citation
 ```
-@incollection{NIPS2019_9605,
-	title = {A Generalized Algorithm for Multi-Objective Reinforcement Learning and Policy Adaptation},
-	author = {Yang, Runzhe and Sun, Xingyuan and Narasimhan, Karthik},
-	booktitle = {Advances in Neural Information Processing Systems 32},
-	editor = {H. Wallach and H. Larochelle and A. Beygelzimer and F. d\textquotesingle Alch\'{e}-Buc and E. Fox and R. Garnett},
-	pages = {14610--14621},
-	year = {2019},
-	publisher = {Curran Associates, Inc.},
-	url = {http://papers.nips.cc/paper/9605-a-generalized-algorithm-for-multi-objective-reinforcement-learning-and-policy-adaptation.pdf}
+@incollection{yang2019morl,
+  title = {A Generalized Algorithm for Multi-Objective Reinforcement Learning and Policy Adaptation},
+  author = {Yang, Runzhe and Sun, Xingyuan and Narasimhan, Karthik},
+  booktitle = {Advances in Neural Information Processing Systems 32},
+  editor = {H. Wallach and H. Larochelle and A. Beygelzimer and F. d\textquotesingle Alch\'{e}-Buc and E. Fox and R. Garnett},
+  pages = {14610--14621},
+  year = {2019},
+  publisher = {Curran Associates, Inc.},
+  url = {http://papers.nips.cc/paper/9605-a-generalized-algorithm-for-multi-objective-reinforcement-learning-and-policy-adaptation.pdf}
 }
 ```
