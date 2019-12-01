@@ -70,10 +70,10 @@ class EnvelopeLinearCQN(torch.nn.Module):
         # extend preference batch
         w_ext = w.unsqueeze(2).repeat(1, self.action_size, 1).view(-1, 2)
 
-        # produce hte inner products
+        # produce the inner products
         prod = torch.bmm(reQ.unsqueeze(1), w_ext.unsqueeze(2)).squeeze()
 
-        # mask for take max over actions
+        # mask for taking max over actions
         prod = prod.view(-1, self.action_size)
         inds = prod.max(1)[1]
         mask = ByteTensor(prod.size()).zero_()
