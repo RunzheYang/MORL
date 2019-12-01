@@ -6,6 +6,18 @@
 
 We introduce a new algorithm for **multi-objective reinforcement learning (MORL)** with **linear preferences**, with the goal of enabling **few-shot adaptation** to new tasks.In MORL, the aim is to learn policies over multiple competing objectives whose relative importance (preferences) is **unknown** to the agent. While this alleviates dependence on scalar reward design, the expected return of a policy can change significantly with varying preferences, making it challenging to learn a single model to produce optimal policies under different preference conditions. We propose a generalized version of the Bellman equation to learn a single parametric representation for **optimal policies over the space of all possible preferences**. After this initial learning phase, our agent  can execute the optimal policy under any given preference, or automatically infer an underlying preference with very few samples. Experiments across four different domains demonstrate the effectiveness of our approach.
 
+## Installation Requirements
+
+* numpy
+* torch
+* [visdom](https://github.com/facebookresearch/visdom)
+
+Install:
+
+`
+pip install numpy torch visdom
+`
+
 ## Instructions
 
 The experiments on two synthetic domains, **Deep Sea Treasure (DST)** and **Fruit Tree Navigation (FTN)**, as well as two complex real domains, **Task-Oriented Dialog Policy Learning (Dialog)** and **SuperMario Game (SuperMario)**.
@@ -34,6 +46,16 @@ The multi-objective version SuperMario Game. The environment is modified from [K
 `python run_e3c_double.py --env-id SuperMarioBros-v2 --use-cuda --use-gae --life-done --single-stage --training --standardization --num-worker 16 --sample-size 8 --beta 0.05 --name e3c_b05`
 
 The code for our envelope MOQ-learning algorithm is in `multimario/agent.py`. Two multi-objective version environment is in `multimario/env.py`.
+
+## Viewing Results
+
+Open a separate terminal and run the [Visdom](https://github.com/facebookresearch/visdom) server by running:
+
+```
+visdom
+```
+
+Then visit [http://localhost:8097/](http://localhost:8097/) to see the experiment in progress.
 
 ## Citation
 ```
