@@ -13,7 +13,7 @@ import cv2
 from collections import deque
 
 import gym_super_mario_bros
-from nes_py.wrappers import BinarySpaceToDiscreteSpaceEnv
+from nes_py.wrappers import JoypadSpace
 from gym_super_mario_bros.actions import SIMPLE_MOVEMENT
 
 
@@ -28,7 +28,7 @@ class MoMarioEnv(Process):
             w=84):
         super(MoMarioEnv, self).__init__()
         self.daemon = True
-        self.env = BinarySpaceToDiscreteSpaceEnv(
+        self.env = JoypadSpace(
             gym_super_mario_bros.make(args.env_id), SIMPLE_MOVEMENT)
 
         self.is_render = args.render

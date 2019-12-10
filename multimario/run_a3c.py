@@ -24,7 +24,7 @@ from collections import deque
 
 from tensorboardX import SummaryWriter
 import gym_super_mario_bros
-from nes_py.wrappers import BinarySpaceToDiscreteSpaceEnv
+from nes_py.wrappers import JoypadSpace
 from gym_super_mario_bros.actions import SIMPLE_MOVEMENT
 
 from env import MoMarioEnv
@@ -116,7 +116,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     # get enviroment information
-    env = BinarySpaceToDiscreteSpaceEnv(
+    env = JoypadSpace(
         gym_super_mario_bros.make(args.env_id), SIMPLE_MOVEMENT)
     input_size = env.observation_space.shape
     output_size = env.action_space.n
