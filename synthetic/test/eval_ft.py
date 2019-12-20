@@ -384,7 +384,7 @@ if args.pltcontrol:
         realc = real_sol.dot(w).max() * w_e
         qc = w_e
         if args.method == 'crl-naive':
-            qc = hq.data[0] * w_e
+            qc = hq.data[0] * torch.from_numpy(w_e)
         elif args.method == 'crl-envelope':
             qc = w.dot(hq.data.cpu().numpy().squeeze()) * w_e
         elif args.method == 'crl-energy':
@@ -452,7 +452,7 @@ if args.pltcontrol:
         realc = real_sol.dot(w).max() * w_e
         qc = w_e
         if args.method == 'crl-naive':
-            qc = hq.data[0] * w_e
+            qc = hq.data[0] * torch.from_numpy(w_e)
         elif args.method == 'crl-envelope':
             qc = w.dot(hq.data.cpu().numpy().squeeze()) * w_e
         elif args.method == 'crl-energy':
