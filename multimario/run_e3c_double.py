@@ -305,7 +305,9 @@ if __name__ == '__main__':
             # calculate utility from reward vectors
             total_moreward = np.array(total_moreward).transpose([1, 0, 2]).reshape([-1, reward_size])
             total_moreward = np.tile(total_moreward, (args.sample_size, 1))
-            total_utility = np.sum(total_moreward * total_update_w, axis=-1).reshape([-1])
+            # total_utility here is defined for debugging purporses. See
+            # https://github.com/RunzheYang/MORL/issues/12
+            # total_utility = np.sum(total_moreward * total_update_w, axis=-1).reshape([-1])
             # expand action batch
             total_action = np.stack(total_action).transpose().reshape([-1])
             total_action = np.tile(total_action, args.sample_size)
