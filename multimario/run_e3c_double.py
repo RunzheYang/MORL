@@ -58,7 +58,7 @@ parser.add_argument('--training', action='store_true',
 parser.add_argument('--render', action='store_true',
                     help='render the game (default FALSE)')
 parser.add_argument('--standardization', action='store_true',
-                    help='load previous model (default FALSE)')
+                    help='adds standardization of weight preferences (default FALSE)')
 parser.add_argument('--num-worker', type=int, default=16, metavar='NWORKER',
                     help='number of wokers (defualt 16)')
 
