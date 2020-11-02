@@ -1,6 +1,6 @@
 # Deep Multi-Objective Reinforcement Learning
 
-[A Generalized Algorithm for Multi-Objective Reinforcement Learning and Policy Adaptation](https://arxiv.org/abs/1908.08342),  to appear in NeurIPS'19.   
+[A Generalized Algorithm for Multi-Objective Reinforcement Learning and Policy Adaptation](https://arxiv.org/abs/1908.08342), NeurIPS'19.   
 
 ## Abstract
 
