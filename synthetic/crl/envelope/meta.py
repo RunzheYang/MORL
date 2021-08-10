@@ -184,7 +184,7 @@ class MetaAgent(object):
                       np.linalg.norm(w_batch, ord=1, axis=1, keepdims=True)
             w_batch = torch.from_numpy(w_batch.repeat(self.batch_size, axis=0)).type(FloatTensor)
 
-            __, Q = self.model_(Variable(torch.cat(state_batch, dim=0)),
+            _, Q = self.model_(Variable(torch.cat(state_batch, dim=0)),
                                 Variable(w_batch), w_num=self.weight_num)
 
             # detach since we don't want gradients to propagate
